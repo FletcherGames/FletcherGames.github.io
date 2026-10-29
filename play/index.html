@@ -2785,9 +2785,9 @@ function hud(){
    od.forEach(u=>{if(ls!==-1&&ls!==u.s)h+='<div class="dv"></div>';ls=u.s;h+=`<div class="ii ${u.s===0?'ally':'foe'}${u.s===turn?' on':''}${sel===u?' sel':''}${u.dead?' dead':''}" data-id="${u.id}" title="${esc((u.nm?u.nm+' · ':'')+T[u.t].n)}"><div class="pt"><img alt="" data-pk="${pcls(u)}"></div><i class="hb"><b style="width:${Math.max(0,u.hp)/u.st.hp*100}%"></b></i>${u.s===0&&u.s===turn&&u.ap>0&&!u.dead?'<span class="ipp">'+u.ap+'</span>':''}</div>`});
    $('ini').innerHTML=h}
   $('ovw').disabled=!sel||over!==null||deploy;$('end').textContent=deploy?'Begin battle':'End turn';
-  {let n=0,h='';const on=!deploy&&over===null&&sel&&sel.s===0&&turn===0&&!AIT();
-   if(on)sel.abs.forEach((x,i)=>{n++;const cd=sel.cd[x.id]||0;h+=`<button class="slot k-${x.a.k}${mode==='ab'+i?' act':''}" data-b="${i}" data-k="${n}" ${cd>0||sel.ap<1?'disabled':''} title="${esc(x.a.n+' — '+abDesc(x.a,x.r))}"><u>${n}</u><img class="ico" alt="" data-pk="${icls(x.a.n,x.a.k)}"><span>${esc(x.a.n)}</span>${cd>0?'<b class="cdv">'+cd+'</b>':''}</button>`});
-   CONSK.filter(k=>cons.includes(k)).forEach(k=>{n++;h+=`<button class="slot k-it${mode===k?' act':''}" data-c="${k}" data-k="${n}" title="${esc(ITEMS[k].n)}"><u>${n}</u><img class="ico" alt="" data-pk="${icls(CICO[k]||'Fireball')}"><span>${esc(ITEMS[k].n)}</span><b class="cnt">×${cons.filter(z=>z===k).length}</b></button>`});
+  {let n=0,h='';const lock=turn!==0||AIT(),on=!deploy&&over===null&&sel&&sel.s===0&&!sel.dead;
+   if(on)sel.abs.forEach((x,i)=>{n++;const cd=sel.cd[x.id]||0;h+=`<button class="slot k-${x.a.k}${mode==='ab'+i?' act':''}" data-b="${i}" data-k="${n}" ${lock||cd>0||sel.ap<1?'disabled':''} title="${esc(x.a.n+' — '+abDesc(x.a,x.r))}"><u>${n}</u><img class="ico" alt="" data-pk="${icls(x.a.n,x.a.k)}"><span>${esc(x.a.n)}</span>${cd>0?'<b class="cdv">'+cd+'</b>':''}</button>`});
+   CONSK.filter(k=>cons.includes(k)).forEach(k=>{n++;h+=`<button class="slot k-it${mode===k?' act':''}" data-c="${k}" data-k="${n}" ${lock?'disabled':''} title="${esc(ITEMS[k].n)}"><u>${n}</u><img class="ico" alt="" data-pk="${icls(CICO[k]||'Fireball')}"><span>${esc(ITEMS[k].n)}</span><b class="cnt">×${cons.filter(z=>z===k).length}</b></button>`});
    for(;n<8;n++)h+='<div class="slot e"></div>';$('cons').innerHTML=h}
   $('end').classList.toggle('pulse',!deploy&&over===null&&turn===0&&!AIT()&&!U.some(u=>u.s===0&&!u.dead&&u.ap>0));
   $('log').innerHTML=log.slice(0,6).map(x=>`<div>${x}</div>`).join('');
@@ -9067,6 +9067,13 @@ body.mob{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;ov
    background, but the game kept rendering the last battlefield behind it every frame, which made menus stutter
    on slower GPUs. While a screen is up, the board isn't drawn; it resumes the moment the screen closes. */
 {const _rr=R.render.bind(R);R.render=function(s,c){try{if(s===S&&SCR&&SCR.classList.contains('on')&&!window.__ggForceRender)return}catch(e){}return _rr(s,c)}}
+/* ---------- your fighters can always be inspected ----------
+   On the enemy's turn and with Auto on, clicking one of your fighters still selects it, so you can see its card
+   and its ability bar (greyed out until it can act). Orders are only given on your own turn, as before. */
+{const _act=act;act=function(r,c){
+  if(over===null&&!deploy&&(AIT()||turn!==0)){const o=at(r,c);if(o&&o.s===0&&!o.dead){sel=sel===o?null:o;mode=null;hud()}return}
+  return _act(r,c)}}
+{const _hud=hud;hud=function(){if(sel&&sel.dead)sel=null;const r=_hud.apply(this,arguments);try{if(sel&&(AIT()||turn!==0)){const ow=$('ovw');if(ow)ow.disabled=true}}catch(e){}return r}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
@@ -9580,8 +9587,8 @@ window.ggBell=()=>{try{ST(t=>{SS.chime(t,1760,.08,1.1);SS.chime(t+.1,2349,.055,1
   if(TGT)try{const t=tiles.find(t=>t.userData.r===TGT.r&&t.userData.c===TGT.c);if(t)t.material.emissive.setHex(0xa8741a)}catch(e){}
   /* while aiming the attack, only the enemies you can hit stay red */
   if(mode==='atk'&&sel)try{const tg=targets(sel);tiles.forEach(t=>{const{r,c}=t.userData;t.material.emissive.setHex(tg.some(u=>u.r===r&&u.c===c)?0x6e1412:sel.r===r&&sel.c===c?0x44403a:0)})}catch(e){}
-  const bar=$('cons');if(!bar||!mine())return;
-  const n=targets(sel).length,dis=sel.ap<1;
+  const bar=$('cons');if(!bar||!(!deploy&&over===null&&sel&&sel.s===0&&!sel.dead))return;
+  const n=targets(sel).length,dis=sel.ap<1||!mine();
   const tip=`Attack — Strike with your weapon. Click an enemy to target it, then press Attack.${TGT&&inRange()?` Target: ${nm(TGT)} (${chance(sel,TGT,false)}% to hit).`:n?' No target yet: press to aim.':' No enemy in reach or sight.'} Attacking ends this fighter’s turn.`;
   bar.insertAdjacentHTML('afterbegin',`<button class="slot k-atk${mode==='atk'?' act':''}${inRange()?' rdy':''}" data-atk="1" data-k="1" ${dis?'disabled':''} title="${esc(tip)}"><u>1</u><img class="ico" alt="" data-pk="${icls('Heavy Blow','atk')}"><span>Attack</span></button>`);
   /* renumber the rest and keep the bar at 8 slots */
