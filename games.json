@@ -17,8 +17,8 @@
       "cover": "assets/grim-gambit/chapel-vampire-strike.jpg",
       "color": "#c0392b",
       "download": {
-        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.3",
-        "label": "Download Beta 0.1.3",
+        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.4",
+        "label": "Download Beta 0.1.4",
         "size": "154 MB",
         "note": "Windows: extract the zip anywhere and run Grim Gambit.exe. The launcher updates you to the latest version. If Windows shows a SmartScreen warning, click More info → Run anyway. Phones, tablets and Macs: press Play in browser. On a phone, use Add to Home Screen to play fullscreen like an app."
       },
