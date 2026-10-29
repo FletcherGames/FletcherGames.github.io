@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.6"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.6.1"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -4862,17 +4862,43 @@ function openShop(w,msg){
   if(tcur&&tcur.el===b)return;tcur={kind:'btn',el:b};const s=b.dataset.tt,i=s.indexOf(' — ');const nm=i>0?s.slice(0,i):s,ds=i>0?s.slice(i+3):'';
   let extra='';if(b.disabled){extra=b.querySelector('.cdv')?`<div class="dtr">On cooldown: ${b.querySelector('.cdv').textContent} turn(s)</div>`:'<div class="dtr">Unavailable right now</div>'}
   const key=b.dataset.k?`<div class="dtb">Hotkey ${b.dataset.k}</div>`:'';
-  tp.innerHTML=`<div class="dtn" style="color:#e8d8a0">${esc(nm)}</div>${ds?`<div class="dtm">${esc(ds)}</div>`:''}${extra}${key}`;tp.style.display='block';place(e.clientX,e.clientY)});
+  tp.classList.remove('bt-card');tp.innerHTML=`<div class="dtn" style="color:#e8d8a0">${esc(nm)}</div>${ds?`<div class="dtm">${esc(ds)}</div>`:''}${extra}${key}`;tp.style.display='block';place(e.clientX,e.clientY)});
  document.addEventListener('mousemove',e=>{if(tcur&&tcur.kind==='btn'&&tp.style.display==='block')place(e.clientX,e.clientY)});
  setInterval(()=>{if(tcur&&tcur.kind==='btn'&&!document.body.contains(tcur.el)){tcur=null;hide()}},200);
  // units on the battlefield
  let raf=0,last=null;
- const unitTip=(u,x,y)=>{const al=u.s===0,sl=typeof sel!=='undefined'?sel:null;let h=`<div class="dtn" style="color:${al?'#8fd8a0':'#e87070'}">${u.nm?esc(u.nm)+' · ':''}${T[u.t].n}</div><div class="dtb">${al?'Ally':'Enemy'} · HP ${Math.max(0,u.hp)} / ${u.st.hp} · Actions ${Math.max(0,u.ap)}</div>`;
-  h+=`<div class="dtb">Move ${u.st.mv} · Range ${u.st.rng} · Dmg ${u.st.lo}–${u.st.hi} · Aim ${u.st.aim}%</div>`;
-  if(u.chl>0)h+='<div class="dtm" style="color:#9ad8ff">Chilled ('+u.chl+' turn'+(u.chl>1?'s':'')+')</div>';if(u.frz)h+='<div class="dtm" style="color:#9ad8ff">'+(u.shk?'Stunned':'Frozen')+': loses an action</div>';if(u.psn&&u.psn.fire)h+='<div class="dtm" style="color:#ff9a3a">Burning ('+u.psn.d+'/turn, '+u.psn.t+' turn'+(u.psn.t>1?'s':'')+')</div>';if(u.ow)h+='<div class="dtm">On overwatch</div>';if(u.hid)h+='<div class="dtm">Hidden</div>';
-  if(T[u.t].d)h+=`<div class="dtb" style="color:#9a8c6c;margin-top:3px">${T[u.t].d}</div>`;
-  if(sl&&sl.s===0&&!al&&!sl.dead){try{const d=dist(sl,u);h+=d>sl.st.rng?`<div class="dtr">Out of range (${d} tiles, range ${sl.st.rng})</div>`:`<div class="dtp">${sl.nm?esc(sl.nm):T[sl.t].n} hits for ${chance(sl,u,false)}%${cover(sl,u)?' · target in cover':''}</div>`}catch(er){}}
-  tp.innerHTML=h;tp.style.display='block';place(x,y)};
+ /* the unit card: same look as the squad screen's info cards */
+ const unitTip=(u,x,y)=>{const al=u.s===0,sl=typeof sel!=='undefined'?sel:null,c=u.ch||null;
+  const nm=u.nm||T[u.t].n,lv=c&&typeof clv==='function'?' · Level '+clv(c):'',hp=Math.max(0,u.hp),mh=u.st.hp;
+  let h=`<div class="bt-h" style="color:${al?'#f0d890':'#f08a7a'}">${esc(nm)}</div><div class="bt-c">${u.nm?T[u.t].n:(al?'Ally':'Enemy')}${lv}${T[u.t].boss?' · <b style="color:#e8c878">Boss</b>':''}</div>`;
+  h+=`<div class="bt-hp${al?'':' en'}${hp<mh*.5?' lo':''}"><i style="width:${Math.max(0,hp/mh*100)}%"></i><span>${hp} / ${mh} HP</span></div>`;
+  const st=[['Actions',Math.max(0,u.ap)],['Move',u.st.mv],['Range',u.st.rng],['Dmg',u.st.lo+'–'+u.st.hi],['Aim',u.st.aim+'%']];
+  if(u.st.arm)st.push(['Armor',u.st.arm]);if(u.st.dodge)st.push(['Dodge',u.st.dodge+'%']);if(u.st.crit)st.push(['Crit',u.st.crit+'%']);
+  h+=`<div class="bt-g">${st.map(([k,v])=>`<span>${k}</span><b>${v}</b>`).join('')}</div>`;
+  const fx=[];if(u.chl>0)fx.push(['#9ad8ff','Chilled '+u.chl+'t']);if(u.frz)fx.push(['#9ad8ff',u.shk?'Stunned':'Frozen']);if(u.psn&&u.psn.fire)fx.push(['#ff9a3a','Burning '+u.psn.d+'/turn']);else if(u.psn)fx.push(['#9ad06a','Poisoned']);
+  if(u.ow)fx.push(['#e8c878','Overwatch']);if(u.hid)fx.push(['#b8a8e8','Hidden']);if(u.hk)fx.push(['#c8c0a0','Hunkered']);if(u.pn)fx.push(['#e0a060','Panicked']);if(u.rage)fx.push(['#e07060','Vengeance']);
+  if(fx.length)h+=`<div class="bt-fx">${fx.map(([c2,t])=>`<span style="color:${c2};border-color:${c2}55">${t}</span>`).join('')}</div>`;
+  if(al){const ab=(u.abs||[]).map(x=>{const cd=u.cd&&u.cd[x.id]||0;return esc(x.a.n)+(cd>0?` <small>(${cd})</small>`:'')});if(ab.length)h+=`<div class="bt-l">Abilities</div><div class="bt-v">${ab.join(' · ')}</div>`;
+   if(c&&c.eq){const it=Object.values(c.eq).filter(Boolean).map(k=>{try{return ITEMS[k].n}catch(e){return''}}).filter(Boolean);if(it.length)h+=`<div class="bt-l">Gear</div><div class="bt-v">${it.map(esc).join(' · ')}</div>`}}
+  else if(T[u.t].d)h+=`<div class="bt-l">About</div><div class="bt-v">${T[u.t].d}</div>`;
+  if(sl&&sl.s===0&&!al&&!sl.dead){try{const d=dist(sl,u);h+=d>sl.st.rng?`<div class="bt-f bad">Out of ${esc(sl.nm||T[sl.t].n)}’s range (${Math.round(d)} tiles, range ${sl.st.rng})</div>`:`<div class="bt-f">${esc(sl.nm||T[sl.t].n)} hits for <b>${Math.round(chance(sl,u,false))}%</b>${cover(sl,u)?' · target in cover':''}</div>`}catch(er){}}
+  tp.innerHTML=h;tp.classList.add('bt-card');tp.style.display='block';place(x,y)};
+ {const st=document.createElement('style');st.textContent=`
+#btip{width:auto;max-width:290px;text-align:left;background:linear-gradient(180deg,rgba(26,20,15,.97),rgba(12,9,7,.97));border:1px solid #8a6e3a;box-shadow:inset 0 0 0 1px #000,0 8px 24px rgba(0,0,0,.8);padding:9px 12px 10px;color:#e0d0a8;font-family:'IM Fell English',Georgia,serif;border-radius:0}
+#btip div{text-align:left}
+#btip.bt-card{width:290px}
+#btip .dtn{font:600 15px Cinzel,serif;letter-spacing:.06em;color:#f0d890!important;margin-bottom:3px}
+#btip .dtm{color:#d8c8a0;font-size:13px;line-height:1.3}#btip .dtb{color:#a89878;font-size:12px;margin-top:4px}#btip .dtr{color:#e08a6a;font-size:12.5px;margin-top:4px}
+#btip .bt-h{font:600 16px Cinzel,serif;letter-spacing:.06em}
+#btip .bt-c{color:#c8a860;font-style:italic;margin-bottom:6px;font-size:13px}
+#btip .bt-hp{position:relative;height:16px;background:#1a0e0c;border:1px solid #3a2a1a;margin-bottom:7px}#btip .bt-hp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#5aa04a,#2e6a28)}
+#btip .bt-hp.en i{background:linear-gradient(180deg,#b04a3a,#6a1e14)}#btip .bt-hp.lo:not(.en) i{background:linear-gradient(180deg,#c06040,#7a2a1a)}
+#btip .bt-hp span{position:relative;display:block;text-align:center;font:600 11px Cinzel,serif;line-height:16px;color:#fff;text-shadow:0 1px 2px #000}
+#btip .bt-g{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:1px 8px;font-size:13px}#btip .bt-g span{color:#a89878}#btip .bt-g b{font-weight:400;color:#f0e0b8}
+#btip .bt-fx{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}#btip .bt-fx span{font-size:11.5px;border:1px solid;padding:0 5px}
+#btip .bt-l{margin-top:6px;font:600 11px Cinzel,serif;letter-spacing:.1em;color:#c9a24a;border-top:1px solid #3a2e1e;padding-top:4px}
+#btip .bt-v{color:#d8c8a0;line-height:1.3;font-size:13px}#btip .bt-v small{color:#8a7a5a}
+#btip .bt-f{margin-top:7px;padding-top:5px;border-top:1px solid #3a2e1e;color:#f0d890;font-size:13px}#btip .bt-f b{font:600 14px Cinzel,serif}#btip .bt-f.bad{color:#e08a6a}`;document.head.appendChild(st)}
  cv.addEventListener('pointermove',e=>{if(dn){if(tcur&&tcur.kind==='unit'){tcur=null;hide()}return}
   const x=e.clientX,y=e.clientY;last={x,y,e};if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!last||typeof U==='undefined'||dn)return;let p=null;try{p=pick(last.e)}catch(er){}
    const u=p&&U.find(q=>!q.dead&&q.r===p.r&&q.c===p.c&&isVis(q));

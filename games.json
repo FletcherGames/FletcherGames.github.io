@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.6",
+      "statusLabel": "Beta 0.1.6.1",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11 · Browser · Phones & tablets",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -113,6 +113,16 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.6.1",
+          "title": "Matching cards",
+          "date": "2026-10-29",
+          "notes": [
+            "The hover cards in battle now match the squad screen: name, class and level, a health bar, stats in a grid, status tags (Burning, Hidden, Overwatch, Hunkered, Panicked...), abilities with cooldowns and gear for your fighters, and a short description plus your chance to hit for enemies.",
+            "Ability button tooltips use the same dark-and-gold style.",
+            "Already playing on Windows? Open the launcher and it downloads this update automatically. The browser version is already updated."
+          ]
+        },
         {
           "version": "Beta 0.1.6",
           "title": "Into the light",
