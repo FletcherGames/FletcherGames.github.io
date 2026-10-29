@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.4"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.5"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -9062,6 +9062,11 @@ body.mob{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;ov
  {const _sb=startBattle;startBattle=function(){const r=_sb.apply(this,arguments);try{const A=U.filter(u=>u.s===0&&!u.dead);if(A.length){PAN.x=(A.reduce((t,u)=>t+u.c,0)/A.length-MX)*.75;PAN.z=(A.reduce((t,u)=>t+u.r,0)/A.length-MZ)*.75;place()}}catch(e){}try{if(!hint&&!(G&&G.mobHint)){hint=1;G.mobHint=1;const h=document.createElement('div');h.id='mobhint';h.textContent='Pinch to zoom · two fingers to pan · hold on an enemy for hit chances';document.body.appendChild(h);
    setTimeout(()=>{h.style.opacity=0},6000);setTimeout(()=>h.remove(),7000)}}catch(e){}return r}}
 }
+/* ---------- menus: don't draw the 3D board behind a full-screen menu ----------
+   Every menu screen (title, barracks, gear, shops, campaign map...) covers the whole window with an opaque
+   background, but the game kept rendering the last battlefield behind it every frame, which made menus stutter
+   on slower GPUs. While a screen is up, the board isn't drawn; it resumes the moment the screen closes. */
+{const _rr=R.render.bind(R);R.render=function(s,c){try{if(s===S&&SCR&&SCR.classList.contains('on')&&!window.__ggForceRender)return}catch(e){}return _rr(s,c)}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;

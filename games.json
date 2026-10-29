@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.4",
+      "statusLabel": "Beta 0.1.5",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11 · Browser · Phones & tablets",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -113,6 +113,15 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.5",
+          "title": "Smooth menus",
+          "date": "2026-10-29",
+          "notes": [
+            "Fixed big stutters in the menus: the game no longer keeps drawing the last battlefield hidden behind full-screen menus like the title screen, barracks, gear and shops.",
+            "Already playing on Windows? Open the launcher and it downloads this update automatically. The browser version is already updated."
+          ]
+        },
         {
           "version": "Beta 0.1.4",
           "title": "Blood and phones",
