@@ -17,8 +17,8 @@
       "cover": "assets/grim-gambit/chapel-vampire-strike.jpg",
       "color": "#c0392b",
       "download": {
-        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.2",
-        "label": "Download Beta 0.1.2",
+        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.3",
+        "label": "Download Beta 0.1.3",
         "size": "154 MB",
         "note": "Extract the zip anywhere and run Grim Gambit.exe. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
       },
