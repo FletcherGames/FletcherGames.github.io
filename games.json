@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1",
+      "statusLabel": "Beta 0.1.1",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -17,9 +17,9 @@
       "cover": "assets/grim-gambit/black-chapel.jpg",
       "color": "#c0392b",
       "download": {
-        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1",
-        "label": "Download Beta 0.1",
-        "size": "157 MB",
+        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.1",
+        "label": "Download Beta 0.1.1",
+        "size": "154 MB",
         "note": "Extract the zip anywhere and run Grim Gambit.exe. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
       },
       "links": [
@@ -85,6 +85,21 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.1",
+          "title": "Ready for battle",
+          "date": "2026-10-29",
+          "notes": [
+            "New first-campaign tutorial: a step-by-step guide through the Barracks, skill trees, gear, the campaign map and choosing your squad. Each step lights up what to click, with an arrow and a short explanation.",
+            "A little bell rings whenever a tutorial step or tip pops up.",
+            "Targeting: clicking an enemy now targets it instead of attacking. Press Attack, now the first slot on the ability bar (hotkey 1), or an attack ability to strike your target. Your whole squad can focus the same target.",
+            "New Options → Graphics screen: windowed, fullscreen or borderless windowed, resolution, quality, frame rate limit, brightness and an FPS counter.",
+            "Cloud saves: the game now asks on launch if you’d like to connect an account, and your login stays saved on your PC. If a login ever expires, you’re asked to sign back in with your email filled in.",
+            "Fixed the old main menu flashing for a moment when the game opens.",
+            "Removed the Fullscreen button from the main menu. Use F11, Alt+Enter, or Options → Graphics.",
+            "Players on Beta 0.1: download this version once and extract it over your old folder. Your saves are kept."
+          ]
+        },
         {
           "version": "Beta 0.1",
           "title": "The company marches",

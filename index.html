@@ -70,6 +70,7 @@ section h3{font-family:var(--display);font-weight:800;font-size:28px;text-transf
 .two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px}
 @media (max-width:820px){.two{grid-template-columns:1fr}}
 .patch{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.patches{display:flex;flex-direction:column;gap:12px}
 .patch .ver{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase}
 .patch ul{margin:0;padding-left:18px;color:var(--soft);display:flex;flex-direction:column;gap:4px}
 dl.req{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 18px;border-top:1px solid var(--line);padding-top:12px}
@@ -134,7 +135,7 @@ function featured(g){
     </div>
     ${shots?`<section><h3>Screenshots</h3><div class="shots" data-game="${esc(g.id)}">${shots}</div></section>`:""}
     ${(latest||g.requirements)?`<div class="two">
-      ${latest?`<section><h3>What's new</h3>${(g.patchNotes||[]).map(p=>`<div class="patch"><div class="meta">${p.date?esc(fmt(p.date)):""}</div><div class="ver">${esc(p.version)}${p.title?`: ${esc(p.title)}`:""}</div><ul>${(p.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}</section>`:"<div></div>"}
+      ${latest?`<section><h3>Patch notes</h3><div class="patches">${(g.patchNotes||[]).map((p,i)=>`<div class="patch"><div class="meta">${i===0?'<span class="status">Latest</span>':""}${p.date?`<span>${esc(fmt(p.date))}</span>`:""}</div><div class="ver">${esc(p.version)}${p.title?`: ${esc(p.title)}`:""}</div><ul>${(p.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}</div></section>`:"<div></div>"}
       ${g.requirements?`<section><h3>System requirements</h3><dl class="req">${g.requirements.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></section>`:""}
     </div>`:""}
   </article>`;
