@@ -9,18 +9,18 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.1",
+      "statusLabel": "Beta 0.1.2",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
       "description": "A dark gothic, turn-based tactics game in the style of XCOM. Lead a company of ten classes against undead, demons and vampires across haunted graveyards, burning pits, flooded crypts and ruined cathedrals. Build fighters from thirty Diablo II-style talent trees, loot, set gear, runes and a forge. Every New Game+ raises the stakes, and the online Top 100 ranks every company by how far it has gone.",
-      "cover": "assets/grim-gambit/black-chapel.jpg",
+      "cover": "assets/grim-gambit/chapel-vampire-strike.jpg",
       "color": "#c0392b",
       "download": {
         "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.1",
         "label": "Download Beta 0.1.1",
         "size": "154 MB",
-        "note": "Extract the zip anywhere and run Grim Gambit.exe. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
+        "note": "Extract the zip anywhere and run Grim Gambit.exe. The launcher updates you to Beta 0.1.2 automatically. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
       },
       "links": [
         {
@@ -29,6 +29,34 @@
         }
       ],
       "screenshots": [
+        {
+          "src": "assets/grim-gambit/chapel-vampire-strike.jpg",
+          "caption": "A vampire lord strikes in the Black Chapel"
+        },
+        {
+          "src": "assets/grim-gambit/chapel-blood-clash.jpg",
+          "caption": "Blood on the chapel floor"
+        },
+        {
+          "src": "assets/grim-gambit/pit-knights.jpg",
+          "caption": "Late-game knights in the Pit of the Damned"
+        },
+        {
+          "src": "assets/grim-gambit/graveyard-standoff.jpg",
+          "caption": "Standoff in the Hollow Graveyard"
+        },
+        {
+          "src": "assets/grim-gambit/gameplay-graveyard.jpg",
+          "caption": "Hit-chance preview and the ability bar"
+        },
+        {
+          "src": "assets/grim-gambit/gameplay-pit.jpg",
+          "caption": "Lining up a Headshot against the Devil"
+        },
+        {
+          "src": "assets/grim-gambit/gameplay-chapel.jpg",
+          "caption": "High ground in the Black Chapel"
+        },
         {
           "src": "assets/grim-gambit/black-chapel.jpg",
           "caption": "Battle in the Black Chapel"
@@ -85,6 +113,27 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.2",
+          "title": "Tactics of the Damned",
+          "date": "2026-10-29",
+          "notes": [
+            "Bigger battlefields: every map is now 22 by 20 tiles, with room to flank, fall back and fight over objectives.",
+            "Half and full cover: graves, crates and low walls give −20% to be hit; pillars, statues and trees give −40%. Every prop shows its shield during deployment, and you can hold C or press Cover to see them any time.",
+            "High ground: raised stone platforms give +15% aim against targets below.",
+            "Hit-chance preview: hover an enemy to see every modifier behind your chance to hit, plus damage and whether the shot is lethal.",
+            "Blue and gold movement: blue tiles keep an action to attack, gold tiles are a dash that spends both. Hovering a tile shows its cover and warns of enemy overwatch.",
+            "Hunker Down: brace behind cover for double protection until your next turn.",
+            "Missed shots fly past the target and slam into the ground or the cover it hides behind.",
+            "Destructible battlefield: cover cracks and collapses under fire, and volatile barrels explode.",
+            "Morale and panic, with voice lines: losing a friend or taking a brutal hit can make a fighter flee, cower or fire wildly. Voice lines can be turned off in Options.",
+            "Bonds: fighters who survive battles together form bonds for better aim side by side, steadier nerves, and vengeance when their partner is hurt.",
+            "New objectives: stop the ritual, rescue the captive, break through to the gate, or hold the line, each with a turn limit and bonus gold.",
+            "The three campaign bosses are now drawn at random from all ten every campaign, and are scaled to their place on the road. A campaign in progress re-rolls the bosses you haven't fought yet.",
+            "New tutorials for your first battle and for returning from it, covering cover shields, high ground, objectives, barrels, Hunker Down, panic and bonds. Replay them any time from Options.",
+            "Already playing? Open the launcher and it downloads this update automatically."
+          ]
+        },
         {
           "version": "Beta 0.1.1",
           "title": "Ready for battle",
