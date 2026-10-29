@@ -9,9 +9,9 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.3",
+      "statusLabel": "Beta 0.1.4",
       "genre": "Tactics RPG",
-      "platform": "Windows 10/11",
+      "platform": "Windows 10/11 · Browser · Phones & tablets",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
       "description": "A dark gothic, turn-based tactics game in the style of XCOM. Lead a company of ten classes against undead, demons and vampires across haunted graveyards, burning pits, flooded crypts and ruined cathedrals. Build fighters from thirty Diablo II-style talent trees, loot, set gear, runes and a forge. Every New Game+ raises the stakes, and the online Top 100 ranks every company by how far it has gone.",
       "cover": "assets/grim-gambit/chapel-vampire-strike.jpg",
@@ -20,7 +20,7 @@
         "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1.3",
         "label": "Download Beta 0.1.3",
         "size": "154 MB",
-        "note": "Extract the zip anywhere and run Grim Gambit.exe. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
+        "note": "Windows: extract the zip anywhere and run Grim Gambit.exe. The launcher updates you to the latest version. If Windows shows a SmartScreen warning, click More info → Run anyway. Phones, tablets and Macs: press Play in browser. On a phone, use Add to Home Screen to play fullscreen like an app."
       },
       "links": [
         {
@@ -114,6 +114,18 @@
       ],
       "patchNotes": [
         {
+          "version": "Beta 0.1.4",
+          "title": "Blood and phones",
+          "date": "2026-10-29",
+          "notes": [
+            "Big performance boost in bloody battles: blood that has finished spreading is painted into a single floor layer instead of hundreds of separate splashes, so the frame rate holds up even on Excessive gore.",
+            "Fewer stutters when blood first appears, and blood splashing onto props is cheaper to work out.",
+            "Grim Gambit now plays in the browser on phones and tablets, at fletchergames.github.io/play: pinch to zoom, two fingers to pan, drag to turn the camera, and press and hold on an enemy or tile to see hit chances and cover.",
+            "Cloud saves work across the desktop game and the browser version: sign in with the same account to continue anywhere.",
+            "Already playing on Windows? Open the launcher and it downloads this update automatically."
+          ]
+        },
+        {
           "version": "Beta 0.1.3",
           "title": "Quiet in the ranks",
           "date": "2026-10-29",
@@ -175,7 +187,8 @@
             "Reactive gore with damage-type deaths. Bodies become cover. Gore can be set to Off, Normal or Excessive."
           ]
         }
-      ]
+      ],
+      "play": "play/"
     }
   ]
 }
