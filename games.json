@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.2",
+      "statusLabel": "Beta 0.1.3",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -113,6 +113,17 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.3",
+          "title": "Quiet in the ranks",
+          "date": "2026-10-29",
+          "notes": [
+            "Removed the spoken voice lines and the speech bubbles over fighters. Panic, bonds and morale still work, and still show in the battle log.",
+            "Hit chances now show as whole numbers in the battle log and the hover tooltip.",
+            "Fixed the enemy hover card staying on screen into the next battle.",
+            "Already playing? Open the launcher and it downloads this update automatically."
+          ]
+        },
         {
           "version": "Beta 0.1.2",
           "title": "Tactics of the Damned",
