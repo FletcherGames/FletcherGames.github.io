@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.5"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.6"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -9248,7 +9248,7 @@ G=load()||fresh();migrate();G.roster.forEach(c=>{if(c.tal)for(const id in c.tal)
  A.menu=()=>openMenu();
  if(SCR&&SCR.querySelector('.mn [data-a="board"]'))openMenu();
  /* build label, bottom-right of the menu screens */
- const b=window.GG_DESKTOP.build;if(b&&b.version){const v=document.createElement('div');v.id='ggver';v.textContent=/^\d/.test(b.version)?'v'+b.version:b.version;v.style.cssText='position:fixed;right:12px;bottom:8px;font:11px Cinzel,serif;letter-spacing:.08em;color:#8a7a5a;opacity:.8;pointer-events:none;z-index:2147483000';document.body.appendChild(v);
+ const b=window.GG_DESKTOP.build;if(b&&b.version){const v=document.createElement('div');v.id='ggver';v.textContent=/^\d/.test(b.version)?'v'+b.version:b.version;v.style.cssText='position:fixed;right:12px;top:calc(6px + env(safe-area-inset-top,0px));font:11px Cinzel,serif;letter-spacing:.08em;color:#8a7a5a;opacity:.8;pointer-events:none;z-index:2147483000';document.body.appendChild(v);
   const st=document.createElement('style');st.textContent='body.bt #ggver{display:none}';document.head.appendChild(st)}
 })();
 </script>
@@ -9364,7 +9364,7 @@ G=load()||fresh();migrate();G.roster.forEach(c=>{if(c.tal)for(const id in c.tal)
  setInterval(paint,30000);
  if(A.quit){const _q=A.quit;A.quit=async()=>{try{clearTimeout(CS.t);CS.t=0;await Promise.race([upload(),new Promise(r=>setTimeout(r,3000))])}catch(e){}_q()}}
  const st=document.createElement('style');st.textContent=`
-#ggcs{position:fixed;right:12px;bottom:24px;font:11px Cinzel,serif;letter-spacing:.06em;color:#8a7a5a;opacity:.85;pointer-events:none;z-index:2147483000}#ggcs.bad{color:#d08a60}body.bt #ggcs{display:none}
+#ggcs{position:fixed;right:12px;top:calc(21px + env(safe-area-inset-top,0px));font:11px Cinzel,serif;letter-spacing:.06em;color:#8a7a5a;opacity:.85;pointer-events:none;z-index:2147483000}#ggcs.bad{color:#d08a60}body.bt #ggcs{display:none}
 .csw{max-width:620px;margin:0 auto}.csw p{color:#d8c8a0}.csw .msg{color:#ffd98a}.cse{color:#e0a080}
 .csc{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}.csb{flex:1 1 220px;border:1px solid #4a3a22;background:rgba(10,7,5,.75);padding:10px 14px}.csb h3{margin:0;font-family:Cinzel,serif;color:#e8d8a8;font-size:15px}.csb small{color:#8a7a5a}.csb p{margin:8px 0 0;font-size:14px}.csb b{color:#ffd98a}
 .csf{display:grid;gap:8px;max-width:360px;margin:10px auto}.csf label{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#b8a070;font-size:13px}
@@ -9982,6 +9982,6 @@ window.ggBell=()=>{try{ST(t=>{SS.chime(t,1760,.08,1.1);SS.chime(t+.1,2349,.055,1
 })();
 
 </script>
-<script>(function(){const v=window.GG_WEB&&GG_WEB.version;if(!v)return;const d=document.createElement("div");d.id="ggver";d.textContent=v+" · web";d.style.cssText="position:fixed;right:12px;bottom:8px;font:11px Cinzel,serif;letter-spacing:.08em;color:#8a7a5a;opacity:.8;pointer-events:none;z-index:2147483000";document.body.appendChild(d);const st=document.createElement("style");st.textContent="body.bt #ggver{display:none}";document.head.appendChild(st)})();</script>
+<script>(function(){const v=window.GG_WEB&&GG_WEB.version;if(!v)return;const d=document.createElement("div");d.id="ggver";d.textContent=v+" · web";d.style.cssText="position:fixed;right:12px;top:calc(6px + env(safe-area-inset-top,0px));font:11px Cinzel,serif;letter-spacing:.08em;color:#8a7a5a;opacity:.8;pointer-events:none;z-index:2147483000";document.body.appendChild(d);const st=document.createElement("style");st.textContent="body.bt #ggver{display:none}";document.head.appendChild(st)})();</script>
 </body>
 </html>
