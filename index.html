@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fletcher Games</title>
+<meta name="description" content="Fletcher Games: dark, hand-built games. Download Grim Gambit, a gothic XCOM-style tactics game for Windows.">
+<meta property="og:title" content="Fletcher Games">
+<meta property="og:description" content="Download Grim Gambit, a gothic turn-based tactics game for Windows.">
+<meta property="og:image" content="https://fletchergames.github.io/assets/grim-gambit/black-chapel.jpg">
+<meta name="theme-color" content="#0d0c10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800;900&family=Chivo:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a dark game shelf. Marquee header, one featured cabinet with screenshots and patch notes, then a grid for the rest. */
+:root{
+  --bg:#0d0c10; --panel:#16141b; --line:#2a2631; --fg:#ece8e1; --muted:#9a93a3; --soft:#cfc9d3;
+  --accent:#f0a830; --ok:#6fcf8e;
+  --display:"Big Shoulders Display","Impact","Arial Narrow",sans-serif;
+  --body:"Chivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-block:32px 64px;display:flex;flex-direction:column;gap:40px}
+
+header{display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(48px,10vw,96px);line-height:.88;margin:0;text-transform:uppercase;text-wrap:balance}
+h1 span{color:var(--accent)}
+.tag{color:var(--muted);max-width:56ch;margin:6px 0 0}
+
+.feature{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);border:1px solid var(--line);background:var(--panel);border-radius:6px;overflow:hidden}
+.feature .cover{position:relative;background:#000;min-height:280px}
+.feature .cover img{width:100%;height:100%;object-fit:cover}
+.feature .cover .ct{position:absolute;left:20px;right:20px;bottom:16px;font-family:var(--display);font-weight:900;text-transform:uppercase;line-height:.9;font-size:clamp(44px,6.5vw,80px);color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.8)}
+.feature .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.75))}
+.feature .cover .ct{z-index:1}
+.info{padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.info h2{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;margin:0;text-transform:uppercase}
+@media (max-width:820px){.feature{grid-template-columns:1fr}.feature .cover{aspect-ratio:16/9;min-height:0}}
+
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:3px;border:1px solid currentColor;color:var(--ok)}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pitch{margin:0;font-weight:600}
+.desc{margin:0;color:var(--soft)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;border-radius:4px;background:var(--c,var(--accent));color:#140f0a}
+.btn:hover{filter:brightness(1.12)}
+.btn small{font-weight:400;opacity:.75}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--c,var(--accent));filter:none}
+.note{margin:0;font-size:13px;color:var(--muted)}
+
+section h3{font-family:var(--display);font-weight:800;font-size:28px;text-transform:uppercase;margin:0 0 14px;letter-spacing:.01em}
+.shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(160px,100%),1fr));gap:10px}
+.shots button{padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#000;cursor:zoom-in;aspect-ratio:16/9}
+.shots img{width:100%;height:100%;object-fit:cover;transition:transform .2s ease}
+.shots button:hover img{transform:scale(1.04)}
+
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.patch{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.patch .ver{font-family:var(--display);font-size:22px;font-weight:800;text-transform:uppercase}
+.patch ul{margin:0;padding-left:18px;color:var(--soft);display:flex;flex-direction:column;gap:4px}
+dl.req{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 18px;border-top:1px solid var(--line);padding-top:12px}
+dl.req dt{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+dl.req dd{margin:0;color:var(--soft)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);display:flex;flex-direction:column}
+.card img{aspect-ratio:16/10;object-fit:cover;width:100%}
+
+.lightbox{position:fixed;inset:0;background:rgba(5,4,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:20;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
+.lightbox img{max-height:82vh;border-radius:4px}
+.lightbox p{margin:0;font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+.loading{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Indie games · Windows</div>
+    <h1 id="siteName">Fletcher <span>Games</span></h1>
+    <p class="tag" id="siteTag">Dark, hand-built games from a one-person studio. Download the latest builds here.</p>
+  </header>
+  <main id="main" style="display:flex;flex-direction:column;gap:44px"><p class="loading">Loading games…</p></main>
+  <footer><span>© <span id="yr"></span> Fletcher Games</span><a href="https://github.com/FletcherGames">GitHub</a></footer>
+</div>
+<div class="lightbox" id="lb" hidden><img id="lbImg" alt=""><p id="lbCap"></p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=d=>{const t=new Date(d+"T12:00:00");return isNaN(t)?"":t.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})};
+$("yr").textContent=new Date().getFullYear();
+
+function buttons(g){
+  let h="";
+  if(g.download?.url)h+=`<a class="btn" href="${esc(g.download.url)}">⬇ ${esc(g.download.label||"Download")}${g.download.size?` <small>${esc(g.download.size)}</small>`:""}</a>`;
+  if(g.play)h+=`<a class="btn ghost" href="${esc(g.play)}">▶ Play in browser</a>`;
+  (g.links||[]).forEach(l=>h+=`<a class="btn ghost" href="${esc(l.url)}">${esc(l.label)}</a>`);
+  return h;
+}
+function metaRow(g){return `<div class="meta">${g.statusLabel?`<span class="status">${esc(g.statusLabel)}</span>`:""}${g.genre?`<span>${esc(g.genre)}</span>`:""}${g.platform?`<span>${esc(g.platform)}</span>`:""}</div>`}
+
+function featured(g){
+  const shots=(g.screenshots||[]).map((s,i)=>`<button type="button" data-shot="${i}" aria-label="View ${esc(s.caption)}"><img src="${esc(s.src)}" alt="${esc(s.caption)}" loading="lazy"></button>`).join("");
+  const latest=(g.patchNotes||[])[0];
+  return `<article style="display:flex;flex-direction:column;gap:32px;--c:${esc(g.color||"")}" id="${esc(g.id)}">
+    <div class="feature">
+      <div class="cover">${g.cover?`<img src="${esc(g.cover)}" alt="">`:""}<div class="ct">${esc(g.title)}</div></div>
+      <div class="info">
+        <div class="eyebrow">Featured</div>
+        <h2>${esc(g.title)}</h2>
+        ${metaRow(g)}
+        ${g.tagline?`<p class="pitch">${esc(g.tagline)}</p>`:""}
+        ${g.description?`<p class="desc">${esc(g.description)}</p>`:""}
+        <div class="actions">${buttons(g)}</div>
+        ${g.download?.note?`<p class="note">${esc(g.download.note)}</p>`:""}
+      </div>
+    </div>
+    ${shots?`<section><h3>Screenshots</h3><div class="shots" data-game="${esc(g.id)}">${shots}</div></section>`:""}
+    ${(latest||g.requirements)?`<div class="two">
+      ${latest?`<section><h3>What's new</h3>${(g.patchNotes||[]).map(p=>`<div class="patch"><div class="meta">${p.date?esc(fmt(p.date)):""}</div><div class="ver">${esc(p.version)}${p.title?`: ${esc(p.title)}`:""}</div><ul>${(p.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}</section>`:"<div></div>"}
+      ${g.requirements?`<section><h3>System requirements</h3><dl class="req">${g.requirements.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></section>`:""}
+    </div>`:""}
+  </article>`;
+}
+function card(g){
+  return `<article class="card" style="--c:${esc(g.color||"")}" id="${esc(g.id)}">${g.cover?`<img src="${esc(g.cover)}" alt="${esc(g.title)}" loading="lazy">`:""}
+    <div class="info"><h2 style="font-size:28px">${esc(g.title)}</h2>${metaRow(g)}${g.tagline?`<p class="pitch">${esc(g.tagline)}</p>`:""}<div class="actions">${buttons(g)}</div></div></article>`;
+}
+
+let data;
+fetch("games.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{
+  data=d;
+  if(d.site?.name){const p=d.site.name.trim().split(/\s+/),last=p.pop();$("siteName").innerHTML=(p.length?esc(p.join(" "))+" ":"")+`<span>${esc(last)}</span>`;document.title=d.site.name}
+  if(d.site?.tagline)$("siteTag").textContent=d.site.tagline;
+  const games=d.games||[],feat=games.find(g=>g.featured)||games[0],rest=games.filter(g=>g!==feat);
+  $("main").innerHTML=(feat?featured(feat):"<p class='loading'>No games posted yet.</p>")+
+    (rest.length?`<section><h3>More games</h3><div class="grid">${rest.map(card).join("")}</div></section>`:"");
+}).catch(()=>{$("main").innerHTML="<p class='loading'>The game list couldn't load. Refresh the page to try again.</p>"});
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-shot]");
+  if(b){const g=data.games.find(x=>x.id===b.closest("[data-game]").dataset.game),s=g.screenshots[+b.dataset.shot];
+    $("lbImg").src=s.src;$("lbImg").alt=s.caption;$("lbCap").textContent=s.caption;$("lb").hidden=false;return}
+  if(e.target.closest("#lb"))$("lb").hidden=true;
+});
+addEventListener("keydown",e=>{if(e.key==="Escape")$("lb").hidden=true});
+</script>
+</body>
+</html>

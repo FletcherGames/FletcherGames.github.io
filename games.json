@@ -1,0 +1,106 @@
+{
+  "site": {
+    "name": "Fletcher Games",
+    "tagline": "Dark, hand-built games from a one-person studio. Download the latest builds here."
+  },
+  "games": [
+    {
+      "id": "grim-gambit",
+      "title": "Grim Gambit",
+      "featured": true,
+      "status": "playable",
+      "statusLabel": "Beta 0.1",
+      "genre": "Tactics RPG",
+      "platform": "Windows 10/11",
+      "tagline": "Lead the company. Bury the dead. Do not look back.",
+      "description": "A dark gothic, turn-based tactics game in the style of XCOM. Lead a company of ten classes against undead, demons and vampires across haunted graveyards, burning pits, flooded crypts and ruined cathedrals. Build fighters from thirty Diablo II-style talent trees, loot, set gear, runes and a forge. Every New Game+ raises the stakes, and the online Top 100 ranks every company by how far it has gone.",
+      "cover": "assets/grim-gambit/black-chapel.jpg",
+      "color": "#c0392b",
+      "download": {
+        "url": "https://github.com/FletcherGames/Grim-Gambit/releases/tag/beta-0.1",
+        "label": "Download Beta 0.1",
+        "size": "157 MB",
+        "note": "Extract the zip anywhere and run Grim Gambit.exe. If Windows shows a SmartScreen warning, click More info → Run anyway. The game isn't code-signed yet."
+      },
+      "links": [
+        {
+          "label": "GitHub page",
+          "url": "https://github.com/FletcherGames/Grim-Gambit"
+        }
+      ],
+      "screenshots": [
+        {
+          "src": "assets/grim-gambit/black-chapel.jpg",
+          "caption": "Battle in the Black Chapel"
+        },
+        {
+          "src": "assets/grim-gambit/rotting-mire.jpg",
+          "caption": "The Rotting Mire"
+        },
+        {
+          "src": "assets/grim-gambit/pit-of-the-damned.jpg",
+          "caption": "The Pit of the Damned"
+        },
+        {
+          "src": "assets/grim-gambit/hollow-graveyard.jpg",
+          "caption": "The Hollow Graveyard"
+        },
+        {
+          "src": "assets/grim-gambit/cathedral-of-ash.jpg",
+          "caption": "The Cathedral of Ash"
+        },
+        {
+          "src": "assets/grim-gambit/library.jpg",
+          "caption": "The sorcerer's library"
+        },
+        {
+          "src": "assets/grim-gambit/main-menu.jpg",
+          "caption": "Main menu"
+        },
+        {
+          "src": "assets/grim-gambit/launcher.jpg",
+          "caption": "The launcher"
+        }
+      ],
+      "requirements": [
+        [
+          "OS",
+          "Windows 10 or 11, 64-bit"
+        ],
+        [
+          "Graphics",
+          "Any GPU with WebGL 2 support from the last decade"
+        ],
+        [
+          "Memory",
+          "4 GB RAM"
+        ],
+        [
+          "Disk",
+          "500 MB free"
+        ],
+        [
+          "Internet",
+          "Optional. Used for patches, cloud saves and the leaderboard."
+        ]
+      ],
+      "patchNotes": [
+        {
+          "version": "Beta 0.1",
+          "title": "The company marches",
+          "date": "2026-10-28",
+          "notes": [
+            "Grim Gambit is now a desktop game with its own launcher. Patches download automatically when you open it.",
+            "Cloud saves: the game saves after every move and backs up online within seconds. Make an account to continue on any PC.",
+            "Resume Battle: quit mid-fight and pick up exactly where you left off.",
+            "Online Top 100 leaderboard, ranked by highest New Game+ reached.",
+            "Ten classes and thirty talent trees, with capstone masteries and 30 matching item sets.",
+            "Loot: affixes, legendary, mythic and cursed items, runes, sockets and a forge.",
+            "Living maps with lava, swamps, thunderstorms and a mad organist in the Black Chapel.",
+            "Reactive gore with damage-type deaths. Bodies become cover. Gore can be set to Off, Normal or Excessive."
+          ]
+        }
+      ]
+    }
+  ]
+}
