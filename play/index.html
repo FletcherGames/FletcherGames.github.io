@@ -9090,6 +9090,128 @@ A.fsx=()=>FS.toggle();
 {const _om=openMenu;openMenu=function(){const r=_om.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"],[data-a="fs"]')){const q=m.querySelector('[data-a="quit"]');(q?q:m.lastElementChild).insertAdjacentHTML(q?'beforebegin':'afterend',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
 {const _oo=openOpt;openOpt=function(){const r=_oo.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"]')){const g=m.querySelector('[data-a="gxopen"]')||m.querySelector('[data-a="tips"]');(g||m.firstElementChild).insertAdjacentHTML('beforebegin',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
 ['fullscreenchange','webkitfullscreenchange'].forEach(k=>document.addEventListener(k,()=>{try{SCR.querySelectorAll('[data-a="fsx"]').forEach(b=>b.textContent=FS.label())}catch(e){}}));
+/* ---------- Choose your squad: the company waits in a dark, foggy castle hall ----------
+   Every fighter stands in the gloom; the ones picked for the squad step into shafts of light.
+   Click a fighter to bring them into the light or send them back into the dark.
+   Hover (or press and hold) a fighter for their stats and gear; their name can still be edited on the plate.
+   Marching out with fewer than 6 fighters asks first. */
+const SQS_CSS=`
+#scr:has(> .sqs) > :not(.sqs):not(.bkb){display:none!important}
+#scr > .sqs{position:fixed;inset:0;overflow:hidden;background:#030305;font-family:'IM Fell English',Georgia,serif;color:#d8c8a0;z-index:1}
+.sqs .sq-hall{position:absolute;inset:0;width:100%;height:100%}
+.sqs .sq-fog{position:absolute;left:-30%;width:160%;pointer-events:none;mix-blend-mode:screen}
+.sqs .sq-fog.sq-a{bottom:-6%;height:46%;background:radial-gradient(ellipse 40% 60% at 30% 70%,rgba(150,160,180,.24),transparent 70%),radial-gradient(ellipse 35% 50% at 75% 60%,rgba(140,150,170,.2),transparent 70%);animation:sqsfog 38s linear infinite alternate}
+.sqs .sq-fog.sq-b{bottom:12%;height:40%;background:radial-gradient(ellipse 30% 40% at 55% 55%,rgba(160,165,185,.16),transparent 70%),radial-gradient(ellipse 25% 35% at 15% 45%,rgba(150,160,180,.14),transparent 70%);animation:sqsfog 52s linear infinite alternate-reverse}
+.sqs .sq-fog.sq-c{bottom:-10%;height:26%;background:linear-gradient(0deg,rgba(120,128,148,.2),transparent);mix-blend-mode:normal}
+@keyframes sqsfog{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+.sqs .sq-top{position:absolute;top:18px;left:0;right:0;text-align:center;z-index:5;pointer-events:none}
+.sqs h2{margin:0;font-family:Cinzel,serif;font-size:30px;letter-spacing:.16em;color:#e8c878;text-shadow:0 2px 12px #000}
+.sqs .sq-sub{margin:6px 0 0;color:#a89878;font-style:italic;font-size:16px}
+.sqs .sq-cnt{display:inline-block;margin-top:8px;font:600 15px Cinzel,serif;letter-spacing:.12em;color:#f0d890;padding:3px 14px;border:1px solid #6a5430;background:rgba(10,8,6,.7)}
+.sqs .sq-cnt.sq-full{color:#9ad08a;border-color:#4a7a40}
+.sqs .sq-msg2{margin:8px auto 0;max-width:640px;color:#e0a080;font-size:15px}
+.sqs .sq-stage{position:absolute;left:0;right:0;bottom:10vh;top:150px}
+.sqs .sq-stage .sq-f{position:absolute;bottom:0;left:calc(50% + var(--x) * var(--st));width:var(--fw);transform:translateX(-50%)}
+.sqs .sq-stage .sq-f.sq-bk{bottom:16.5vh;transform:translateX(-50%) scale(.78);transform-origin:50% 100%;filter:brightness(.8)}
+.sqs .sq-f{position:relative;width:clamp(92px,11vw,160px);display:flex;flex-direction:column;align-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sqs .sq-f .sq-beam{position:absolute;bottom:0;left:50%;width:190%;height:78vh;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .45s;
+ background:linear-gradient(180deg,rgba(255,226,160,0) 0%,rgba(255,222,150,.04) 30%,rgba(255,214,140,.16) 100%);clip-path:polygon(44% 0,56% 0,80% 100%,20% 100%);filter:blur(6px)}
+.sqs .sq-f .sq-pool{position:absolute;bottom:-18px;left:50%;width:150%;height:38px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(255,214,140,.5),rgba(255,200,120,.12) 55%,transparent 72%);opacity:0;transition:opacity .45s;pointer-events:none}
+.sqs .sq-f img{position:relative;width:100%;aspect-ratio:1/1.25;object-fit:contain;object-position:50% 100%;image-rendering:auto;filter:brightness(.16) saturate(.2) blur(.6px);transition:filter .45s,transform .3s;transform-origin:50% 100%}
+.sqs .sq-f .sq-sh{position:absolute;bottom:-6px;left:50%;width:70%;height:12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.75),transparent 70%)}
+.sqs .sq-f.sq-on .sq-beam,.sqs .sq-f.sq-on .sq-pool{opacity:1}
+.sqs .sq-f.sq-on img{filter:brightness(1.05) saturate(1.05) drop-shadow(0 0 10px rgba(255,210,140,.35))}
+.sqs .sq-f:hover img{transform:scale(1.04)}.sqs .sq-f:not(.sq-on):hover img{filter:brightness(.42) saturate(.5)}
+.sqs .sq-plate{position:relative;margin-top:4px;text-align:center;line-height:1.15;min-height:46px;transition:opacity .45s;opacity:.38}
+.sqs .sq-f.sq-on .sq-plate{opacity:1}
+.sqs .sq-plate input{width:100%;background:transparent;border:0;border-bottom:1px dashed transparent;color:#f0e0b0;font:600 13px Cinzel,serif;text-align:center;padding:0;outline:none}
+.sqs .sq-f.sq-on .sq-plate input{color:#ffe7a8;text-shadow:0 0 10px rgba(255,200,120,.6)}.sqs .sq-f.sq-on .sq-plate i::before{content:'◆ ';color:#e8c878}
+.sqs .sq-plate input:focus{border-bottom-color:#8a6e3a}
+.sqs .sq-plate i{display:block;font-size:12px;color:#c8a860}
+.sqs .sq-plate .sq-wd{display:block;font-size:11px;color:#e0786a}
+.sqs .sq-tag{position:absolute;top:-4px;left:50%;transform:translateX(-50%);font:600 10px Cinzel,serif;letter-spacing:.12em;color:#140f0a;background:#e8c878;padding:1px 7px;opacity:0;transition:opacity .45s;z-index:2}
+.sqs .sq-f.sq-on .sq-tag{opacity:1}
+.sqs .sq-bot{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:12px;z-index:5}
+.sqs .sq-bot button{min-width:170px}
+.sqs .sq-tipx{position:fixed;z-index:20;pointer-events:none;width:290px;background:linear-gradient(180deg,rgba(26,20,15,.97),rgba(12,9,7,.97));border:1px solid #8a6e3a;box-shadow:inset 0 0 0 1px #000,0 8px 24px rgba(0,0,0,.8);padding:9px 12px 10px;font-size:13px;color:#e0d0a8;display:none}
+.sqs .sq-th{font:600 16px Cinzel,serif;letter-spacing:.06em;color:#f0d890}
+.sqs .sq-tc{color:#c8a860;font-style:italic;margin-bottom:6px}.sqs .sq-tc small{color:#8a7a5a;font-style:normal}
+.sqs .sq-thp{position:relative;height:16px;background:#1a0e0c;border:1px solid #3a2a1a;margin-bottom:7px}.sqs .sq-thp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#5aa04a,#2e6a28)}.sqs .sq-thp.w i{background:linear-gradient(180deg,#c06040,#7a2a1a)}
+.sqs .sq-thp span{position:relative;display:block;text-align:center;font:600 11px Cinzel,serif;line-height:16px;color:#fff;text-shadow:0 1px 2px #000}
+.sqs .sq-tg{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:1px 8px;margin-bottom:4px}.sqs .sq-tg span{color:#a89878}.sqs .sq-tg b{font-weight:400;color:#f0e0b8}
+.sqs .sq-tl{margin-top:6px;font:600 11px Cinzel,serif;letter-spacing:.1em;color:#c9a24a;border-top:1px solid #3a2e1e;padding-top:4px}
+.sqs .sq-tv{color:#d8c8a0;line-height:1.3}
+.sqs .sq-tp{margin-top:6px;color:#f0c050}
+.sqs .sq-tf{margin-top:7px;font-size:12px;color:#8a7a5a;font-style:italic}
+.sqs .sq-warn{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.sqs .sq-warn .sq-box{max-width:420px;background:linear-gradient(180deg,#1c1510,#0c0907);border:1px solid #8a6e3a;box-shadow:inset 0 0 0 2px #000,0 10px 40px #000;padding:22px 24px;text-align:center}
+.sqs .sq-warn h3{margin:0 0 10px;font:600 20px Cinzel,serif;letter-spacing:.1em;color:#f0c070}
+.sqs .sq-warn p{margin:0 0 16px;font-size:16px;color:#d8c8a0}
+.sqs .sq-warn .sq-b{display:flex;gap:10px;justify-content:center}
+@media (max-height:520px){.sqs .sq-top{top:6px}.sqs h2{font-size:20px}.sqs .sq-sub{display:none}.sqs .sq-stage{top:70px;bottom:64px}.sqs .sq-bot{bottom:8px}.sqs .sq-bot button{min-width:120px;padding:6px 10px}.sqs .sq-f{width:clamp(64px,10vw,110px)}.sqs .sq-plate{min-height:34px}.sqs .sq-plate i{font-size:10px}.sqs .sq-plate input{font-size:11px}}`;
+function sqsHall(){/* stone hall: receding arches, pillars, faint high windows, flagstone floor */
+ let s=`<svg class="sq-hall" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"><defs>
+ <linearGradient id="sqw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07070b"/><stop offset=".6" stop-color="#0d0d12"/><stop offset="1" stop-color="#050506"/></linearGradient>
+ <linearGradient id="sqf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0b0e"/><stop offset="1" stop-color="#030304"/></linearGradient>
+ <radialGradient id="sqwin" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#4a5a80" stop-opacity=".55"/><stop offset="1" stop-color="#1a2030" stop-opacity="0"/></radialGradient>
+ <radialGradient id="sqvig" cx=".5" cy=".62" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".92"/></radialGradient></defs>
+ <rect width="1600" height="900" fill="url(#sqw)"/>`;
+ /* far wall arches with high windows */
+ for(let i=0;i<7;i++){const x=140+i*220;s+=`<path d="M${x-80} 620 L${x-80} 300 Q${x-80} 190 ${x} 160 Q${x+80} 190 ${x+80} 300 L${x+80} 620 Z" fill="#0a0a0f" stroke="#15151c" stroke-width="3"/>`;
+  if(i%2===0)s+=`<path d="M${x-22} 330 L${x-22} 250 Q${x-22} 214 ${x} 204 Q${x+22} 214 ${x+22} 250 L${x+22} 330 Z" fill="url(#sqwin)"/><path d="M${x} 204 L${x} 330 M${x-22} 280 L${x+22} 280" stroke="#0a0a0f" stroke-width="3"/>`}
+ /* pillars in front */
+ [[80,1],[420,.8],[1180,.8],[1520,1]].forEach(([x,k])=>{const w=90*k;s+=`<rect x="${x-w/2}" y="40" width="${w}" height="640" fill="#08080b" stroke="#121218" stroke-width="2"/><rect x="${x-w/2-10}" y="660" width="${w+20}" height="40" fill="#0b0b0f"/><rect x="${x-w/2-10}" y="40" width="${w+20}" height="30" fill="#0b0b0f"/>`});
+ /* floor */
+ s+=`<rect y="640" width="1600" height="260" fill="url(#sqf)"/>`;
+ for(let r=0;r<6;r++){const y=650+r*r*9+r*14;s+=`<line x1="0" y1="${y}" x2="1600" y2="${y}" stroke="#141318" stroke-width="2"/>`}
+ for(let c=-8;c<=8;c++){s+=`<line x1="${800+c*60}" y1="650" x2="${800+c*260}" y2="900" stroke="#121116" stroke-width="2"/>`}
+ /* hanging chains and a dead chandelier */
+ s+=`<g stroke="#15141a" stroke-width="3"><line x1="800" y1="0" x2="800" y2="120"/><path d="M700 150 Q800 190 900 150" fill="none"/><line x1="700" y1="150" x2="800" y2="120"/><line x1="900" y1="150" x2="800" y2="120"/></g>`;
+ s+=`<rect width="1600" height="900" fill="url(#sqvig)"/></svg>`;return s}
+function sqsOpen(msg){
+ if(!document.getElementById('sqscss')){const st=document.createElement('style');st.id='sqscss';st.textContent=SQS_CSS;document.head.appendChild(st)}
+ const R2=G.roster,n=R2.length,full=G.squad.length>=6;
+ const fig=c=>{const on=G.squad.includes(c.id),it=Object.values(c.eq).filter(Boolean).map(k=>{try{return ITEMS[k].n}catch(e){return ''}}).filter(Boolean);
+  let ab=[];try{ab=ABL(c.t).filter(k=>SKLV(c,k.id)>0).map(k=>k.n)}catch(e){}
+  const hp=curHp(c),mh=maxHp(c),st=statLine(c).split(' · ').filter(x=>!/^HP /.test(x)).map(x=>{const i=x.lastIndexOf(' ');return `<span>${esc(x.slice(0,i))}</span><b>${esc(x.slice(i+1))}</b>`}).join('');
+  const tip=`<div class="sq-th">${esc(c.nm)}</div><div class="sq-tc">${T[c.t].n} · Level ${clv(c)} <small>(${xpInfo(c)})</small></div>`+
+   `<div class="sq-thp${hp<mh?' w':''}"><i style="width:${Math.max(0,hp/mh*100)}%"></i><span>${hp} / ${mh} HP${hp<mh?' · wounded':''}</span></div>`+
+   `<div class="sq-tg">${st}</div>`+
+   (ab.length?`<div class="sq-tl">Abilities</div><div class="sq-tv">${ab.map(esc).join(' · ')}</div>`:'')+
+   (it.length?`<div class="sq-tl">Gear</div><div class="sq-tv">${it.map(esc).join(' · ')}</div>`:'')+
+   (c.tp?`<div class="sq-tp">${c.tp} unspent talent point${c.tp>1?'s':''}</div>`:'')+
+   `<div class="sq-tf">${on?'In the squad · click to bench':'Benched · click to add to the squad'}</div>`;
+  return `<div class="sq-f${on?' sq-on':''}" data-sqf="${c.id}" data-tip="${esc(tip)}"><div class="sq-beam"></div><div class="sq-pool"></div><div class="sq-sh"></div><img alt="" src="${portrait(c)}"></div>`};
+ /* up to 7 in one line; more fighters stand in two ranks, the back rank further into the dark */
+ /* up to 7 stand in one line; a bigger company stands in a zig-zag, every other fighter a step further back, so nobody hides behind anyone */
+ const zig=n>7,place=(c,i)=>fig(c).replace('class="sq-f','style="--x:'+(i-(n-1)/2)+'" class="sq-f'+(zig&&i%2?' sq-bk':''));
+ show(`<h2>Choose your squad</h2>`);const sc=document.createElement('div');sc.className='sqs';SCR.appendChild(sc);sc.innerHTML=(`${sqsHall()}<div class="sq-fog sq-b"></div>
+  <div class="sq-top"><h2>Choose your squad</h2><p class="sq-sub">Bring up to six fighters into the light. Enemy warbands and maps change every battle.</p><span class="sq-cnt${full?' sq-full':''}">Squad ${G.squad.length} / 6</span>
+   ${G.squad.some(id=>{const c=R2.find(x=>x.id===id);return c&&missHp(c)>0})?'<p class="sq-msg2">Some of your squad are wounded and will fight at reduced health. The Plague Doctor can heal them.</p>':''}${msg?`<p class="sq-msg2">${msg}</p>`:''}</div>
+  <div class="sq-stage">${R2.map((c,i)=>zig&&i%2?place(c,i):'').join('')}${R2.map((c,i)=>zig&&i%2?'':place(c,i)).join('')}</div>
+  <div class="sq-fog sq-a"></div><div class="sq-fog sq-c"></div>
+  <div class="sq-bot"><button data-a="sqgo" ${G.squad.length?'':'disabled'}>Begin battle</button><button data-a="load">Edit loadout</button><button data-a="sqback">Back</button></div><div class="sq-tipx"></div>`);
+ const root=SCR.querySelector('.sqs');if(!root)return;
+ const lay=()=>{const st=root.querySelector('.sq-stage');if(!st)return;const W=innerWidth*.94,H=innerHeight,k=zig?.62:1.12;let fw=Math.min(160,H*.2,W/((n-1)*k+1));st.style.setProperty('--fw',fw+'px');st.style.setProperty('--st',fw*k+'px')};lay();addEventListener('resize',lay);const tx=root.querySelector('.sq-tipx');
+ root.querySelectorAll('[data-sqf]').forEach(f=>{
+  /* touch: press and hold for the info card; a quick tap picks the fighter */
+  let ht=0,held=false;
+  f.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;held=false;clearTimeout(ht);ht=setTimeout(()=>{held=true;tx.innerHTML=f.dataset.tip;tx.style.display='block';const r=f.getBoundingClientRect(),w=tx.offsetWidth,h=tx.offsetHeight;tx.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+'px';tx.style.top=Math.max(8,r.top-h-8)+'px'},420)});
+  ['pointerup','pointercancel','pointerleave'].forEach(k=>f.addEventListener(k,()=>clearTimeout(ht)));
+  f.addEventListener('contextmenu',e=>e.preventDefault());
+  f.addEventListener('click',e=>{if(e.target.closest('input'))return;if(held){held=false;return}tx.style.display='none';A.sq(f.dataset.sqf)});
+  f.addEventListener('mousemove',e=>{tx.innerHTML=f.dataset.tip;tx.style.display='block';const w=tx.offsetWidth,h=tx.offsetHeight;tx.style.left=Math.min(innerWidth-w-8,e.clientX+16)+'px';tx.style.top=Math.max(8,e.clientY-h-12)+'px'});
+  f.addEventListener('mouseleave',()=>{tx.style.display='none'})})}
+/* marching out short-handed asks first */
+A.sqgo=()=>{if(!G.squad.length)return;if(G.squad.length>=6||G.tut===1){A.go();return}
+ const root=SCR.querySelector('.sqs');if(!root){A.go();return}const free=G.roster.length-G.squad.length;
+ const w=document.createElement('div');w.className='sq-warn';w.innerHTML=`<div class="sq-box"><h3>Your squad isn’t full</h3><p>Only ${G.squad.length} of 6 fighters are marching out.${free>0?` ${free} more ${free>1?'are':'is'} waiting in the dark.`:''} A smaller squad faces the same warband.</p><div class="sq-b"><button class="sq-go">March anyway</button><button class="sq-no">Pick more</button></div></div>`;
+ root.appendChild(w);w.querySelector('.sq-go').onclick=()=>{w.remove();A.go()};w.querySelector('.sq-no').onclick=()=>w.remove()};
+
+A.sqback=()=>A.map();
+
+/* replaces the old list screen (after every other wrapper, so nothing redraws the old one) */
+openSquad=sqsOpen;
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
@@ -9392,7 +9514,7 @@ window.ggBell=()=>{try{ST(t=>{SS.chime(t,1760,.08,1.1);SS.chime(t+.1,2349,.055,1
   hall:()=>!!$q('.hall'),
   tal:()=>!!$q('[data-a="tsave"]'),
   map:()=>!!$q('.cmap'),
-  squad:()=>!!$q('[data-a="go"]')&&!!$q('[data-a="sq"]')
+  squad:()=>!!$q('.sqs [data-a="sqgo"]')
  };
  const firstUnit=()=>$q('.hall .un[data-a="tchar"]');
  const curChar=()=>{try{return G.roster.find(x=>x.id===tsel)}catch(e){return null}};
@@ -9445,11 +9567,11 @@ window.ggBell=()=>{try{ST(t=>{SS.chime(t,1760,.08,1.1);SS.chime(t+.1,2349,.055,1
    x:'Glowing rings mark the places you can go next. Click one to read about it. Your first stop is a battle.'},
   {on:'map',t:'[data-a="march"]',h:'March out',
    x:`${click} <b>March to battle</b> to set out.`,done:()=>scr.squad()},
-  {on:'squad',t:()=>{const r=$a('.cr');return r.length?r:null},next:1,free:1,h:'Choose your squad',
-   x:'Pick up to <b>6 fighters</b> for this battle. Click <b>In squad</b> or <b>Bench</b> to swap someone in or out. Wounded fighters fight at reduced health.'},
+  {on:'squad',t:()=>{const r=$a('.sqs .sq-f');return r.length?r:null},next:1,free:1,h:'Choose your squad',
+   x:`Pick up to <b>6 fighters</b> for this battle. ${click} a fighter to bring them into the light, or ${click.toLowerCase()} again to send them back into the dark. ${touch?'Press and hold':'Hover over'} a fighter to see their stats, abilities and gear. Wounded fighters fight at reduced health.`},
   {on:'squad',t:'[data-a="load"]',next:1,h:'Edit loadout',
    x:'Use <b>Edit loadout</b> to change gear and choose up to 3 consumables to carry into battle.'},
-  {on:'squad',t:'[data-a="go"]',h:'To battle!',
+  {on:'squad',t:'[data-a="sqgo"]',h:'To battle!',
    x:'Your company is ready. Press <b>Begin battle</b>. Tips will guide you through placing your fighters and your first turns.',done:()=>!scr.squad()}
  ];
 
