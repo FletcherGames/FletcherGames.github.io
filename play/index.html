@@ -9028,8 +9028,7 @@ body.mob{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;ov
  try{if(!localStorage.getItem('gg-gfx'))localStorage.setItem('gg-gfx',JSON.stringify({scale:.8}))}catch(e){}
  try{R.setPixelRatio(Math.min(devicePixelRatio,1.25));resize()}catch(e){}
  {const _om=openMenu;let first=true;openMenu=function(){if(first){first=false;try{if(G&&!G.gfx)G.gfx='lo'}catch(e){}}const r=_om.apply(this,arguments);
-   try{const m=SCR.querySelector('.mn'),fe=document.fullscreenEnabled||document.webkitFullscreenEnabled;if(m&&fe&&!m.querySelector('[data-a="mobfs"]'))m.insertAdjacentHTML('beforeend',`<button data-a="mobfs">${document.fullscreenElement?'Exit fullscreen':'Fullscreen'}</button>`)}catch(e){}return r}}
- A.mobfs=()=>{const d=document.documentElement;try{if(document.fullscreenElement)document.exitFullscreen();else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}).catch(()=>{})}}catch(e){}setTimeout(()=>{try{if(!inBattle)openMenu()}catch(e){}},400)};
+   return r}}
 
  /* a closer camera on small screens */
  {const _in=init;init=function(){const r=_in.apply(this,arguments);try{if(innerWidth>innerHeight)rad=Math.min(rad,Math.max(13,9*ZK));PAN.x=PAN.z=0;place()}catch(e){}return r}}
@@ -9074,6 +9073,23 @@ body.mob{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;ov
   if(over===null&&!deploy&&(AIT()||turn!==0)){const o=at(r,c);if(o&&o.s===0&&!o.dead){sel=sel===o?null:o;mode=null;hud()}return}
   return _act(r,c)}}
 {const _hud=hud;hud=function(){if(sel&&sel.dead)sel=null;const r=_hud.apply(this,arguments);try{if(sel&&(AIT()||turn!==0)){const ow=$('ovw');if(ow)ow.disabled=true}}catch(e){}return r}}
+/* ---------- Fullscreen on the main menu and in Options, in every version ----------
+   Desktop app: switches the window between fullscreen and windowed (same as F11; Options → Graphics also has Borderless).
+   Browser (PC, Android, iPad): uses the browser's fullscreen mode. iPhones don't allow it: Add to Home Screen instead. */
+const FS={
+ desk:()=>!!(window.GG_DESKTOP&&GG_DESKTOP.toggleFullscreen),
+ ok:()=>FS.desk()||!!(document.fullscreenEnabled||document.webkitFullscreenEnabled),
+ on:()=>!!(document.fullscreenElement||document.webkitFullscreenElement)||(FS.desk()&&innerWidth>=screen.width-1&&innerHeight>=screen.height-1),
+ label:()=>FS.on()?'Exit fullscreen':'Fullscreen',
+ toggle(){try{if(FS.desk()){GG_DESKTOP.toggleFullscreen()}
+   else if(FS.on())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
+   else{const d=document.documentElement,r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d);if(r&&r.then)r.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}).catch(()=>{})}}catch(e){}
+  /* refresh the button text once the window has changed */
+  setTimeout(()=>{try{SCR.querySelectorAll('[data-a="fsx"]').forEach(b=>b.textContent=FS.label())}catch(e){}},500)}};
+A.fsx=()=>FS.toggle();
+{const _om=openMenu;openMenu=function(){const r=_om.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"],[data-a="fs"]')){const q=m.querySelector('[data-a="quit"]');(q?q:m.lastElementChild).insertAdjacentHTML(q?'beforebegin':'afterend',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
+{const _oo=openOpt;openOpt=function(){const r=_oo.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"]')){const g=m.querySelector('[data-a="gxopen"]')||m.querySelector('[data-a="tips"]');(g||m.firstElementChild).insertAdjacentHTML('beforebegin',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
+['fullscreenchange','webkitfullscreenchange'].forEach(k=>document.addEventListener(k,()=>{try{SCR.querySelectorAll('[data-a="fsx"]').forEach(b=>b.textContent=FS.label())}catch(e){}}));
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
