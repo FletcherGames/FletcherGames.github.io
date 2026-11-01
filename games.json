@@ -225,14 +225,85 @@
     },
     {
       "id": "untitled",
-      "title": "Untitled",
+      "title": "Gangland: Empire Burning",
       "featured": false,
       "status": "development",
       "statusLabel": "In development",
-      "genre": "Gangland remake",
-      "tagline": "A new project. A familiar underworld.",
-      "description": "A remake of Gangland, currently in development. Working title: Untitled. More details and screenshots to come.",
-      "color": "#c79458"
+      "genre": "Crime strategy · Remaster project",
+      "tagline": "Build your crew. Take the streets. Rule an empire.",
+      "description": "Gangland: Empire Burning is an in-development remaster project built around the original Gangland’s blend of crime strategy, crew command, business management and rival gangs. The goal is to preserve its gameplay and setting while rebuilding the experience for modern Windows PCs and iPhone and iPad: clearer controls, a redesigned interface, refreshed presentation and more of the world to explore.",
+      "color": "#c79458",
+      "platform": "Planned: Windows PC · iPhone & iPad",
+      "cover": "assets/gangland-empire-burning/asset-preview.png",
+      "screenshotHeading": "Early asset previews",
+      "screenshotNote": "Recovered character, vehicle and environment assets from our inspection and conversion work. These development renders show the starting point for the remaster, with original textures and approximate lighting; they are not final gameplay screenshots.",
+      "screenshots": [
+        {
+          "src": "assets/gangland-empire-burning/asset-preview.png",
+          "caption": "Environment and asset study: building, taxi, character and ground tile with original textures."
+        },
+        {
+          "src": "assets/gangland-empire-burning/character-preview.png",
+          "caption": "Recovered character animation poses: collector, goombah, dog trainer and Russian boss."
+        },
+        {
+          "src": "assets/gangland-empire-burning/animation-preview.png",
+          "caption": "Animation study: four poses from a recovered civilian run cycle."
+        }
+      ],
+      "details": [
+        {
+          "title": "The game",
+          "items": [
+            {
+              "title": "An empire built on the streets",
+              "text": "Recruit and command a crew, fight rival gangs, take control of businesses and turn income into a stronger organization. The remaster aims to keep the original mix of tactical street encounters and longer-term empire building."
+            },
+            {
+              "title": "A familiar world, rebuilt for modern screens",
+              "text": "The new direction preserves the original game’s setting and identity. Work is focused on making its characters, streets and missions easier to read and control while retaining the isometric perspective and atmosphere."
+            }
+          ]
+        },
+        {
+          "title": "Development so far",
+          "items": [
+            {
+              "title": "Recovering the foundations",
+              "text": "The asset inspection has recovered models, textures, animations, maps and supporting game resources. Characters, vehicles and buildings can now be previewed outside the original game, giving the remaster a foundation for visual and animation testing."
+            },
+            {
+              "title": "From experiments to a remaster",
+              "text": "Early neighborhood experiments explored crew movement, business capture, income and combat. The project has since shifted toward a shared Godot remaster project for Windows and iOS. The next milestone is a small mission that tests the new interface, imported assets and both control schemes."
+            }
+          ]
+        },
+        {
+          "title": "Plans for the future",
+          "items": [
+            {
+              "title": "A redesigned interface",
+              "text": "Build a clearer HUD, readable menus and responsive layouts for desktop monitors and smaller touchscreens. PC controls are planned around mouse and keyboard; iPhone and iPad controls around touch selection, command buttons and camera pan and zoom."
+            },
+            {
+              "title": "Refreshed sights and sound",
+              "text": "Improve texture resolution, refine models and animation presentation, and update audio quality while keeping the original visual character and mood. The images above document the source asset stage, before those upgrades."
+            },
+            {
+              "title": "Quality of life",
+              "text": "Make selecting units, giving orders and understanding mission goals more convenient. Focus on readable information, useful feedback and controls suited to each platform as the first playable mission takes shape."
+            },
+            {
+              "title": "Expanded maps and story",
+              "text": "Build toward larger maps, additional story content and more varied objectives after the core remaster experience is working. These are development goals rather than features available in a public build."
+            },
+            {
+              "title": "PC and iOS",
+              "text": "Target Windows PC and iPhone/iPad from the same project, with platform-specific controls and graphics settings. iOS support is planned and still needs device testing. Release timing will follow the playable milestones."
+            }
+          ]
+        }
+      ]
     }
   ]
 }

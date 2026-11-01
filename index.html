@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Fletcher Games</title>
-<meta name="description" content="Fletcher Games: dark games from a one-person studio. Download Grim Gambit, a gothic XCOM-style tactics game for Windows.">
+<meta name="description" content="Fletcher Games: home of Grim Gambit and Gangland: Empire Burning, a PC and iOS remaster project in development.">
 <meta property="og:title" content="Fletcher Games">
-<meta property="og:description" content="Download Grim Gambit, a gothic turn-based tactics game for Windows.">
+<meta property="og:description" content="Play Grim Gambit and follow the development of Gangland: Empire Burning for PC and iOS.">
 <meta property="og:image" content="https://fletchergames.github.io/assets/grim-gambit/black-chapel.jpg">
 <meta name="theme-color" content="#0d0c10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,7 +102,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Indie games · Windows</div>
+    <div class="eyebrow">Independent games · PC & mobile</div>
     <h1 id="siteName">Fletcher <span>Games</span></h1>
     <p class="tag" id="siteTag">Dark games from a one-person studio. Download the latest builds here.</p>
   </header>
@@ -142,7 +142,8 @@ function featured(g){
         ${g.download?.note?`<p class="note">${esc(g.download.note)}</p>`:""}
       </div>
     </div>
-    ${shots?`<section><h3>Screenshots</h3><div class="shots" data-game="${esc(g.id)}">${shots}</div></section>`:""}
+    ${shots?`<section><h3>${esc(g.screenshotHeading||"Screenshots")}</h3>${g.screenshotNote?`<p class="note" style="margin-bottom:14px">${esc(g.screenshotNote)}</p>`:""}<div class="shots" data-game="${esc(g.id)}">${shots}</div></section>`:""}
+    ${(g.details||[]).map(section=>`<section><h3>${esc(section.title)}</h3><div class="patches">${(section.items||[]).map(item=>`<div class="patch"><div class="ver">${esc(item.title)}</div><p class="desc">${esc(item.text)}</p></div>`).join("")}</div></section>`).join("")}
     ${(latest||g.requirements)?`<div class="two">
       ${latest?`<section><h3>Patch notes</h3><div class="patches">${(g.patchNotes||[]).map((p,i)=>`<div class="patch"><div class="meta">${i===0?'<span class="status">Latest</span>':""}${p.date?`<span>${esc(fmt(p.date))}</span>`:""}</div><div class="ver">${esc(p.version)}${p.title?`: ${esc(p.title)}`:""}</div><ul>${(p.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></div>`).join("")}</div></section>`:"<div></div>"}
       ${g.requirements?`<section><h3>System requirements</h3><dl class="req">${g.requirements.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></section>`:""}
