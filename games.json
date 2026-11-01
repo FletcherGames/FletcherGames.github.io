@@ -303,6 +303,39 @@
               "text": "Target Windows PC and iPhone/iPad from the same project, with platform-specific controls and graphics settings. iOS support is planned and still needs device testing. Release timing will follow the playable milestones."
             }
           ]
+        },
+        {
+          "title": "Future development ideas — planning only",
+          "items": [
+            {
+              "title": "A living criminal city",
+              "text": "Explore pedestrians with daily routines, traffic, working businesses, police patrols and distinct neighborhoods. The city could react to extortion, violence, business ownership and shifting criminal influence even when the player is elsewhere."
+            },
+            {
+              "title": "Smarter gangster AI and tactical combat",
+              "text": "Consider cover use, coordinated attacks, retreats, bodyguard behavior and injuries, while preserving Gangland's original real-time crew-command feel and isometric camera."
+            },
+            {
+              "title": "A deeper criminal economy",
+              "text": "Explore interconnected protection rackets, gambling, smuggling, loan sharking, legitimate businesses, money laundering and territorial income. Choices could create opportunities, risks and rival responses."
+            },
+            {
+              "title": "Gangsters with personalities and consequences",
+              "text": "Investigate loyalty, ambition, greed, fear, relationships, promotions, injuries and betrayal, so crew members develop stories and react to how the family is managed."
+            },
+            {
+              "title": "Rival families, diplomacy and territory",
+              "text": "Consider negotiations, temporary alliances, retaliation, contested neighborhoods, rival expansion and police investigations driven by the player's actions."
+            },
+            {
+              "title": "Modern graphics, classic Gangland identity",
+              "text": "Keep the recognizable 2004 isometric perspective, colorful urban atmosphere, building proportions and character silhouettes while exploring improved textures, lighting, animations, effects and environmental detail."
+            },
+            {
+              "title": "Design principle and development status",
+              "text": "These are ideas under consideration, not features in development or confirmed for release. The priority remains a faithful, playable Gangland remaster. No work on these proposed systems is planned until development resumes at the PC."
+            }
+          ]
         }
       ],
       "aliases": [
