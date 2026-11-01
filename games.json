@@ -222,6 +222,17 @@
         }
       ],
       "play": "play/"
+    },
+    {
+      "id": "untitled",
+      "title": "Untitled",
+      "featured": false,
+      "status": "development",
+      "statusLabel": "In development",
+      "genre": "Gangland remake",
+      "tagline": "A new project. A familiar underworld.",
+      "description": "A remake of Gangland, currently in development. Working title: Untitled. More details and screenshots to come.",
+      "color": "#c79458"
     }
   ]
 }
