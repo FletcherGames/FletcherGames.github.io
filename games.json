@@ -224,7 +224,7 @@
       "play": "play/"
     },
     {
-      "id": "untitled",
+      "id": "gangland-empire-burning",
       "title": "Gangland: Empire Burning",
       "featured": false,
       "status": "development",
@@ -303,6 +303,9 @@
             }
           ]
         }
+      ],
+      "aliases": [
+        "untitled"
       ]
     }
   ]

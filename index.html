@@ -172,7 +172,7 @@ function showProject(index,focus=false){
   if(focus)$("projectView").focus({preventScroll:true});
 }
 function projectFromHash(){
-  const i=data.games.findIndex(g=>"#"+encodeURIComponent(g.id)===location.hash);
+  const i=data.games.findIndex(g=>"#"+encodeURIComponent(g.id)===location.hash||(g.aliases||[]).some(alias=>"#"+encodeURIComponent(alias)===location.hash));
   showProject(i<0?0:i);
 }
 addEventListener("hashchange",()=>{if(data)projectFromHash()});
