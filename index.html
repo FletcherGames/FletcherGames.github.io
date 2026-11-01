@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;800;900&family=Chivo:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* One project at a time, with touch and keyboard navigation. */
+/* Studio homepage and linked project pages. */
 :root{
   --bg:#0d0c10; --panel:#16141b; --line:#2a2631; --fg:#ece8e1; --muted:#9a93a3; --soft:#cfc9d3;
   --accent:#f0a830; --ok:#6fcf8e;
@@ -97,6 +97,20 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 #projectView:focus{outline:none}
 .feature .cover.placeholder{background:radial-gradient(ellipse at 65% 25%,#4b3328 0,transparent 60%),linear-gradient(145deg,#19151a,#09090c);display:flex;align-items:center;justify-content:center;min-height:280px}
 .placeholder .coming{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:var(--muted);align-self:flex-start;margin-top:36px;z-index:1}
+.home-intro{max-width:760px}
+.home-intro h2{font-family:var(--display);font-size:clamp(38px,6vw,64px);line-height:1.05;text-transform:uppercase;margin:0 0 22px}
+.home-intro p{color:var(--soft);font-size:18px}
+.home-intro .eyebrow{color:var(--accent);font-size:12px}
+.home-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.project-card{text-decoration:none;transition:transform .2s,border-color .2s}
+.project-card:hover{transform:translateY(-4px);border-color:var(--c,var(--accent))}
+.project-card .info{flex:1}
+.project-card .btn{align-self:flex-start;margin-top:auto}
+.project-card .preview{position:relative}
+.project-card .preview img{aspect-ratio:16/9}
+.project-card .preview-note{position:absolute;bottom:10px;left:10px;background:#0d0c10e8;border-radius:3px;padding:4px 8px;font-family:var(--mono);font-size:10px;text-transform:uppercase}
+.site-home{display:inline-flex;align-self:flex-start;margin-top:16px}
+@media(prefers-reduced-motion:reduce){.project-card:hover{transform:none}}
 </style>
 </head>
 <body>
@@ -104,7 +118,8 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   <header>
     <div class="eyebrow">Independent games · PC & mobile</div>
     <h1 id="siteName">Fletcher <span>Games</span></h1>
-    <p class="tag" id="siteTag">Dark games from a one-person studio. Download the latest builds here.</p>
+    <p class="tag" id="siteTag">A new developer, big ideas, and a lot of help from AI.</p>
+    <a class="btn ghost site-home" href="#home">Home · All projects</a>
   </header>
   <main id="main" style="display:flex;flex-direction:column;gap:44px"><p class="loading">Loading games…</p></main>
   <footer><span>© <span id="yr"></span> Fletcher Games</span><a href="https://github.com/FletcherGames">GitHub</a></footer>
@@ -151,16 +166,35 @@ function featured(g){
   </article>`;
 }
 function card(g){
-  return `<article class="card" style="--c:${esc(g.color||"")}" id="${esc(g.id)}">${g.cover?`<img src="${esc(g.cover)}" alt="${esc(g.title)}" loading="lazy">`:""}
-    <div class="info"><h2 style="font-size:28px">${esc(g.title)}</h2>${metaRow(g)}${g.tagline?`<p class="pitch">${esc(g.tagline)}</p>`:""}<div class="actions">${buttons(g)}</div></div></article>`;
+  return `<a class="card project-card" style="--c:${esc(g.color||"")}" href="#${encodeURIComponent(g.id)}" aria-label="Explore ${esc(g.title)}">
+    <div class="preview">${g.cover?`<img src="${esc(g.cover)}" alt="${esc(g.title)} preview" loading="lazy">`:""}${g.screenshotNote?'<span class="preview-note">Early asset preview</span>':""}</div>
+    <div class="info"><h3>${esc(g.title)}</h3>${metaRow(g)}<p class="desc">${esc(g.summary||g.tagline||"")}</p><span class="btn">Explore game →</span></div></a>`;
+}
+function showHome(focus=false){
+  projectIndex=-1;
+  gesture=null;
+  $("lb").hidden=true;
+  document.title=data.site.name;
+  $("main").innerHTML=`<section class="home-intro" aria-labelledby="welcomeTitle">
+    <p class="eyebrow">Learning by making games</p>
+    <h2 id="welcomeTitle" tabindex="-1">New to development.<br>Full of ideas.</h2>
+    <p>I'm a very new game developer, and Fletcher Games is where I'm learning to turn my ideas into games. I rely heavily on AI to help me build them, work through problems, and learn as I go.</p>
+    <p>These projects are part of that learning process. I'm figuring things out one feature, test, and update at a time, and this site is a place to share what I've made and where I want to take it next.</p>
+    <p>So far, I've been working on <strong>Grim Gambit</strong>, a dark, turn-based tactics game you can already try, and <strong>Gangland: Empire Burning</strong>, an early remaster project with plans for PC and iOS. Pick a project below to see screenshots, current progress, and what's planned.</p>
+    </section>
+    <section aria-labelledby="projectsTitle"><h3 id="projectsTitle">My projects so far</h3><div class="grid home-grid">${data.games.map(card).join("")}</div></section>`;
+  if(focus)$("welcomeTitle").focus({preventScroll:true});
 }
 
-let data,projectIndex=0,gesture=null;
-function showProject(index,focus=false){
+let data,projectIndex=-1,gesture=null;
+function showProject(index,focus=false,navigate=true){
   const games=data.games;
   if(!games.length)return;
   projectIndex=(index+games.length)%games.length;
   const g=games[projectIndex];
+  gesture=null;
+  $("lb").hidden=true;
+  document.title=g.title+" | "+data.site.name;
   $("main").innerHTML=`<div><nav class="project-nav" aria-label="Projects">
     <button type="button" class="btn ghost" data-step="-1" aria-label="Previous project">← Previous</button>
     <div class="project-tabs">${games.map((game,i)=>`<button type="button" class="btn ghost ${i===projectIndex?"current":""}" data-project="${i}" ${i===projectIndex?'aria-current="page"':""}>${esc(game.title)}</button>`).join("")}</div>
@@ -168,12 +202,16 @@ function showProject(index,focus=false){
     </nav><p class="project-hint">Swipe right for the next project · Swipe left to go back · Use ← / → on your keyboard</p>
     <p class="note" role="status">Project ${projectIndex+1} of ${games.length}: ${esc(g.title)}</p></div>
     <div id="projectView" tabindex="-1" aria-label="${esc(g.title)}">${featured(g)}</div>`;
-  history.replaceState(null,"","#"+encodeURIComponent(g.id));
+  const hash="#"+encodeURIComponent(g.id);
+  if(navigate&&location.hash!==hash)history.pushState(null,"",hash);
   if(focus)$("projectView").focus({preventScroll:true});
 }
 function projectFromHash(){
   const i=data.games.findIndex(g=>"#"+encodeURIComponent(g.id)===location.hash||(g.aliases||[]).some(alias=>"#"+encodeURIComponent(alias)===location.hash));
-  showProject(i<0?0:i);
+  if(i<0){showHome();return}
+  const canonical="#"+encodeURIComponent(data.games[i].id);
+  if(location.hash!==canonical)history.replaceState(null,"",canonical);
+  showProject(i,false,false);
 }
 addEventListener("hashchange",()=>{if(data)projectFromHash()});
 $("main").addEventListener("click",e=>{
@@ -195,7 +233,7 @@ $("main").addEventListener("pointerup",e=>{
 });
 $("main").addEventListener("pointercancel",()=>{gesture=null});
 addEventListener("keydown",e=>{
-  if(!data||!$("lb").hidden||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||e.target.closest("input,textarea,select,[contenteditable]"))return;
+  if(!data||projectIndex<0||!$("lb").hidden||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||e.target.closest("input,textarea,select,[contenteditable]"))return;
   if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();showProject(projectIndex+(e.key==="ArrowRight"?1:-1),true)}
 });
 fetch("games.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{

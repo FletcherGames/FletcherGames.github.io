@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Fletcher Games",
-    "tagline": "Dark games from a one-person studio. Download the latest builds here."
+    "tagline": "A new developer, big ideas, and a lot of help from AI."
   },
   "games": [
     {
@@ -221,7 +221,8 @@
           ]
         }
       ],
-      "play": "play/"
+      "play": "play/",
+      "summary": "My playable dark fantasy tactics project. Lead a company through gothic battlefields, build your fighters, and see how far you can take them."
     },
     {
       "id": "gangland-empire-burning",
@@ -306,7 +307,8 @@
       ],
       "aliases": [
         "untitled"
-      ]
+      ],
+      "summary": "My next project: an early Gangland remaster aiming for a refreshed interface, improved presentation, expanded content, and PC and iOS support."
     }
   ]
 }
