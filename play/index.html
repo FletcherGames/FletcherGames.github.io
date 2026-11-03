@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.6.1"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.7"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -2898,7 +2898,7 @@ function tac(u,be,en){
 function ev(u,r,c){
   const o=[u.r,u.c];u.r=r;u.c=c;let bs=-1,be=null;
   targets(u).forEach(e=>{const av=(u.st.lo+u.st.hi)/2,sc=chance(u,e,false)/10*av+(av>=e.hp?12:0)-e.hp*.3+(AIP[u.t]||AIP0).tb(e);if(sc>bs){bs=sc;be=e}});
-  const en=aiGoal(u),d0=dist(en,u),rgW=u.t==='rg'&&!be&&!agg(),d=rgW?Math.max(d0,6):d0,P=AIP[u.t]||AIP0,ag=agg(),idl=Math.max(1,P.id(u)-ag);
+  const en=aiGoal(u),d0=dist(en,u),rgW=u.t==='rg'&&!be&&!agg()&&!u.hid,d=rgW?Math.max(d0,6):d0,P=AIP[u.t]||AIP0,ag=agg(),idl=Math.max(1,P.id(u)-ag);
   let p=(cover(en,u)?P.cv:0)-(d>idl?(d-idl)*P.ap:(u.st.rng>3||P.kt?(idl-d)*P.kt+(u.st.rng>3&&d<3&&!P.kt?5:0):0))+(be?bs+10:0);
   if(P.fa){let fd=99;U.forEach(f=>{if(!f.dead&&f.s===u.s&&f!==u&&FRONT.has(f.t))fd=Math.min(fd,dist(u,f))});if(fd<99)p-=P.fa*Math.max(0,fd-2)}
   if(u.st.heal){let w=null;U.forEach(f=>{if(!f.dead&&f.s===u.s&&f!==u&&f.hp<f.st.hp*.7&&(!w||f.hp<w.hp))w=f});if(w)p-=1.2*Math.max(0,dist(u,w)-u.st.rng+1)}
@@ -2917,17 +2917,19 @@ function aiStep(){
       if(a.k==='atk'){const av=(u.st.lo+u.st.hi)/2+v('dm');abTargets(u,x).forEach(e=>{const p=Math.max(5,Math.min(95,chance(u,e,false)+v('am')+(v('ig')&&cover(u,e)?30:0)));let sc=p/10*av+(av>=e.hp?12:0)-e.hp*.3+16+(u.hid?3:0)+v('po')*v('pt')*1.2*(e.psn?.3:1);
         if(v('sp'))U.forEach(q=>{if(q.dead||q===e||Math.max(Math.abs(q.r-e.r),Math.abs(q.c-e.c))>1)return;sc+=(q.s!==u.s?1:-1.5)*v('sp')*2.5});
         if(v('keep'))sc-=3;add({u,ab:x,t:e,sc})})}
-      else if(a.k==='heal'){abTargets(u,x).forEach(e=>{const m=Math.min(v('hl'),e.st.hp-e.hp);if(m>=2)add({u,ab:x,t:e,sc:m*3+(e.hp<e.st.hp*.5?6:0)+8})})}
+      else if(a.k==='heal'){abTargets(u,x).forEach(e=>{const m=Math.min(v('hl'),e.st.hp-e.hp);if(m>=2)add({u,ab:x,t:e,sc:m*4+(e.hp<e.st.hp*.5?10:0)+(e.hp<e.st.hp*.3?10:0)+14})})}
       else if(a.k==='buf'){const ws=v('rd')?U.filter(q=>!q.dead&&q.s===u.s&&dist(u,q)<=v('rd')):[u];
         const foe=U.filter(q=>!q.dead&&q.s!==u.s&&dist(u,q)<=u.st.rng+u.st.mv+2&&(u.s===1?visE(u,q):seen.has(q.r*100+q.c))).length;let sc=0;
         ws.forEach(w=>{sc+=Math.min(v('hl'),w.st.hp-w.hp)*2.2;if(foe)sc+=v('ar')*2.5+v('dd')*.18+v('am')*.12+v('dm')*3});
         if(v('mv')&&!foe&&u.ap>=2&&dist(aiGoal(u),u)>u.st.mv+u.st.rng)sc+=v('mv')*1.5;
-        if(v('stl')&&!u.hid&&foe)sc+=u.hp<u.st.hp*.7?14:6;if(v('stl')&&u.hid)sc=0;if(u.ap<2&&!v('hl')&&!v('stl'))sc=0;if(sc>2)add({u,ab:x,sc:sc+(v('rd')?ws.length*.8:0)})}
+        if(v('stl')&&!u.hid&&foe)sc+=(u.hp<u.st.hp*.7?16:10)+(U.some(q=>!q.dead&&q.s!==u.s&&dist(q,u)<=q.st.mv+q.st.rng)?6:0);if(v('stl')&&u.hid)sc=0;if(u.ap<2&&!v('hl')&&!v('stl'))sc=0;if(sc>2)add({u,ab:x,sc:sc+(v('rd')?ws.length*.8:0)})}
       else if(a.k==='blk'){let bp=ev(u,u.r,u.c).p,pick=null;blinkT(u,x).forEach(([r,c])=>{const e=ev(u,r,c);if(e.p>bp+4){bp=e.p;pick=[r,c]}});if(pick)add({u,ab:x,bt:pick,sc:bp+1})}});
+    if(typeof aiHealCand==='function')aiHealCand(u,add);
     if(u.ap>=2||!cur.be)reach(u).forEach((_,k)=>{const[r,c]=k.split(',').map(Number),e=ev(u,r,c);add({u,mv:[r,c],sc:e.p-(e.be&&u.ap>=2?0:6)})})});
   if(!best){busy=false;U.forEach(u=>{if(u.s===side)u.ap=0});fin();return}
   const u=best.u;
   if(best.ab){doAb(u,best.ab,best.t||null,best.bt&&best.bt[0],best.bt&&best.bt[1]);later(aiStep,750);return}
+  if(best.hl){aiDoHeal(u,best.hl);later(aiStep,750);return}
   if(best.mv){setPath(u,best.mv[0],best.mv[1]);u.r=best.mv[0];u.c=best.mv[1];u.ap--;u.ow=false;
     U.filter(x=>!x.dead&&x.s!==u.s&&x.ow&&dist(x,u)<=x.st.rng&&los(x,u)&&canSee(x,u)).forEach(x=>{if(!u.dead){x.ow=false;shoot(x,u,true)}})}
   else if(best.a){shoot(u,best.a,false);u.ap=0}
@@ -3654,7 +3656,7 @@ function invBody(c,msg){
   const sid=selId(),sit=sid&&ITEMS[sid],sp=isel?isel.split(':')[0]:'',inSq=G.squad.includes(c.id);
   const cell=(id,data,cls,label)=>`<button class="ic${id?' r'+ITEMS[id].r:' emp'}${cls||''}${isel===data?' sel':''}" data-a="ipick" data-v="${data}">${id?icon(id):label||''}</button>`;
   const doll=SLOTS.map(k=>{const id=c.eq[k],tgt=sp==='inv'&&sit&&sit.s===k&&canEq(c,sid);return `<div class="sl2 s_${k}">${cell(id,'eq:'+k,tgt?' tgt':'',`<small>${SL[k]}</small>`)}</div>`}).join('');
-  const n=Math.max(24,Math.ceil(G.inv.length/6)*6),pack=Array.from({length:n},(_,i)=>cell(G.inv[i]||null,'inv:'+i)).join('');
+  const IL=invSync(),pack=IL.map((k,i)=>{const j=INVM.s2i[i];return j==null?cell(null,'slot:'+i):cell(G.inv[j],'inv:'+j)}).join('');
   const belt=Array.from({length:3},(_,i)=>cell(G.carry[i]||null,'belt:'+i,sp==='inv'&&sit&&sit.s==='c'&&G.carry.length<3&&!G.carry[i]&&i===G.carry.length?' tgt':'','<small>Belt</small>')).join('');
   const st=effStats(c);
   let tip='<span style="color:#8a7a5a">Tap an item to inspect it. Tap a highlighted slot, or the item again, to equip it.</span>',btns='';
@@ -3994,7 +3996,7 @@ TR['The Broken Field']=q_mk(100,16,q_BFP,(i,b,t,d,P)=>{
   if(i===0){saws(P.r,t,d*16,.09,{at:.1,rel:.3,lp:400,det:[-10,10]});P.c.forEach(m=>organ(m,t,d*16,.03))}
   if([0,3,6,8,11,14].includes(i))mFid(P.c[[0,1,2,0,1,2][[0,3,6,8,11,14].indexOf(i)]]+12+(b%2?2:0),t,d*2.5,.07);
   if(i===0&&b===3)crash(t,.12);if(i===8&&b%2)mClank(t,.1)});
-function sched(){while(track&&nextT<AC.currentTime+.2){track.step(step,nextT);nextT+=60/track.bpm/4;step++}}
+function sched(){while(track&&nextT<AC.currentTime+.6){track.step(step,nextT);nextT+=60/track.bpm/4;step++}}
 function music(n){want=n;if(!AC)return;ac();if(n==='title'&&musicOn){track=null;if(timer){clearInterval(timer);timer=null}cstStop();titlePlay();return}if(n==='Occult Castle'&&musicOn){track=null;if(timer){clearInterval(timer);timer=null}titleStop();cstPlay();return}cstStop();titleStop();
   if(!musicOn||!n){track=null;if(timer){clearInterval(timer);timer=null}return}
   if(track===TR[n])return;track=TR[n];step=0;nextT=AC.currentTime+.1;if(!timer)timer=setInterval(sched,40)}
@@ -4843,8 +4845,10 @@ function openShop(w,msg){
   const take=()=>{if(ft==='inv')G.inv.splice(+fx,1);else if(ft==='belt')G.carry.splice(+fx,1);else c.eq[fx]=null};
   if(tt==='eq'){if(ft!=='inv')return;if(it.s!==tx){openLoad(`${it.n} does not go in the ${SL[tx].toLowerCase()} slot.`);return}if(!canEq(c,id)){openLoad(`${it.n}: ${clsTag(it)}.`);return}const old=c.eq[tx];G.inv.splice(+fx,1);if(old)G.inv.push(old);c.eq[tx]=id;msg=`${it.n} equipped.`}
   else if(tt==='belt'){if(it.s!=='c'){openLoad('Only consumables fit on the belt.');return}if(ft==='belt')return;if(G.carry.length>=3){openLoad('The belt is full.');return}take();G.carry.push(id)}
-  else{ // to backpack
-   take();const j=Math.min(+tx,G.inv.length);G.inv.splice(j,0,id)}
+  else{ // to the bag: slots are independent, so items swap or drop into the exact slot
+   const ts=tt==='slot'?+tx:(typeof invSync==='function'?(invSync(),INVM.i2s[+tx]):null);
+   if(ft==='inv'){if(ts!=null&&ts>=0&&typeof invMove==='function')invMove(+fx,ts)}
+   else{take();G.inv.push(id);if(typeof invPlaceLast==='function')invPlaceLast(ts)}}
   isel=null;save();openLoad(msg||undefined)}
  new MutationObserver(mark).observe(document.getElementById('scr'),{childList:true,subtree:true});
 })();
@@ -5251,14 +5255,15 @@ function openRecruit(msg){music('menu');
   SCR.innerHTML=`<div class="hall"><div class="stage">${DOCK_BG}${u}</div></div><div class="hhud"><h2>The Recruiter</h2><span>Barracks ${G.roster.length}/12 · New recruits arrive after every battle</span></div>${goldHtml()}<div class="dpn">${msg?`<p class="msg">${msg}</p>`:''}${info}<div class="dup"><b>Recruiter Lv ${L}/${mx}</b>${L<mx?`<span>Next: ${UPD.rec[L]}</span><button data-a="upg" data-v="rec" ${G.gold<UPC.rec[L]?'disabled':''}>Upgrade (${UPC.rec[L]})</button>`:'<span>Fully upgraded.</span>'}</div><div class="dbt"><button data-a="rrr" ${G.gold<recCost()?'disabled':''}>Find other recruits (${recCost()} gold)</button><button data-a="camp">Back</button></div></div>`;
   SCR.classList.add('on');const h=SCR.querySelector('.hall');h.scrollLeft=(h.scrollWidth-h.clientWidth)/2}
 /* ---------- readable text: enforce a minimum font size ---------- */
-{if(!PCM){}else{const FL=()=>13;let pend=0,last=0;
- const run=()=>{pend=0;last=performance.now();const fl=FL();
-  document.querySelectorAll('body *').forEach(e=>{if(e.tagName==='CANVAS'||e.tagName==='SCRIPT'||e.tagName==='STYLE'||e.tagName==='svg'||e.closest('svg'))return;
-   let own=false;for(const n of e.childNodes)if(n.nodeType===3&&n.textContent.trim()){own=true;break}if(!own)return;
-   const f2=e.closest('.tag')?11:fl,fs=parseFloat(getComputedStyle(e).fontSize);if(fs<f2-.05){e.style.setProperty('font-size',f2+'px','important');e.dataset.fz=1}})};
- const sched=()=>{if(pend)return;pend=1;const w=Math.max(0,250-(performance.now()-last));setTimeout(()=>requestAnimationFrame(run),w)};
- new MutationObserver(sched).observe(document.body,{childList:true,subtree:true,characterData:true});
- addEventListener('resize',()=>{document.querySelectorAll('[data-fz]').forEach(e=>{e.style.removeProperty('font-size');delete e.dataset.fz});sched()});sched()}}
+{if(!PCM){}else{const FL=()=>13;
+ /* fix text the moment it is added (the observer runs before the browser paints), and only the new elements:
+     scanning the whole page a quarter-second later made screens jump as text grew after it was shown */
+  const fix=e=>{if(e.nodeType!==1||e.tagName==='CANVAS'||e.tagName==='SCRIPT'||e.tagName==='STYLE'||e.tagName==='svg'||(e.closest&&e.closest('svg')))return;
+    let own=false;for(const n of e.childNodes)if(n.nodeType===3&&n.textContent.trim()){own=true;break}if(!own)return;
+    const f2=e.closest('.tag')?11:FL(),fs=parseFloat(getComputedStyle(e).fontSize);if(fs<f2-.05){e.style.setProperty('font-size',f2+'px','important');e.dataset.fz=1}};
+  const scan=root=>{if(root.nodeType!==1)return;fix(root);root.querySelectorAll('*').forEach(fix)};
+  new MutationObserver(recs=>{for(const r of recs){if(r.type==='characterData'){if(r.target.parentElement)fix(r.target.parentElement)}else r.addedNodes.forEach(scan)}}).observe(document.body,{childList:true,subtree:true,characterData:true});
+  addEventListener('resize',()=>{document.querySelectorAll('[data-fz]').forEach(e=>{e.style.removeProperty('font-size');delete e.dataset.fz});scan(document.body)});scan(document.body)}}
 /* ---------- volumetric fog: height-based, noise-driven ray-marched scene fog + drifting fog layers + living fog-of-war ---------- */
 {const FN=matchMedia('(hover:hover) and (pointer:fine)').matches?3:2;
  THREE.ShaderChunk.fog_pars_vertex='#ifdef USE_FOG\n varying float vFogDepth;\n varying vec3 vFogV;\n#endif';
@@ -5997,7 +6002,7 @@ Object.assign(TR,YTR);
 /* route every music request through the new tracks (the old recorded title/castle loops are retired) */
 /* smooth transitions: the outgoing track keeps playing while it fades, the new one fades in */
 let YMF=[];
-function ymSched(){if(!AC)return;const now=AC.currentTime;while(track&&nextT<now+.2){track.step(step,nextT);nextT+=60/track.bpm/4;step++}
+function ymSched(){if(!AC)return;const now=AC.currentTime;while(track&&nextT<now+.45){track.step(step,nextT);nextT+=60/track.bpm/4;step++}
  YMF.forEach(f=>{while(f.nextT<Math.min(now+.2,f.end)){f.tr.step(f.step,f.nextT);f.nextT+=60/f.tr.bpm/4;f.step++}});YMF=YMF.filter(f=>f.nextT<f.end&&f.tr!==track);
  if(!track&&!YMF.length&&timer){clearInterval(timer);timer=null}}
 function ymOut(tr,dur){if(!tr||!tr.fade)return;YMF=YMF.filter(f=>f.tr!==tr);tr.fade(0,dur);YMF.push({tr,step,nextT,end:AC.currentTime+dur+.05})}
@@ -7696,7 +7701,8 @@ function cbatSet(th){CBAT.list.forEach(b=>S.remove(b.g));CBAT.list=[];if(th.n!==
  b.g.position.set(x,y,z);b.g.rotation.y=Math.atan2(nx-x,nz-z);b.g.rotation.z=Math.sin(a*3)*.3;const fl=Math.sin(t*22+i*2);b.wl.rotation.z=fl*.9;b.wr.rotation.z=-fl*.9})}requestAnimationFrame(f)})();
 /* ---------- graveyard rain: noise wash, noise-grain patter and gusting wind (no pitched tones) ---------- */
 /* rain voices: noise wash + noise-grain droplets (no pitched tones) */
-function rnNoise(ctx,sec,kind){const n=Math.floor(ctx.sampleRate*sec),b=ctx.createBuffer(2,n,ctx.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,l=0;
+const RNB={};function rnNoise(ctx,sec,kind){const ck=kind+sec+'@'+ctx.sampleRate;if(RNB[ck])return RNB[ck];return RNB[ck]=rnNoise0(ctx,sec,kind)}
+function rnNoise0(ctx,sec,kind){const n=Math.floor(ctx.sampleRate*sec),b=ctx.createBuffer(2,n,ctx.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,l=0;
  for(let i=0;i<n;i++){const w=Math.random()*2-1;if(kind==='brown'){l=(l+.02*w)/1.02;d[i]=l*3.5}else{b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926}}
  const F=4096;for(let i=0;i<F;i++){const k=i/F;d[n-F+i]=d[n-F+i]*(1-k)+d[i]*k}}return b}
 const RVAR={
@@ -7721,11 +7727,26 @@ function rainBuild(ctx,out,v){const V=RVAR[v],bus=ctx.createGain();bus.connect(o
   for(let t=t0;t<t1;t+=-Math.log(1-Math.random())/D.rate)one(t,R(D.f),R(D.len),R(D.g),2.2)};
  return{bus,nodes,grains}}
 
-/* live graveyard rain using voice C (storm with gusting wind) */
-const RNS={r:null,tick:null,t:0};
-rnStart=function(){if(RNY.nodes||!AC||!sfxG)return;const g=AC.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(.55,AC.currentTime+2.5);g.connect(sfxG);const r=rainBuild(AC,g,'C');RNS.r=r;RNS.g=g;RNS.t=AC.currentTime;
- const ahead=()=>{const now=AC.currentTime;if(RNS.t<now)RNS.t=now;if(RNS.t<now+.6){r.grains(RNS.t,now+.8);RNS.t=now+.8}};ahead();RNS.tick=setInterval(ahead,250);RNY.nodes=r.nodes;RNY.th=6+Math.random()*10};
-rnStop=function(){if(!RNY.nodes)return;const t=AC.currentTime,ns=RNY.nodes,g=RNS.g;RNY.nodes=null;clearInterval(RNS.tick);RNS.r=null;
+/* live graveyard rain using voice C (storm with gusting wind).
+   The patter used to be hundreds of tiny one-shot sounds created every second (each with its own filter, gain and
+   panner), which made the audio stutter. Now the patter is synthesized once, straight into samples, as two long loops
+   of different lengths that play on top of each other, so it never audibly repeats and costs almost nothing. */
+const RNS={r:null,tick:null,t:0,loops:null};
+/* synthesize the patter straight into a sample buffer: band-passed noise bursts, randomly timed and panned (no audio nodes) */
+function rnPatter(len){const sr=AC.sampleRate,n=Math.floor(sr*len),L=new Float32Array(n),R=new Float32Array(n),V=RVAR.C,Rg=a=>a[0]+Math.random()*(a[1]-a[0]);
+ const burst=(t0,f,dur,g,q)=>{const w=2*Math.PI*f/sr,al=Math.sin(w)/(2*q),a0=1+al,b0=al/a0,b2=-al/a0,a1=-2*Math.cos(w)/a0,a2=(1-al)/a0;let x1=0,x2=0,y1=0,y2=0;
+  const i0=Math.floor(t0*sr),m=Math.floor(dur*sr),att=Math.max(1,Math.floor(.0008*sr)),k=Math.log(.0005/1)/(m||1),pan=Math.random()*1.8-.9,pl=Math.cos((pan+1)*Math.PI/4),pr=Math.sin((pan+1)*Math.PI/4);
+  for(let j=0;j<m;j++){const xn=Math.random()*2-1,yn=b0*xn+b2*x2-a1*y1-a2*y2;x2=x1;x1=xn;y2=y1;y1=yn;const e=(j<att?j/att:Math.exp(k*j))*g,v=yn*e,ii=(i0+j)%n;L[ii]+=v*pl;R[ii]+=v*pr}};
+ for(let t=0;t<len;t+=-Math.log(1-Math.random())/V.grain.rate)burst(t,Rg(V.grain.f),Rg(V.grain.len),Rg(V.grain.g)*.52,V.grain.q);
+ for(let t=0;t<len;t+=-Math.log(1-Math.random())/V.drop.rate)burst(t,Rg(V.drop.f),Rg(V.drop.len),Rg(V.drop.g)*.38,2.2);
+ const b=AC.createBuffer(2,n,sr);b.copyToChannel(L,0);b.copyToChannel(R,1);return b}
+rnStart=function(){if(RNY.nodes||!AC||!sfxG)return;const g=AC.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(.55,AC.currentTime+2.5);g.connect(sfxG);
+ /* the continuous wash and wind stay live (a handful of looping nodes) */
+ const r=rainBuild(AC,g,'C');
+ RNS.r=r;RNS.g=g;RNY.nodes=r.nodes.slice();RNY.th=6+Math.random()*10;
+ const play=bufs=>{if(!RNY.nodes||RNS.r!==r)return;bufs.forEach(b=>{if(!b)return;const s=AC.createBufferSource();s.buffer=b;s.loop=true;s.connect(r.bus);s.start(AC.currentTime+.05);RNY.nodes.push(s)})};
+ if(!RNS.loops||RNS.loops.sr!==AC.sampleRate){RNS.loops=[rnPatter(7.3),rnPatter(11.1)];RNS.loops.sr=AC.sampleRate}play(RNS.loops)};
+rnStop=function(){if(!RNY.nodes)return;const t=AC.currentTime,ns=RNY.nodes,g=RNS.g;RNY.nodes=null;RNS.r=null;
  if(g){g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+1)}ns.forEach(x=>{try{x.stop(t+1.1)}catch(e){}})};
 /* Cathedral of Ash: the great stained-glass window replaces the plain far-wall windows (and their night-landscape panes) it used to overlap */
 const CATW={hid:[]};
@@ -8319,7 +8340,7 @@ function gCorpse(u,canvas,tint,squash){const map=canvas?new THREE.CanvasTexture(
  m.translateY(-.6*B);gGroup().add(m);const key=Math.round(u.pz)*100+Math.round(u.px);GORE.corpses.set(key,{m,u,r:Math.round(u.pz),c:Math.round(u.px)});return m}
 function GCOV(a,t){if(!GORE.corpses.size)return false;const dr=Math.sign(a.r-t.r),dc=Math.sign(a.c-t.c);return !!((dr&&GORE.corpses.has((t.r+dr)*100+t.c))||(dc&&GORE.corpses.has(t.r*100+t.c+dc)))}
 /* ---------- kill moments ---------- */
-function gKillCam(u,heavy){try{shake(heavy?.32:.18,0)}catch(e){}if(!heavy)return;const f0=cam.fov,t0=performance.now();GORE.zoom={f0,t0};
+function gKillCam(u,heavy){try{shake(heavy?.32:.18,0)}catch(e){}if(!heavy)return;const f0=GORE.zoom?GORE.zoom.f0:(window.CAMFOV0||cam.fov),t0=performance.now();GORE.zoom={f0,t0};
  let v=document.getElementById('gvig');if(!v){v=document.createElement('div');v.id='gvig';v.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(120,0,0,.55));opacity:0;transition:opacity .5s';document.body.appendChild(v)}
  v.style.transition='none';v.style.opacity=1;requestAnimationFrame(()=>{v.style.transition='opacity .9s';v.style.opacity=0})}
 /* ---------- deaths by creature and cause ---------- */
@@ -8371,7 +8392,7 @@ function gTick(now){GORE.fr++;const dt=Math.min(.05,(now-gLast)/1000);gLast=now;
 /* attacker info for direction and overkill: recorded when a blow lands */
 {const _sk=strike;strike=function(a,t,hit,d){try{if(t&&a){t._gA={from:{x:a.px,z:a.pz},d:d||0,over:t.hp<0?-t.hp:0};if(hit&&t.hp<=0&&!t._gK){t._gK=1;gBloodyWeapon(a)}}}catch(e){}return _sk.apply(this,arguments)}}
 /* new battle: clear the gore */
-{const _in=init;init=function(){if(GORE.g){S.remove(GORE.g);GORE.g=null}GORE.grid=null;GORE.dec=[];GORE.fly=[];GORE.corpses=new Map();GORE.raised=0;return _in.apply(this,arguments)}}
+{window.CAMFOV0=window.CAMFOV0||cam.fov;const _in=init;init=function(){if(GORE.zoom){GORE.zoom=null}if(cam.fov!==window.CAMFOV0){cam.fov=window.CAMFOV0;cam.updateProjectionMatrix()}if(GORE.g){S.remove(GORE.g);GORE.g=null}GORE.grid=null;GORE.dec=[];GORE.fly=[];GORE.corpses=new Map();GORE.raised=0;return _in.apply(this,arguments)}}
 /* ---------- necromancers raise the fallen ---------- */
 {const _et=endTurn;endTurn=function(){_et();try{if(turn!==1||over!==null||GORE.raised>=4)return;U.filter(u=>!u.dead&&u.s===1&&u.t==='nc').forEach(n=>{if(Math.random()>.45)return;
   const c=[...GORE.corpses.values()].filter(k=>dist(n,k)<=5&&!at(k.r,k.c)&&k.u.t!=='zb');if(!c.length)return;const k=c[(Math.random()*c.length)|0];
@@ -8404,7 +8425,7 @@ function gReskin(){const BL=new Set([bloodM,bloodD]);try{if(HPX&&HPX.m)BL.add(HP
    which is what dragged the frame rate down late in a bloody battle. Once a floor mark has finished spreading it is
    painted onto a single canvas (colour + wet normal map) covering the board, and its mesh is removed. Marks on
    props, walls, raised platforms and fresh pools still animate as before. */
-const GBK={PX:56,cv:null,nv:null,tex:null,ntex:null,mesh:null,last:0,tmp:null};
+const GBK={PX:44,lastBake:0,cv:null,nv:null,tex:null,ntex:null,mesh:null,last:0,tmp:null};
 function gbkSetup(){if(GBK.mesh&&GBK.mesh.parent)return true;if(typeof SW==='undefined'||typeof S==='undefined')return false;
  const W=SW*GBK.PX,H=SZ*GBK.PX;
  if(!GBK.cv||GBK.cv.width!==W||GBK.cv.height!==H){GBK.cv=document.createElement('canvas');GBK.nv=document.createElement('canvas');GBK.cv.width=GBK.nv.width=W;GBK.cv.height=GBK.nv.height=H;
@@ -8424,8 +8445,10 @@ function gbkPaint(m){const PX=GBK.PX,c=GBK.cv.getContext('2d'),n=GBK.nv.getConte
  const t=GBK.tmp||(GBK.tmp=document.createElement('canvas'));if(t.width!==nimg.width){t.width=nimg.width;t.height=nimg.height}const tg=t.getContext('2d');
  tg.globalCompositeOperation='source-over';tg.clearRect(0,0,t.width,t.height);tg.drawImage(nimg,0,0,t.width,t.height);tg.globalCompositeOperation='destination-in';tg.drawImage(img,0,0,t.width,t.height);
  n.save();n.translate(X,Y);n.rotate(-th);n.scale(sx,sz);n.drawImage(t,-.5,-.5,1,1);n.restore()}
-function gbkTick(now){if(!GORE.g||!gOn()||now-GBK.last<1500)return;GBK.last=now;if(!gbkSetup())return;
- const done=[];GORE.dec.forEach(m=>{if(gbkOk(m,now))done.push(m)});if(!done.length)return;
+/* baking re-uploads the whole floor layer to the GPU, so it is batched: only when a dozen marks have settled,
+   or a few seconds after the last bake, never every second */
+function gbkTick(now){if(!GORE.g||!gOn()||now-GBK.last<1000)return;GBK.last=now;
+ const done=[];GORE.dec.forEach(m=>{if(gbkOk(m,now))done.push(m)});if(!done.length||(done.length<12&&now-GBK.lastBake<6000))return;if(!gbkSetup())return;GBK.lastBake=now;
  /* paint oldest first so newer marks sit on top, like they did as meshes */
  done.sort((a,b)=>a.renderOrder-b.renderOrder).forEach(m=>{try{gbkPaint(m)}catch(e){}m.parent&&m.parent.remove(m)});
  const set=new Set(done);GORE.dec=GORE.dec.filter(m=>!set.has(m));GBK.tex.needsUpdate=GBK.ntex.needsUpdate=true;GBK.mesh.visible=true}
@@ -9092,6 +9115,47 @@ body.mob{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;ov
    background, but the game kept rendering the last battlefield behind it every frame, which made menus stutter
    on slower GPUs. While a screen is up, the board isn't drawn; it resumes the moment the screen closes. */
 {const _rr=R.render.bind(R);R.render=function(s,c){try{if(s===S&&SCR&&SCR.classList.contains('on')&&!window.__ggForceRender)return}catch(e){}return _rr(s,c)}}
+/* ---------- fewer draw calls: the board's 440 floor tiles and 440 fog-of-war squares are drawn as a handful of
+   instanced / merged meshes instead of 880 separate objects. The original tile and fog objects stay in the scene as
+   invisible stand-ins, so every other system (picking, highlights, high ground, fog fades) keeps working unchanged;
+   each frame their colours, highlights, heights and fog opacity are copied into the merged meshes. ---------- */
+const DM={groups:null,fog:null,sig:''};
+function dmTileSig(){let s='';for(const t of tiles){const m=t.material;s+=(m&&m.map?m.map.uuid:'-')+(m&&m.bumpMap?m.bumpMap.uuid:'-')+(m?m.type:'')+'|'}return s}
+function dmBuildTiles(){if(DM.groups)DM.groups.forEach(g=>{S.remove(g.mesh);g.mesh.material.dispose()});DM.groups=[];const by=new Map();
+ tiles.forEach((t,i)=>{const m=t.material;if(!m)return;const key=(m.map?m.map.uuid:'-')+(m.bumpMap?m.bumpMap.uuid:'-')+m.type+(m.bumpScale||0)+(m.roughness||0);if(!by.has(key))by.set(key,[]);by.get(key).push(i)});
+ by.forEach(ids=>{const src=tiles[ids[0]].material,mat=src.clone();mat.visible=true;mat.color.setRGB(1,1,1);mat.emissive&&mat.emissive.setRGB(0,0,0);
+  const base=src.onBeforeCompile;mat.customProgramCacheKey=()=>'dmtile'+(src.customProgramCacheKey?src.customProgramCacheKey():'');
+  mat.onBeforeCompile=(sh,rr)=>{try{if(base)base.call(src,sh,rr)}catch(e){}sh.vertexShader='attribute vec3 iem;\nvarying vec3 vIem;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvIem=iem;');
+   sh.fragmentShader='varying vec3 vIem;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vIem;')};
+  const mesh=new THREE.InstancedMesh(tiles[ids[0]].geometry,mat,ids.length);mesh.frustumCulled=false;mesh.receiveShadow=true;mesh.renderOrder=tiles[ids[0]].renderOrder||0;
+  mesh.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(ids.length*3),3);const iem=new THREE.InstancedBufferAttribute(new Float32Array(ids.length*3),3);mesh.geometry=mesh.geometry.clone();mesh.geometry.setAttribute('iem',iem);
+  S.add(mesh);DM.groups.push({ids,mesh,iem})});
+ tiles.forEach(t=>{if(t.material)t.material.visible=false});DM.sig=dmTileSig()}
+const DMZ=new THREE.Matrix4().makeScale(0,0,0);
+function dmSyncTiles(){if(!DM.groups||DM.sig!==dmTileSig())dmBuildTiles();
+ for(const g of DM.groups){const{ids,mesh,iem}=g,ic=mesh.instanceColor.array,ie=iem.array;
+  for(let j=0;j<ids.length;j++){const t=tiles[ids[j]],m=t.material;if(m.visible)m.visible=false;let shown=t.visible;for(let q=t.parent;shown&&q;q=q.parent)if(!q.visible)shown=false;
+   if(shown){t.updateMatrixWorld();mesh.setMatrixAt(j,t.matrixWorld)}else mesh.setMatrixAt(j,DMZ);
+   ic[j*3]=m.color.r;ic[j*3+1]=m.color.g;ic[j*3+2]=m.color.b;const e=m.emissive,k=m.emissiveIntensity===undefined?1:m.emissiveIntensity;ie[j*3]=e?e.r*k:0;ie[j*3+1]=e?e.g*k:0;ie[j*3+2]=e?e.b*k:0}
+  mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;iem.needsUpdate=true}}
+/* fog of war: one mesh with four corners per square; per-square opacity and height come from the stand-ins */
+function dmBuildFog(){const n=fogP.length,pos=new Float32Array(n*12),uv=new Float32Array(n*8),fa=new Float32Array(n*4),idx=[];
+ for(let i=0;i<n;i++){const b=i*4;idx.push(b,b+2,b+1,b+2,b+3,b+1)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('fa',new THREE.BufferAttribute(fa,1));g.setIndex(idx);
+ const src=fogP[0].material,mat=new THREE.MeshBasicMaterial({color:src.color.clone(),map:src.map||null,transparent:true,depthWrite:false});
+ mat.onBeforeCompile=sh=>{sh.vertexShader='attribute float fa;\nvarying float vFa;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFa=fa;');
+  sh.fragmentShader='varying float vFa;\n'+sh.fragmentShader.replace('#include <dithering_fragment>','#include <dithering_fragment>\ngl_FragColor.a*=vFa;')};
+ const mesh=new THREE.Mesh(g,mat);mesh.frustumCulled=false;mesh.renderOrder=fogP[0].renderOrder||0;S.add(mesh);DM.fog={mesh,map:src.map||null,uvDone:false};
+ fogP.forEach(m=>{m.material.visible=false})}
+function dmSyncFog(){if(!DM.fog)dmBuildFog();const F=DM.fog,src=fogP[0].material;
+ if(F.map!==(src.map||null)){F.map=src.map||null;F.mesh.material.map=F.map;F.mesh.material.color.copy(src.color);F.mesh.material.needsUpdate=true;F.uvDone=false}
+ const g=F.mesh.geometry,pos=g.attributes.position.array,fa=g.attributes.fa.array,uv=g.attributes.uv.array,C=[[-.5,.5],[.5,.5],[-.5,-.5],[.5,-.5]];
+ for(let i=0;i<fogP.length;i++){const m=fogP[i];if(m.material.visible)m.material.visible=false;let shown=m.visible&&m.scale.x>0;for(let q=m.parent;shown&&q;q=q.parent)if(!q.visible)shown=false;
+  const a=shown?m.material.opacity:0,x0=m.position.x,y0=m.position.y,z0=m.position.z;
+  for(let k=0;k<4;k++){const b=(i*4+k)*3;pos[b]=x0+C[k][0];pos[b+1]=y0;pos[b+2]=z0-C[k][1];fa[i*4+k]=a}
+  if(!F.uvDone){const su=m.geometry.attributes.uv;for(let k=0;k<4;k++){uv[(i*4+k)*2]=su.getX(k);uv[(i*4+k)*2+1]=su.getY(k)}}}
+ F.uvDone=true;g.attributes.position.needsUpdate=true;g.attributes.fa.needsUpdate=true;g.attributes.uv.needsUpdate=true}
+{const _r=R.render.bind(R);R.render=function(s,c){if(s===S&&!(SCR&&SCR.classList.contains('on')&&!window.__ggForceRender)){try{dmSyncTiles();dmSyncFog()}catch(e){console.error('drawmerge',e)}}return _r(s,c)}}
 /* ---------- your fighters can always be inspected ----------
    On the enemy's turn and with Auto on, clicking one of your fighters still selects it, so you can see its card
    and its ability bar (greyed out until it can act). Orders are only given on your own turn, as before. */
@@ -9238,6 +9302,68 @@ A.sqback=()=>A.map();
 
 /* replaces the old list screen (after every other wrapper, so nothing redraws the old one) */
 openSquad=sqsOpen;
+/* ---------- independent inventory slots ----------
+   The bag used to be a packed list: removing, equipping or selling one item slid everything after it along.
+   Now every slot keeps its item where you put it. G.invL is the bag's layout (item or empty per slot); G.inv stays
+   the plain item list the rest of the game uses, and the two are reconciled on every draw:
+   - items that left the bag leave an empty slot behind,
+   - new items (loot, purchases, unequipped gear) go into the first empty slot,
+   - you can drop or click an item into any empty slot, and drag one item onto another to swap them. */
+const INVM={s2i:[],i2s:[]};
+function invSync(){if(!G)return;const inv=G.inv||(G.inv=[]);let L=Array.isArray(G.invL)?G.invL:(G.invL=inv.slice());
+ /* how many of each item are in the bag, and which bag indexes hold them */
+ const pool=new Map();inv.forEach((k,i)=>{if(!pool.has(k))pool.set(k,[]);pool.get(k).push(i)});
+ const s2i=[],i2s=new Array(inv.length).fill(-1);
+ for(let s=0;s<L.length;s++){const k=L[s],q=k!=null&&pool.get(k);if(q&&q.length){const i=q.shift();s2i[s]=i;i2s[i]=s}else{L[s]=null;s2i[s]=null}}
+ /* new arrivals fill the first empty slots */
+ for(let i=0;i<inv.length;i++)if(i2s[i]<0){let s=L.indexOf(null);if(s<0){s=L.length;L.push(null)}L[s]=inv[i];s2i[s]=i;i2s[i]=s}
+ /* at least 24 slots, whole rows of 6, empty rows past the last item trimmed */
+ let last=-1;for(let s=0;s<L.length;s++)if(L[s]!=null)last=s;const n=Math.max(24,Math.ceil((last+1)/6)*6);
+ while(L.length<n){L.push(null);s2i.push(null)}while(L.length>n&&L[L.length-1]==null){L.pop();s2i.pop()}
+ INVM.s2i=s2i;INVM.i2s=i2s;return L}
+/* move bag item (by G.inv index) into slot s: an empty slot takes it, an occupied one swaps with it */
+function invMove(i,s){invSync();const L=G.invL,from=INVM.i2s[i];if(from==null||from<0||s===from)return;while(L.length<=s)L.push(null);const t=L[s];L[s]=L[from];L[from]=t;invSync()}
+/* put an item that just arrived in the bag (the last one) into slot s if it is empty */
+function invPlaceLast(s){invSync();const i=G.inv.length-1;if(i<0)return;const L=G.invL;if(s!=null&&s>=0&&(s>=L.length||L[s]==null))invMove(i,s)}
+/* clicking an empty slot with something selected moves it there */
+{const _pk=A.ipick;A.ipick=v=>{const[t,k]=(v||'').split(':');if(t!=='slot')return _pk(v);const s=+k;
+  if(isel&&isel.startsWith('inv:')){invMove(+isel.slice(4),s);isel=null;save();openLoad();return}
+  if(isel&&(isel.startsWith('eq:')||isel.startsWith('belt:'))){const was=isel;if(was.startsWith('eq:'))A.iunequip();else A.iunbelt();invPlaceLast(s);isel=null;save();openLoad();return}
+  isel=null;openLoad()}}
+/* ---------- smarter Rogues and Clerics (used by the enemy AI and by Auto mode for your own fighters) ----------
+   Rogue: while hidden, stalks the most valuable target (archers, casters, healers, the badly wounded), keeps clear of
+   other enemies so it isn't spotted early, and only gives up its stealth for a good ambush. Once revealed it falls
+   back out of reach (more than 2 tiles from every enemy) so it slips back into the shadows next turn, and re-casts
+   stealth when it can.
+   Cleric: actually uses its mend on wounded allies (it never did on Auto), heals whoever is in the most danger first,
+   moves to get a hurt ally into range, and stays out of melee reach. */
+const aiFoes=u=>U.filter(e=>!e.dead&&e.s!==u.s);
+/* how much a Rogue wants to ambush this enemy */
+function aiAmbV(u,e){const av=(u.st.lo+u.st.hi)/2+2;let v=(e.st.rng>3?7:0)+(e.st.heal?8:0)+(av>=e.hp?16:0)+(e.hp<e.st.hp*.5?4:0)+(T[e.t]&&T[e.t].boss?3:0);if(FRONT.has(e.t)&&av<e.hp)v-=8;return v}
+function aiHealV(f,m){const r=f.hp/f.st.hp;return m*4+(r<.5?10:0)+(r<.3?10:0)}
+{const _ev=ev;ev=function(u,r,c){const res=_ev(u,r,c);try{
+  if(u.t==='rg'){const F=aiFoes(u);if(F.length){const o=[u.r,u.c];u.r=r;u.c=c;let dmin=99;F.forEach(e=>{dmin=Math.min(dmin,dist(u,e))});
+    if(u.hid){if(res.be)res.p+=aiAmbV(u,res.be);else{let best=null;F.forEach(e=>{const s=aiAmbV(u,e)-dist(u,e)*.6;if(!best||s>best[0])best=[s,e]});if(best)res.p-=1.6*Math.max(0,dist(u,best[1])-u.st.rng);if(dmin<=1)res.p-=12}}
+    else if(!res.be||aiAmbV(u,res.be)<8){res.p+=dmin>2?10:-6*(3-dmin);if(cover(F[0],u))res.p+=2}
+    u.r=o[0];u.c=o[1]}}
+  if(u.st&&u.st.heal){const o=[u.r,u.c];u.r=r;u.c=c;
+    if(u.ap>=2){let hb=0;U.forEach(f=>{if(f.dead||f.s!==u.s||f===u)return;const m=Math.min(3+(u.st.hv||0),f.st.hp-f.hp);if(m>=2&&dist(u,f)<=u.st.rng&&los(u,f))hb=Math.max(hb,aiHealV(f,m))});res.p+=hb*.8}
+    if(aiFoes(u).some(e=>e.st.rng<=1&&dist(u,e)<=1))res.p-=6;
+    u.r=o[0];u.c=o[1]}}catch(e){console.error('ai ev',e)}return res}}
+/* the Cleric's basic mend as an AI option */
+function aiHealCand(u,add){if(!u.st||!u.st.heal)return;U.forEach(f=>{if(f.dead||f.s!==u.s||f===u)return;const m=Math.min(3+(u.st.hv||0),f.st.hp-f.hp);if(m>=2&&dist(u,f)<=u.st.rng&&los(u,f))add({u,hl:f,sc:aiHealV(f,m)+12})})}
+function aiDoHeal(u,o){const h=Math.min(3+(u.st.hv||0),o.st.hp-o.hp);if(h<=0)return;o.hp+=h;u.xg=(u.xg||0)+2;floater(o,'+'+h,'h');burst(o,0x9fffb0,10,true);log.unshift(`${u.nm||T[u.t].n} mends ${o.nm||T[o.t].n}.`);u.ap=0;fin()}
+/* ---------- enemies keep up with a well-equipped company ----------
+   The campaign already adds bigger warbands as your squad's power (levels, skill points, gear rarity, sockets) runs
+   ahead of the floor you're on, but that only goes so far. Past that point, enemies now gain health and damage
+   for every point of power your squad has beyond what this part of the road expects. */
+const ESC={hp:.02,dmg:.012,hpCap:3,dmgCap:2.2};
+function escExcess(){try{if(!camp)return 0;const sp=curSpec();if(!sp)return 0;const exp=BAL.pb+BAL.ps*sp.tier+BAL.adc/BAL.ad;return Math.max(0,partyPower()-exp)}catch(e){return 0}}
+function escMul(){const E=escExcess();return{E,hp:Math.min(ESC.hpCap,1+ESC.hp*E),dmg:Math.min(ESC.dmgCap,1+ESC.dmg*E)}}
+{const _as=applyStats;applyStats=function(){const r=_as.apply(this,arguments);try{const m=escMul();if(m.E>0)U.forEach(u=>{if(u.s!==1||u.ch||!u.st)return;const f=u.hp/Math.max(1,u.st.hp);
+  u.st.hp=Math.max(1,Math.round(u.st.hp*m.hp));u.st.lo=Math.max(1,Math.round(u.st.lo*m.dmg));u.st.hi=Math.max(u.st.lo,Math.round(u.st.hi*m.dmg));u.hp=Math.max(1,Math.round(u.st.hp*f))})}catch(e){console.error('enemy scale',e)}return r}}
+/* say so at the start of the battle, so the jump isn't a mystery */
+{const _sb=startBattle;startBattle=function(){const r=_sb.apply(this,arguments);try{const m=escMul();if(m.E>=1){log.unshift(`<span style="color:#e0a070">The enemy has grown to match your company: +${Math.round((m.hp-1)*100)}% health, +${Math.round((m.dmg-1)*100)}% damage.</span>`);hud()}}catch(e){}return r}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
