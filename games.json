@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.7",
+      "statusLabel": "Beta 0.1.7.1",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11 · Browser · Phones & tablets",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -114,11 +114,19 @@
       ],
       "patchNotes": [
         {
+          "version": "Beta 0.1.7.1",
+          "title": "A new soundtrack",
+          "date": "2026-11-04",
+          "notes": [
+            "A brand-new soundtrack: twelve recorded songs replace the old synthesized music. The Grim Gambit on the main menu, The Mustering Hall in the barracks and on the campaign map, and a theme for every battlefield, from The Iron Warden's Gate in the Occult Castle to Seraphiel's Fall in the Pit of the Damned. The Black Chapel's organist plays along in time with The Mad Organist.",
+            "Already playing on Windows? Open the launcher and it downloads this update automatically. The browser version is already updated."
+          ]
+        },
+        {
           "version": "Beta 0.1.7",
           "title": "Into the halls",
           "date": "2026-11-04",
           "notes": [
-            "A brand-new soundtrack: twelve recorded songs replace the old synthesized music. The Grim Gambit on the main menu, The Mustering Hall in the barracks and on the campaign map, and a theme for every battlefield, from The Iron Warden's Gate in the Occult Castle to Seraphiel's Fall in the Pit of the Damned. The Black Chapel's organist plays along in time with The Mad Organist.",
             "XCOM-style battle maps: every battlefield is now a hand-made floor plan filled with rooms and features that fit the map, flipped at random, with loose cover along the lanes between them. You get real routes to choose between instead of evenly scattered single pieces.",
             "Walls that form rooms, with new hand-painted textures for each map: book-lined library walls, scorched ruined brick, packed skulls, carved gothic tracery, thorn hedges, mossy root banks, a sharpened palisade, crypt walls with iron railings and glowing obsidian. Walls are full cover, block sight and can be smashed.",
             "Large set pieces covering two or four tiles: great bookcases, sarcophagi, bone heaps, pews, fallen giant trunks, supply crates, mausoleums and brimstone altars.",
