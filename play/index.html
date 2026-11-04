@@ -3436,7 +3436,7 @@ function openTalents(id,msg){
     tip=`<b>${sk0.n}</b> · ${sk0.t==='a'?'Active skill':'Passive skill'} · ${tr.n}<br>${E?`<b>Level ${E}${bn?` (${L} + ${bn} from items)`:''}:</b> ${skDesc(c,sk0,E)}`:'<i>Not learned</i>'}${L<sk0.mx?`<br><b>Next point (level ${E+1}):</b> ${skDesc(c,sk0,E+1)}`:''}${bn?'<br><i style="color:#8ad0ff">Item bonus can exceed the skill cap.</i>':''}${syn}<br><i>Needs character level ${sk0.req}${pnm.length?' and '+pnm.join(', '):''}.</i>${why?`<em>${why}</em>`:''}${canLearn(c,sk0)&&!matchMedia('(hover:hover) and (pointer:fine)').matches?`<div class="r2"><button data-a="learn" data-v="${sk0.id}">Add skill point</button></div>`:''}`}
   const spent=t=>t.sk.reduce((a,k)=>a+SKB(c,k.id),0);
   const tabs=TREES[c.t].map((t,i)=>`<button data-a="ttab" data-v="${i}" class="${i===ttab?'cur':''}">${t.n}${spent(t)?` (${spent(t)})`:''}</button>`).join('');
-  show(`<div class="cmp"><div class="tw"><div class="rail" style="--cols:${rCols};--tw:${rW}px;--tf:${rW<56?8:rW<64?9:10}px">${rail}</div><div class="tmain"><div class="hd"><img class="pt" src="${portrait(c)}"><div><input class="nm" data-n="${c.id}" value="${esc(c.nm)}" maxlength="20" aria-label="Name"></div><div style="text-align:left;font-size:13px"><b style="font-family:Cinzel,serif;color:#c8a050;font-size:16px">${T[c.t].n}</b><br>Level ${clv(c)} · ${xpInfo(c)}<br><span class="stars">Skill points: ${c.tp}</span>${dirty?'<br><em style="color:#e8c878;font-style:normal">Unsaved</em>':''}</div></div>${msg&&!/equipped|Bought|squad|Squad|:/.test(msg)?`<p class="msg">${msg}</p>`:''}<div class="sw"><span>Colors</span>${SWC.map((cc,i)=>`<button data-a="tcol" data-v="${i}" title="${SWN[i]}" class="${apOf(c.lk)===i?'on':''}" style="background:${cc}"></button>`).join('')}</div><div class="tabs">${tabs}</div><div style="width:${340*sc}px;height:${H*sc}px;margin:0 auto"><div class="d2" style="width:340px;height:${H}px;transform:scale(${sc})"><svg width="340" height="${H}">${ln}</svg>${bt}</div></div><div id="ti">${tip}</div><div class="mn row"><button data-a="tsave" ${Object.keys(TS).length?'':'disabled'}>Save</button><button data-a="tundo" ${dirty?'':'disabled'}>Undo</button><button data-a="treset" ${spentPts(c)&&G.gold>=TRC(c)?'':'disabled'}>Reset skills (${TRC(c)}g)</button><button data-a="tdis" class="${dismArm===c.id?'dng':''}">${dismArm===c.id?'Confirm dismiss':'Dismiss'}</button><button data-a="tback">Back</button></div></div>${invBody(c,msg&&/equipped|Bought|squad|Squad|:/.test(msg)?msg:'')}</div></div>`)}
+  show(`<div class="cmp"><div class="tw"><div class="rail" style="--cols:${rCols};--tw:${rW}px;--tf:${rW<56?8:rW<64?9:10}px">${rail}</div><div class="tmain"><div class="hd"><img class="pt" src="${portrait(c)}"><div><input class="nm" data-n="${c.id}" value="${esc(c.nm)}" maxlength="20" aria-label="Name"></div><div style="text-align:left;font-size:13px"><b style="font-family:Cinzel,serif;color:#c8a050;font-size:16px">${T[c.t].n}</b><br>Level ${clv(c)} · ${xpInfo(c)}<br><span class="stars">Skill points: ${c.tp}</span>${typeof trHtml==='function'?trHtml(c,'hd'):''}${dirty?'<br><em style="color:#e8c878;font-style:normal">Unsaved</em>':''}</div></div>${msg&&!/equipped|Bought|squad|Squad|:/.test(msg)?`<p class="msg">${msg}</p>`:''}<div class="sw"><span>Colors</span>${SWC.map((cc,i)=>`<button data-a="tcol" data-v="${i}" title="${SWN[i]}" class="${apOf(c.lk)===i?'on':''}" style="background:${cc}"></button>`).join('')}</div><div class="tabs">${tabs}</div><div style="width:${340*sc}px;height:${H*sc}px;margin:0 auto"><div class="d2" style="width:340px;height:${H}px;transform:scale(${sc})"><svg width="340" height="${H}">${ln}</svg>${bt}</div></div><div id="ti">${tip}</div><div class="mn row"><button data-a="tsave" ${Object.keys(TS).length?'':'disabled'}>Save</button><button data-a="tundo" ${dirty?'':'disabled'}>Undo</button><button data-a="treset" ${spentPts(c)&&G.gold>=TRC(c)?'':'disabled'}>Reset skills (${TRC(c)}g)</button><button data-a="tdis" class="${dismArm===c.id?'dng':''}">${dismArm===c.id?'Confirm dismiss':'Dismiss'}</button><button data-a="tback">Back</button></div></div>${invBody(c,msg&&/equipped|Bought|squad|Squad|:/.test(msg)?msg:'')}</div></div>`)}
 
 /* recruiting and squads */
 const BASEP={kn:105,cb:85,lb:90,cl:100,rg:100,mg:120,bk:105,pd:135,bd:110,mo:115},RW={hp:14,aim:3,mv:70,rng:55,dmg:80},RT=Object.keys(BASEP),rtPick=()=>{const l=RT.filter(t=>t==='bd'?(G.ng||0)>=10:t==='mo'?(G.ng||0)>=25:true);return l[Math.floor(Math.random()*l.length)]};
@@ -3483,7 +3483,7 @@ function migrate(){
   if(!G.roster){G.roster=NM.map((nm,i)=>({id:i+1,t:TY[i],nm,m:{hp:0,aim:0,mv:0,rng:0,dmg:0},eq:(G.eq&&G.eq[i])||{w:null,a:null,t:null}}));G.nextId=NM.length+1;G.squad=G.roster.map(c=>c.id)}
   G.roster.forEach(c=>{if(!c.tal){c.tal={};c.tp=2;c.xp=2}else if(Array.isArray(c.tal)){const sp=c.tal.reduce((a,n)=>a+[0,1,2,4][n],0);c.tp=(c.tp||0)+sp;c.xp=c.tp;c.tal={}}if(c.xp===undefined)c.xp=c.tp||0;if(!c.lk)c.lk=genLook();const ne=NOEQ();for(const k in(c.eq||{})){const id=c.eq[k];if(!id||!ITEMS[id])continue;const sl=ITEMS[id].s;if(ne[sl]===undefined||ne[sl])G.inv.push(id);else ne[sl]=id}c.eq=ne});delete G.eq;if(!G.rec)G.rec={stock:[],rr:0};if(!G.rec.stock.length)recRoll();if(!G.bm.stock.length)bmRoll();
   G.squad=(G.squad||[]).filter(id=>G.roster.some(c=>c.id===id)).slice(0,6);if(!G.squad.length)G.squad=G.roster.slice(0,6).map(c=>c.id)}
-const statLine=c=>{const b=T[c.t],m=c.m,g=lvB(c.t,clv(c)-1);return `HP ${b.hp+m.hp+g.hp} · Move ${b.mv+m.mv} · Range ${b.rng+m.rng} · Vision ${b.vis} · Dmg ${b.lo+m.dmg+g.dmg}–${b.hi+m.dmg+g.dmg} · Aim ${b.aim+m.aim+g.aim}%`};
+const statLine=c=>{const b=typeof trBase==='function'?trBase(c):T[c.t],m=c.m,g=lvB(c.t,clv(c)-1);return `HP ${b.hp+m.hp+g.hp} · Move ${b.mv+m.mv} · Range ${b.rng+m.rng} · Vision ${b.vis} · Dmg ${b.lo+m.dmg+g.dmg}–${b.hi+m.dmg+g.dmg} · Aim ${b.aim+m.aim+g.aim}%`};
 function openSquad(msg){
   const rows=G.roster.map(c=>{const on=G.squad.includes(c.id),it=Object.values(c.eq).filter(Boolean).map(k=>ITEMS[k].n).join(', ');
     return `<div class="cr"><img class="pt" src="${portrait(c)}"><b><input class="nm" data-n="${c.id}" value="${esc(c.nm)}" maxlength="20" aria-label="Name"><i><span style="color:#e8c878;font-family:Cinzel,serif">${T[c.t].n}</span> · Level ${clv(c)} <small>(${xpInfo(c)})</small>${c.tp?' · <span class="stars">'+c.tp+' talent pts</span>':''}</i></b><span class="st">${statLine(c)}${missHp(c)>0?`<br><span style="color:#e0786a">Wounded: ${curHp(c)}/${maxHp(c)} HP</span>`:''}${it?'<br>'+it:''}</span><button data-a="sq" data-v="${c.id}" class="${on?'sel':''}">${on?'In squad':'Bench'}</button></div>`}).join('');
@@ -4878,7 +4878,7 @@ function openShop(w,msg){
   h+=`<div class="bt-hp${al?'':' en'}${hp<mh*.5?' lo':''}"><i style="width:${Math.max(0,hp/mh*100)}%"></i><span>${hp} / ${mh} HP</span></div>`;
   const st=[['Actions',Math.max(0,u.ap)],['Move',u.st.mv],['Range',u.st.rng],['Dmg',u.st.lo+'–'+u.st.hi],['Aim',u.st.aim+'%']];
   if(u.st.arm)st.push(['Armor',u.st.arm]);if(u.st.dodge)st.push(['Dodge',u.st.dodge+'%']);if(u.st.crit)st.push(['Crit',u.st.crit+'%']);
-  h+=`<div class="bt-g">${st.map(([k,v])=>`<span>${k}</span><b>${v}</b>`).join('')}</div>`;
+  h+=`<div class="bt-g">${st.map(([k,v])=>`<span>${k}</span><b>${v}</b>`).join('')}</div>`;if(al&&c&&typeof trHtml==='function')h+=trHtml(c,'bt');
   const fx=[];if(u.chl>0)fx.push(['#9ad8ff','Chilled '+u.chl+'t']);if(u.frz)fx.push(['#9ad8ff',u.shk?'Stunned':'Frozen']);if(u.psn&&u.psn.fire)fx.push(['#ff9a3a','Burning '+u.psn.d+'/turn']);else if(u.psn)fx.push(['#9ad06a','Poisoned']);
   if(u.ow)fx.push(['#e8c878','Overwatch']);if(u.hid)fx.push(['#b8a8e8','Hidden']);if(u.hk)fx.push(['#c8c0a0','Hunkered']);if(u.pn)fx.push(['#e0a060','Panicked']);if(u.rage)fx.push(['#e07060','Vengeance']);
   if(fx.length)h+=`<div class="bt-fx">${fx.map(([c2,t])=>`<span style="color:${c2};border-color:${c2}55">${t}</span>`).join('')}</div>`;
@@ -5250,7 +5250,7 @@ function openRecruit(msg){music('menu');
   let u='';st.forEach((r,i)=>{if(!r)return;const w=190,h=w*1.25,x=xs(i),fy=738+(i%2?16:0),on=recSel===i;
     u+=`<button class="un rc${on?' on':''}" data-a="dsel" data-v="${i}" style="left:${(x-w/2)/16}%;top:${(fy-h)/10}%;width:${w/16}%;height:${h/10}%;z-index:${Math.round(fy)};animation-delay:${-(i*.53).toFixed(2)}s" title="${PCM?'':esc(r.nm)}"><i class="sh"></i><img alt="" src="${portrait(r)}"><span class="nt">${esc(r.nm)}<small>${recDesc(r)} · ${r.p}g</small></span></button>`});
   const r=recSel!==null?st[recSel]:null,L=upL('rec'),mx=UPC.rec.length;
-  const info=r?`<div class="dinf"><img class="pt" src="${portrait(r)}"><div><b>${esc(r.nm)}</b><i>${recDesc(r)} · <span class="stars">${'★'.repeat(r.q)}${'☆'.repeat(5-r.q)}</span></i><span>${statLine(r)}</span><em>${r.p} gold${clv(r)>1?` <small>(starts with ${2*(clv(r)-1)} skill points)</small>`:''}</em></div><button data-a="hire" data-v="${recSel}" ${G.gold<r.p||G.roster.length>=12?'disabled':''}>Hire</button></div>`:`<div class="dinf hint">Click a recruit on the dock to inspect them.${st.every(x=>!x)?' Everyone here has been hired.':''}</div>`;
+  const info=r?`<div class="dinf"><img class="pt" src="${portrait(r)}"><div><b>${esc(r.nm)}</b><i>${recDesc(r)} · <span class="stars">${'★'.repeat(r.q)}${'☆'.repeat(5-r.q)}</span></i><span>${statLine(r)}</span>${typeof trHtml==='function'?trHtml(r,'rc'):''}<em>${r.p} gold${clv(r)>1?` <small>(starts with ${2*(clv(r)-1)} skill points)</small>`:''}</em></div><button data-a="hire" data-v="${recSel}" ${G.gold<r.p||G.roster.length>=12?'disabled':''}>Hire</button></div>`:`<div class="dinf hint">Click a recruit on the dock to inspect them.${st.every(x=>!x)?' Everyone here has been hired.':''}</div>`;
   SCR.dataset.th='hall';ambSet('hall');
   SCR.innerHTML=`<div class="hall"><div class="stage">${DOCK_BG}${u}</div></div><div class="hhud"><h2>The Recruiter</h2><span>Barracks ${G.roster.length}/12 · New recruits arrive after every battle</span></div>${goldHtml()}<div class="dpn">${msg?`<p class="msg">${msg}</p>`:''}${info}<div class="dup"><b>Recruiter Lv ${L}/${mx}</b>${L<mx?`<span>Next: ${UPD.rec[L]}</span><button data-a="upg" data-v="rec" ${G.gold<UPC.rec[L]?'disabled':''}>Upgrade (${UPC.rec[L]})</button>`:'<span>Fully upgraded.</span>'}</div><div class="dbt"><button data-a="rrr" ${G.gold<recCost()?'disabled':''}>Find other recruits (${recCost()} gold)</button><button data-a="camp">Back</button></div></div>`;
   SCR.classList.add('on');const h=SCR.querySelector('.hall');h.scrollLeft=(h.scrollWidth-h.clientWidth)/2}
@@ -9266,7 +9266,7 @@ function sqsOpen(msg){
   const hp=curHp(c),mh=maxHp(c),st=statLine(c).split(' · ').filter(x=>!/^HP /.test(x)).map(x=>{const i=x.lastIndexOf(' ');return `<span>${esc(x.slice(0,i))}</span><b>${esc(x.slice(i+1))}</b>`}).join('');
   const tip=`<div class="sq-th">${esc(c.nm)}</div><div class="sq-tc">${T[c.t].n} · Level ${clv(c)} <small>(${xpInfo(c)})</small></div>`+
    `<div class="sq-thp${hp<mh?' w':''}"><i style="width:${Math.max(0,hp/mh*100)}%"></i><span>${hp} / ${mh} HP${hp<mh?' · wounded':''}</span></div>`+
-   `<div class="sq-tg">${st}</div>`+
+   `<div class="sq-tg">${st}</div>`+(typeof trHtml==='function'?trHtml(c,'sq'):'')+
    (ab.length?`<div class="sq-tl">Abilities</div><div class="sq-tv">${ab.map(esc).join(' · ')}</div>`:'')+
    (it.length?`<div class="sq-tl">Gear</div><div class="sq-tv">${it.map(esc).join(' · ')}</div>`:'')+
    (c.tp?`<div class="sq-tp">${c.tp} unspent talent point${c.tp>1?'s':''}</div>`:'')+
@@ -9364,6 +9364,403 @@ function escMul(){const E=escExcess();return{E,hp:Math.min(ESC.hpCap,1+ESC.hp*E)
   u.st.hp=Math.max(1,Math.round(u.st.hp*m.hp));u.st.lo=Math.max(1,Math.round(u.st.lo*m.dmg));u.st.hi=Math.max(u.st.lo,Math.round(u.st.hi*m.dmg));u.hp=Math.max(1,Math.round(u.st.hp*f))})}catch(e){console.error('enemy scale',e)}return r}}
 /* say so at the start of the battle, so the jump isn't a mystery */
 {const _sb=startBattle;startBattle=function(){const r=_sb.apply(this,arguments);try{const m=escMul();if(m.E>=1){log.unshift(`<span style="color:#e0a070">The enemy has grown to match your company: +${Math.round((m.hp-1)*100)}% health, +${Math.round((m.dmg-1)*100)}% damage.</span>`);hud()}}catch(e){}return r}}
+/* ---------- room walls and large set pieces, with their own hand-painted textures ----------
+   Walls: each wall tile draws a post plus an arm reaching toward every neighbouring wall tile, so a run of wall tiles
+   reads as one continuous wall. Every map has its own wall: library walls lined with books (Occult Castle), scorched
+   ruined brick (Cathedral of Ash), packed skulls (Charnel Pit, Drowned Ossuary), carved gothic tracery (Black Chapel),
+   thorn hedges (Gloomwood, Rotting Mire), a sharpened palisade (Broken Field), a low crypt wall with iron railings
+   (Hollow Graveyard) and jagged glowing obsidian (Pit of the Damned). Walls are full cover, block sight and can be
+   smashed like other full cover.
+   Set pieces span 2x1 or 2x2 tiles and can't be destroyed: great bookcases, sarcophagi, bone heaps, pews, fallen
+   giant trunks, supply crates, mausoleums and brimstone altars. */
+Object.assign(PT.K,{
+ /* shelves of book spines */
+ books(N,s,o={}){const R=PT.rng(s),c=PT.cv(N),g=c.getContext('2d'),rows=4,rh=N/rows,pal=o.pal||['#5a1414','#1c2a4a','#2a3a1e','#6a4a16','#3a1a2a','#1a1a1a','#4a2a14','#6a5a3a','#2a2a3a'];
+  g.fillStyle='#120c08';g.fillRect(0,0,N,N);
+  for(let r=0;r<rows;r++){const y0=r*rh,yb=y0+rh-7;let x=0;
+   g.fillStyle='#0a0604';g.fillRect(0,y0,N,rh);
+   while(x<N){const w=5+R()*11;if(R()<.06){x+=w*1.5;continue}const h=rh*(.62+R()*.3),col=pal[Math.floor(R()*pal.length)],lean=R()<.05?(R()-.5)*.3:0;
+    g.save();g.translate(x+w/2,yb);g.rotate(lean);
+    const q=g.createLinearGradient(-w/2,0,w/2,0);q.addColorStop(0,'rgba(0,0,0,.6)');q.addColorStop(.35,'rgba(255,255,255,.12)');q.addColorStop(1,'rgba(0,0,0,.65)');
+    g.fillStyle=col;g.fillRect(-w/2,-h,w,h);g.fillStyle=q;g.fillRect(-w/2,-h,w,h);
+    if(R()<.7){g.fillStyle='rgba(214,170,80,.75)';g.fillRect(-w/2,-h+h*.12,w,1.4);g.fillRect(-w/2,-h*.14,w,1.4)}
+    if(R()<.5){g.fillStyle='rgba(20,12,8,.7)';g.fillRect(-w/2+1.5,-h*.62,w-3,h*.2)}
+    g.restore();x+=w+(R()<.2?1:0)}
+   /* the shelf board */
+   const sb=g.createLinearGradient(0,yb,0,y0+rh);sb.addColorStop(0,'#6a4a2c');sb.addColorStop(.3,'#4a3220');sb.addColorStop(1,'#1a100a');g.fillStyle=sb;g.fillRect(0,yb,N,7)}
+  PT.blots(g,N,R,14,10,34,'20,14,10',.3);PT.specks(g,N,R,900,1.6,'#c8b89a',.08);PT.strokes(g,N,R,120,30,0,'rgba(0,0,0,1)',.12);return c},
+ /* packed skulls and long bones */
+ skulls(N,s,o={}){const R=PT.rng(s),n=PT.noise(N,R),c=PT.cv(N),g=c.getContext('2d'),tint=o.tint||[214,200,170];
+  g.fillStyle='#0c0a08';g.fillRect(0,0,N,N);const rr=N/16,rows=Math.round(N/(rr*2.1));
+  for(let j=0;j<rows;j++){const y=(j+.5)*N/rows,off=(j%2)*rr*1.05;
+   if(j%3===1){/* a course of long bones */for(let x=-rr;x<N+rr;x+=rr*3.2){const L=rr*2.8,cx=x+R()*rr;PT.wrap(N,(dx,dy)=>{g.fillStyle=`rgb(${tint[0]*.82|0},${tint[1]*.8|0},${tint[2]*.74|0})`;g.beginPath();g.ellipse(cx+dx,y+dy,L/2,rr*.32,0,0,7);g.fill();for(const e of[-1,1]){g.beginPath();g.arc(cx+dx+e*L/2,y+dy-rr*.2,rr*.32,0,7);g.arc(cx+dx+e*L/2,y+dy+rr*.2,rr*.32,0,7);g.fill()}
+     g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=1;g.beginPath();g.moveTo(cx+dx-L/2,y+dy+rr*.3);g.lineTo(cx+dx+L/2,y+dy+rr*.3);g.stroke()})}continue}
+   for(let x=off;x<N+rr;x+=rr*2.1){const cx=x+(R()-.5)*3,cy=y+(R()-.5)*3,sc=.85+R()*.25,L=.7+.5*n(cx,cy,3),a=(R()-.5)*.4;
+    PT.wrap(N,(dx,dy)=>{g.save();g.translate(cx+dx,cy+dy);g.rotate(a);g.scale(sc,sc);
+     const q=g.createRadialGradient(-rr*.35,-rr*.4,1,0,0,rr*1.05);q.addColorStop(0,`rgb(${tint[0]*L|0},${tint[1]*L|0},${tint[2]*L|0})`);q.addColorStop(.75,`rgb(${tint[0]*L*.6|0},${tint[1]*L*.56|0},${tint[2]*L*.5|0})`);q.addColorStop(1,'rgb(30,24,18)');
+     g.fillStyle=q;g.beginPath();g.ellipse(0,-rr*.1,rr*.92,rr*.85,0,0,7);g.fill();g.fillRect(-rr*.48,rr*.3,rr*.96,rr*.42);
+     g.fillStyle='#070504';for(const e of[-1,1]){g.beginPath();g.ellipse(e*rr*.36,rr*.02,rr*.24,rr*.27,e*.2,0,7);g.fill()}
+     g.beginPath();g.moveTo(0,rr*.24);g.lineTo(-rr*.1,rr*.44);g.lineTo(rr*.1,rr*.44);g.fill();
+     g.strokeStyle='rgba(10,8,6,.85)';g.lineWidth=1;for(let t=-2;t<=2;t++){g.beginPath();g.moveTo(t*rr*.18,rr*.52);g.lineTo(t*rr*.18,rr*.72);g.stroke()}
+     g.restore()})}}
+  PT.blots(g,N,R,16,12,40,o.moss?'50,70,40':'60,36,20',o.moss?.32:.22);PT.blots(g,N,R,10,10,30,'0,0,0',.3);PT.specks(g,N,R,700,1.6,'#000',.25);return c},
+ /* carved gothic tracery panels */
+ tracery(N,s,o={}){const R=PT.rng(s),n=PT.noise(N,R),base=o.base||[86,74,96],c=PT.pix(N,(x,y)=>{const f=n(x,y,5),L=.5+.5*f+(R()-.5)*.08,joint=(y%(N/4))<2?.5:1;return[base[0]*L*joint,base[1]*L*joint,base[2]*L*joint]}),g=c.getContext('2d'),pw=N/2;
+  const arch=(x0,y0,w,h,col,lw)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();g.moveTo(x0,y0+h);g.lineTo(x0,y0+w*.55);g.arc(x0+w,y0+w*.55,w,Math.PI,Math.PI*1.33);g.moveTo(x0+w,y0+h);g.lineTo(x0+w,y0+w*.55);g.arc(x0,y0+w*.55,w,0,-Math.PI*.33,true);g.stroke()};
+  for(let i=0;i<2;i++)for(let j=0;j<2;j++){const x0=i*pw+pw*.18,y0=j*pw+pw*.1,w=pw*.64,h=pw*.82;
+   g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0+2,y0+w*.55,w-4,h-w*.55);
+   arch(x0+1.5,y0+1.5,w,h,'rgba(255,240,255,.22)',3);arch(x0,y0,w,h,'rgba(8,4,10,.85)',3);
+   g.strokeStyle='rgba(8,4,10,.8)';g.lineWidth=2;g.beginPath();g.moveTo(x0+w/2,y0+w*.35);g.lineTo(x0+w/2,y0+h);g.stroke();
+   for(const[cx,cy,r]of[[x0+w/2,y0+w*.3,w*.14],[x0+w*.27,y0+w*.62,w*.1],[x0+w*.73,y0+w*.62,w*.1]]){g.strokeStyle='rgba(255,240,255,.2)';g.beginPath();g.arc(cx+1,cy+1,r,0,7);g.stroke();g.strokeStyle='rgba(8,4,10,.85)';g.beginPath();g.arc(cx,cy,r,0,7);g.stroke()}}
+  PT.cracks(g,N,R,4);PT.blots(g,N,R,12,14,40,'10,6,14',.3);if(o.gold){PT.specks(g,N,R,120,2,'#d0a040',.5)}PT.specks(g,N,R,800,1.6,'#000',.2);return c},
+ /* tangled thorn briars */
+ thorns(N,s,o={}){const R=PT.rng(s),n=PT.noise(N,R),bc=o.base||[44,30,24],c=PT.pix(N,(x,y)=>{const f=n(x,y,5),L=.35+.6*f;return[bc[0]*L,bc[1]*L,bc[2]*L]}),g=c.getContext('2d');g.lineCap='round';
+  for(let i=0;i<70;i++){let x=R()*N,y=R()*N,a=R()*6.28;const w=1.5+R()*3.5,pts=[[x,y]];for(let k=0;k<10;k++){a+=(R()-.5)*1;x+=Math.cos(a)*10;y+=Math.sin(a)*10;pts.push([x,y,a])}
+   const col=o.vine||'58,38,26';
+   PT.wrap(N,(dx,dy)=>{g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=w+2;g.beginPath();pts.forEach(([px,py],k)=>k?g.lineTo(px+dx,py+dy+1):g.moveTo(px+dx,py+dy+1));g.stroke();
+    g.strokeStyle=`rgb(${col})`;g.lineWidth=w;g.beginPath();pts.forEach(([px,py],k)=>k?g.lineTo(px+dx,py+dy):g.moveTo(px+dx,py+dy));g.stroke();
+    g.strokeStyle='rgba(255,230,200,.16)';g.lineWidth=w*.35;g.beginPath();pts.forEach(([px,py],k)=>k?g.lineTo(px+dx-w*.25,py+dy-w*.25):g.moveTo(px+dx-w*.25,py+dy-w*.25));g.stroke();
+    g.fillStyle=`rgb(${col})`;pts.forEach(([px,py,pa],k)=>{if(!k||k%2)return;const t=pa+(k%4?1.57:-1.57);g.beginPath();g.moveTo(px+dx+Math.cos(t+1.57)*w*.5,py+dy+Math.sin(t+1.57)*w*.5);g.lineTo(px+dx+Math.cos(t)*(w+5),py+dy+Math.sin(t)*(w+5));g.lineTo(px+dx-Math.cos(t+1.57)*w*.5,py+dy-Math.sin(t+1.57)*w*.5);g.fill()})})}
+  PT.blots(g,N,R,14,6,16,o.leaf||'90,26,18',.45);if(o.moss)PT.blots(g,N,R,18,10,30,'60,90,50',.3);PT.specks(g,N,R,600,1.6,'#000',.25);return c},
+ /* black glass with glowing fissures */
+ hellrock(N,s,o={}){const R=PT.rng(s),n=PT.noise(N,R),v=PT.vor(N,5,R),c=PT.pix(N,(x,y)=>{const q=v(x,y),e=(q.d2-q.d1)/q.cs,f=n(x,y,5),L=.28+.35*f+(1-sm(0,.3,e))*-.1;const glow=1-sm(0,.045,e);
+   return[L*90+glow*255,L*70+glow*150,L*74+glow*20]}),g=c.getContext('2d');
+  PT.strokes(g,N,R,200,24,.6,'rgba(255,255,255,1)',.07);PT.specks(g,N,R,240,2,'#ffb040',.5);PT.blots(g,N,R,8,10,30,'255,90,20',.18);return c},
+ /* soot-blackened brick */
+ ashbrick(N,s,o={}){const c=PT.K.brick(N,s,o),g=c.getContext('2d'),R=PT.rng(s+9);PT.blots(g,N,R,22,20,60,'6,4,4',.42);PT.strokes(g,N,R,160,30,-1.4,'rgba(0,0,0,1)',.22,2.5);PT.specks(g,N,R,200,2,'#ff7a30',.25);return c}});
+/* one painted material per (kind, seed) */
+const WLM={},wlMat=(kind,seed,o,ps,col,gl)=>{const k=kind+seed+(gl||0);if(WLM[k])return WLM[k];const m=new THREE.MeshLambertMaterial({color:col||0x8c8c8c,flatShading:true});
+ try{const sl=ptSlot('wl_'+k,ps,1.9);sl.map.value=PT.get(kind,seed,256,o||{});sl.ps.value=ps;if(gl)sl.g.value=gl;paintify(m,sl);m.userData.ptSrc=1}catch(e){console.error('wall paint',e)}return WLM[k]=m};
+const WBX=new THREE.BoxGeometry(1,1,1),WCY=new THREE.CylinderGeometry(1,1,1,7),WCN=new THREE.ConeGeometry(1,1,6),WIC=new THREE.IcosahedronGeometry(1,0);
+/* which wall tiles are on the map (looked up while drawing so each wall knows its neighbours) */
+const WL={src:null,set:new Set()};
+function wlHas(r,c){const L=window.__lastSet;if(L!==WL.src){WL.src=L;WL.set=new Set((L||[]).filter(x=>/^wl_/.test(x[1])).map(x=>x[0]))}return WL.set.has(r*100+c)}
+const wlRnd=(r,c,i=0)=>{let t=(r*374761+c*668265+i*982451)|0;t=Math.imul(t^t>>>13,1274126177);return((t^t>>>16)>>>0)/4294967296};
+/* calls fn(dx,dz) for the post and for each arm toward a neighbouring wall tile */
+function wlArms(r,c,fn){[[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr,dc])=>{if(wlHas(r+dr,c+dc))fn(dc,dr)})}
+const WLB=(r,c,mat,x,y,z,w,h,d,ry=0)=>bg(r,c,WBX,x,y,z,mat,ry,0,0,[w,h,d]);
+/* a plain masonry wall with a cap and plinth; deco(arm dx,dz,len) adds faces */
+function wlStone(r,c,body,cap,H,T,o={}){const post=o.post||T*1.15;
+ const h0=o.ruin?H*(.55+wlRnd(r,c)*.45):H;WLB(r,c,body,0,h0/2,0,post,h0,post);if(cap)WLB(r,c,cap,0,h0+.04,0,post+.08,.08,post+.08);
+ if(o.plinth)WLB(r,c,o.plinth,0,.06,0,post+.12,.12,post+.12);
+ let n=0;wlArms(r,c,(dx,dz)=>{n++;const h=o.ruin?H*(.45+wlRnd(r,c,dx*3+dz)*.55):H,cx=dx*.27,cz=dz*.27,w=dx?.54:T,d=dz?.54:T;WLB(r,c,body,cx,h/2,cz,w,h,d);
+  if(cap)WLB(r,c,cap,cx,h+.035,cz,dx?.54:T+.08,.07,dz?.54:T+.08);if(o.plinth)WLB(r,c,o.plinth,cx,.06,cz,dx?.54:T+.12,.12,dz?.54:T+.12);if(o.deco)o.deco(dx,dz,h,T)});
+ if(!n&&o.alone)o.alone(h0)}
+const WT={
+ castle:{H:1.25,T:.36,draw(r,c){const st=wlMat('ashlar',901,{},.6,0x8a90a0),cap=wlMat('ashlar',902,{},.9,0x5a5e68),bk=wlMat('books',903,{},.9,0x9a9a9a),wd=wlMat('plank',904,{},.9,0x7a6a5a);
+   wlStone(r,c,st,cap,1.25,.36,{plinth:wd,deco:(dx,dz,h,T)=>{for(const sd of[-1,1]){const ox=dz?sd*(T/2+.012):dx*.27,oz=dx?sd*(T/2+.012):dz*.27;WLB(r,c,bk,ox,h*.5,oz,dx?.5:.02,h*.78,dz?.5:.02)}},
+    alone:h=>{for(const[x,z]of[[.25,0],[-.25,0],[0,.25],[0,-.25]])WLB(r,c,bk,x,h*.5,z,x?.02:.36,h*.78,z?.02:.36)}})}},
+ cathedral:{H:1.15,T:.38,draw(r,c){const b=wlMat('ashbrick',911,{},.7,0x6a5a52),cap=wlMat('ashlar',912,{},.9,0x6a5a50);wlStone(r,c,b,cap,1.15,.38,{ruin:1});
+   for(let i=0;i<3;i++)if(wlRnd(r,c,40+i)<.5)bg(r,c,WIC,(wlRnd(r,c,50+i)-.5)*.8,.07,(wlRnd(r,c,60+i)-.5)*.8,b,wlRnd(r,c,i)*6,0,0,[.12,.08,.1])}},
+ charnel:{H:1.05,T:.42,draw(r,c){const b=wlMat('skulls',921,{},.85,0x9a8a7a),cap=wlMat('bone',922,{},1.4,0x8a7a6a);wlStone(r,c,b,null,1.05,.42,{ruin:1,post:.5});
+   for(let i=0;i<2;i++)bg(r,c,WIC,(wlRnd(r,c,70+i)-.5)*.3,1.0+i*.08,(wlRnd(r,c,80+i)-.5)*.3,b,wlRnd(r,c,i)*6,0,0,[.14,.12,.14])}},
+ ossuary:{H:1.1,T:.4,draw(r,c){const b=wlMat('skulls',931,{moss:1,tint:[190,196,170]},.85,0x8a9a8a),cap=wlMat('ashlar',932,{moss:1},.9,0x5a6a60);wlStone(r,c,b,cap,1.1,.4,{plinth:cap})}},
+ chapel:{H:1.3,T:.36,draw(r,c){const b=wlMat('tracery',941,{gold:1},.7,0x9a90a8),cap=wlMat('ashlar',942,{},.9,0x4a4452),gold=wlMat('gilt',943,{},1.2,0x9a8a6a);
+   wlStone(r,c,b,cap,1.3,.36,{plinth:cap});bg(r,c,WCN,0,1.47,0,cap,0,0,0,[.12,.26,.12]);bg(r,c,WBX,0,1.62,0,gold,.785,0,0,[.05,.05,.05])}},
+ forest:{H:1.0,T:.6,draw(r,c){const th=wlMat('thorns',951,{},.8,0x8a8078),bk=wlMat('bark',952,{},.7,0x7a6a5a);
+   const blob=(x,z,s)=>bg(r,c,WIC,x,s*.55,z,th,wlRnd(r,c,x*9+z*7)*6,0,0,[s*.55,s*.62,s*.55]);blob(0,0,1.05);wlArms(r,c,(dx,dz)=>{blob(dx*.3,dz*.3,.95);blob(dx*.48,dz*.48,.85)});
+   for(let i=0;i<3;i++){const a=wlRnd(r,c,90+i)*6.28;bg(r,c,WCY,Math.cos(a)*.2,.75,Math.sin(a)*.2,bk,a,.6*(wlRnd(r,c,95+i)-.5),.5,[.03,.7,.03])}}},
+ mire:{H:.95,T:.6,draw(r,c){const th=wlMat('thorns',961,{moss:1,base:[30,38,28],vine:'46,40,26',leaf:'60,80,40'},.8,0x7a8a78);
+   const blob=(x,z,s)=>bg(r,c,WIC,x,s*.5,z,th,wlRnd(r,c,x*9+z*7)*6,0,0,[s*.55,s*.58,s*.55]);blob(0,0,1);wlArms(r,c,(dx,dz)=>{blob(dx*.3,dz*.3,.92);blob(dx*.48,dz*.48,.82)})}},
+ field:{H:1.2,T:.3,draw(r,c){const bk=wlMat('bark',971,{},.9,0x8a7a6a),wd=wlMat('plank',972,{},.9,0x7a6a5a);
+   const stake=(x,z,i)=>{const h=1.0+wlRnd(r,c,i)*.3;bg(r,c,WCY,x,h/2,z,bk,wlRnd(r,c,i+5)*6,(wlRnd(r,c,i+9)-.5)*.08,0,[.08,h,.08]);bg(r,c,WCN,x,h+.1,z,wd,0,0,0,[.08,.2,.08])};
+   stake(0,0,1);let n=0;wlArms(r,c,(dx,dz)=>{n++;for(let k=1;k<=2;k++)stake(dx*k*.17,dz*k*.17,k*13+dx*3+dz*5);WLB(r,c,wd,dx*.27,.55,dz*.27,dx?.56:.05,.07,dz?.56:.05)});
+   if(!n){stake(.18,0,30);stake(-.18,0,31)}}},
+ grave:{H:.7,T:.34,draw(r,c){const st=wlMat('granite',981,{lichen:1},.8,0x8a9098),cap=wlMat('ashlar',982,{moss:1},.9,0x5a6068),ir=typeof ironM!=='undefined'?ironM:cap;
+   wlStone(r,c,st,cap,.7,.34,{deco:(dx,dz,h)=>{for(let k=0;k<3;k++){const t=.1+k*.15;bg(r,c,WCY,dx*t,h+.27,dz*t,ir,0,0,0,[.014,.5,.014]);bg(r,c,WCN,dx*t,h+.56,dz*t,ir,0,0,0,[.03,.08,.03])}WLB(r,c,ir,dx*.27,h+.42,dz*.27,dx?.54:.02,.025,dz?.54:.02)}});
+   bg(r,c,WBX,0,.82,0,cap,0,0,0,[.3,.16,.3]);bg(r,c,WIC,0,.98,0,cap,0,0,0,[.12,.12,.12])}},
+ hell:{H:1.2,T:.44,draw(r,c){const b=wlMat('hellrock',991,{},.7,0x9a8a8a,2),sp=wlMat('obsid',992,{},.6,0x6a6060);wlStone(r,c,b,null,1.1,.44,{ruin:1,post:.52});
+   for(let i=0;i<3;i++)bg(r,c,WCN,(wlRnd(r,c,100+i)-.5)*.4,1.1+wlRnd(r,c,110+i)*.2,(wlRnd(r,c,120+i)-.5)*.4,sp,wlRnd(r,c,i)*6,(wlRnd(r,c,130+i)-.5)*.5,0,[.07,.5+wlRnd(r,c,140+i)*.3,.07])}}};
+const WTH={'Occult Castle':'castle','The Cathedral of Ash':'cathedral','The Charnel Pit':'charnel','The Drowned Ossuary':'ossuary','The Black Chapel':'chapel','The Gloomwood':'forest','The Rotting Mire':'mire','The Broken Field':'field','The Hollow Graveyard':'grave','The Pit of the Damned':'hell'};
+for(const k in WT){OBJ['wl_'+k]=(r,c)=>WT[k].draw(r,c);X_FULL.add('wl_'+k)}
+/* ---------- set pieces ---------- */
+/* each: footprint [rows,cols] when laid along the row, full or half cover, draw(r,c,len,vert) from the anchor tile */
+const SP={
+ greatcase:{fp:[1,2],full:1,draw(r,c,v){const bk=wlMat('books',905,{},.9,0x9a9a9a),wd=wlMat('plank',906,{},.9,0x6a5444);const L=1.7,ax=v?0:.5,az=v?.5:0,ry=v?Math.PI/2:0;
+   bg(r,c,WBX,ax,.7,az,wd,ry,0,0,[L,1.4,.5]);for(const sd of[-1,1])bg(r,c,WBX,ax+(v?sd*.255:0),.68,az+(v?0:sd*.255),bk,ry,0,0,[L-.14,1.2,.02]);bg(r,c,WBX,ax,1.45,az,wd,ry,0,0,[L+.12,.1,.62]);
+   for(const e of[-1,1])bg(r,c,WBX,ax+(v?0:e*L/2),.72,az+(v?e*L/2:0),wd,ry,0,0,[.08,1.44,.56])}},
+ sarcoph:{fp:[1,2],full:0,draw(r,c,v,th){const ms=th==='ossuary'?wlMat('ashlar',932,{moss:1},.9,0x7a8a80):wlMat('marble',907,{},.8,0x9a9490),gd=wlMat('gilt',908,{},1.2,0x9a8a6a),ry=v?Math.PI/2:0,ax=v?0:.5,az=v?.5:0;
+   bg(r,c,WBX,ax,.22,az,ms,ry,0,0,[1.6,.44,.7]);bg(r,c,WBX,ax,.47,az,ms,ry,0,0,[1.7,.08,.78]);bg(r,c,WBX,ax,.52,az,gd,ry,0,0,[1.66,.02,.74]);
+   bg(r,c,WBX,ax,.6,az,ms,ry,0,0,[1.1,.14,.32]);bg(r,c,WIC,ax+(v?0:-.62),.66,az+(v?-.62:0),ms,0,0,0,[.16,.13,.14]);for(const e of[-1,1])bg(r,c,WBX,ax+(v?0:e*.72),.22,az+(v?e*.72:0),gd,ry,0,0,[.04,.4,.74])}},
+ boneheap:{fp:[2,2],full:1,draw(r,c){const b=wlMat('skulls',923,{},.8,0x9a8a7a),bn=wlMat('bone',924,{},1.4,0x9a8a78);
+   for(let i=0;i<12;i++){const a=wlRnd(r,c,i)*6.28,d=wlRnd(r,c,i+20)*.55,s=.45-d*.35;bg(r,c,WIC,.5+Math.cos(a)*d,s*.6,.5+Math.sin(a)*d,i%3?b:bn,a,0,0,[s,s*.9,s])}
+   for(let i=0;i<5;i++){const a=wlRnd(r,c,i+40)*6.28;bg(r,c,WCY,.5+Math.cos(a)*.6,.12,.5+Math.sin(a)*.6,bn,a,1.4,0,[.035,.6,.035])}}},
+ pews:{fp:[1,2],full:0,draw(r,c,v){const wd=wlMat('plank',944,{},.9,0x6a4a3a),ry=v?Math.PI/2:0,ax=v?0:.5,az=v?.5:0;
+   for(const o of[-.2,.2]){const ox=v?o:0,oz=v?0:o;bg(r,c,WBX,ax+ox,.36,az+oz,wd,ry,0,0,[1.8,.06,.26]);bg(r,c,WBX,ax+ox+(v?.12:0),.6,az+oz+(v?0:.12),wd,ry,0,0,[1.8,.5,.05]);for(const e of[-1,1])bg(r,c,WBX,ax+ox+(v?0:e*.88),.36,az+oz+(v?e*.88:0),wd,ry,0,0,[.06,.72,.3])}}},
+ trunk:{fp:[1,2],full:0,draw(r,c,v,th){const bk=wlMat('bark',th==='mire'?962:953,{},.7,th==='mire'?0x6a7a60:0x7a6a5a),wd=wlMat('wood',954,{},.7,0x8a7a6a),ax=v?0:.5,az=v?.5:0,rz=v?0:Math.PI/2,rx=v?Math.PI/2:0;
+   bg(r,c,WCY,ax,.32,az,bk,0,rz,rx,[.32,1.9,.32]);bg(r,c,WCY,ax+(v?0:.96),.32,az+(v?.96:0),wd,0,rz,rx,[.3,.02,.3]);
+   for(let i=0;i<4;i++){const a=wlRnd(r,c,i)*6.28;bg(r,c,WCY,ax+(v?Math.cos(a)*.3:-.85),.3+Math.sin(a)*.3,az+(v?-.85:Math.cos(a)*.3),bk,a,.9,0,[.06,.5,.06])}
+   bg(r,c,WCY,ax+(v?.2:.2),.75,az+(v?.2:-.1),bk,0,.5,.3,[.05,.6,.05])}},
+ crates:{fp:[1,2],full:1,draw(r,c,v){const wd=wlMat('plank',973,{},.9,0x8a7a62),sk=typeof clothM!=='undefined'?wlMat('cloth',974,{},1.1,0x8a7a6a):wd,ax=v?0:.5,az=v?.5:0;
+   const B=(x,z,y,s,a)=>bg(r,c,WBX,ax+(v?z:x),y,az+(v?x:z),wd,a,0,0,[s,s,s]);B(-.5,0,.33,.66,.1);B(.42,0,.3,.6,-.08);B(-.4,.05,.95,.56,.3);bg(r,c,WIC,ax+(v?0:.5),.85,az+(v?.5:0),sk,0,0,0,[.25,.3,.22])}},
+ mausoleum:{fp:[2,2],full:1,draw(r,c){const st=wlMat('ashlar',983,{moss:1},.8,0x8a9098),gr=wlMat('granite',984,{lichen:1},.7,0x7a8088),ir=typeof ironM!=='undefined'?ironM:gr;
+   bg(r,c,WBX,.5,.12,.5,gr,0,0,0,[1.85,.24,1.85]);bg(r,c,WBX,.5,.85,.5,st,0,0,0,[1.5,1.25,1.5]);bg(r,c,WBX,.5,1.52,.5,gr,0,0,0,[1.7,.1,1.7]);
+   bg(r,c,WCN,.5,1.85,.5,gr,Math.PI/4,0,0,[1.25,.55,1.25]);bg(r,c,WBX,.5,.62,1.26,ir,0,0,0,[.5,.85,.04]);for(const e of[-1,1])bg(r,c,WCY,.5+e*.45,.85,1.32,st,0,0,0,[.08,1.25,.08]);
+   bg(r,c,WBX,.5,2.3,.5,st,0,0,0,[.06,.4,.06]);bg(r,c,WBX,.5,2.38,.5,st,0,0,0,[.26,.06,.06])}},
+ brimaltar:{fp:[2,2],full:1,draw(r,c){const b=wlMat('hellrock',993,{},.7,0x9a8a8a,2),sp=wlMat('obsid',994,{},.6,0x6a6060);
+   bg(r,c,WBX,.5,.15,.5,sp,.2,0,0,[1.8,.3,1.8]);bg(r,c,WBX,.5,.45,.5,b,.2,0,0,[1.3,.32,1.3]);bg(r,c,WBX,.5,.75,.5,sp,.2,0,0,[.8,.3,.8]);
+   for(let i=0;i<4;i++){const a=.2+i*Math.PI/2+Math.PI/4;bg(r,c,WCN,.5+Math.cos(a)*.8,.6,.5+Math.sin(a)*.8,sp,a,(wlRnd(r,c,i)-.5)*.3,0,[.09,1,.09])}
+   bg(r,c,WIC,.5,1.05,.5,b,0,0,0,[.2,.24,.2])}}};
+const SPTH={castle:['greatcase'],cathedral:['sarcoph'],charnel:['boneheap'],ossuary:['sarcoph'],chapel:['pews'],forest:['trunk'],mire:['trunk'],field:['crates'],grave:['mausoleum'],hell:['brimaltar']};
+/* the anchor tile draws the whole piece (h = laid along the row, v = down the column); the other tiles are parts */
+for(const k in SP){for(const o of['h','v'])OBJ['sp_'+k+'_'+o]=(r,c)=>{try{SP[k].draw(r,c,o==='v',WTH[curMapPending()]||'')}catch(e){console.error('set piece',e)}};OBJ['sp_'+k+'_p']=()=>{};
+ if(SP[k].full){X_FULL.add('sp_'+k+'_h');X_FULL.add('sp_'+k+'_v');X_FULL.add('sp_'+k+'_p')}}
+/* curMap is only updated at the end of genMap, so the set pieces read the map being built */
+let WLTH=null;const curMapPending=()=>WLTH||curMap;
+/* set pieces can't be smashed */
+{const _h=xHitCover;xHitCover=function(k,n,at){const t=xTy(k);if(t&&/^sp_/.test(t)){try{fSpark(at?at.x:k%100,at?at.z:Math.floor(k/100),0xc8c0b0,8,1.1,420,0,true)}catch(e){}return}return _h.apply(this,arguments)}}
+{const _d=xDestroy;xDestroy=function(k){const t=xTy(k);if(t&&/^sp_/.test(t))return;return _d.apply(this,arguments)}}
+/* a reloaded battle rebuilds its map by name, so the set pieces know which map they belong to */
+{const _g=genMap;genMap=function(nm){const p=WLTH;if(typeof nm==='string'&&WTH[nm])WLTH=nm;try{return _g.apply(this,arguments)}finally{WLTH=p}}}
+/* ---------- XCOM-style "plot and parcel" battle maps ----------
+   Instead of scattering single obstacles at random, each battle map is now a hand-made floor plan (a "plot") with
+   lots of a set size, and every lot is filled with a hand-made room or feature (a "parcel") picked to fit the lot,
+   then flipped at random. Between the parcels, small cover pieces are scattered along the lanes so open ground is
+   never a pure kill zone. Every piece uses the theme's own props: tall props (pillars, bookcases, trees, mausoleums,
+   spires) form walls and full cover, low props (tombs, desks, logs, gravestones) form half cover.
+   The deployment rows at either end stay clear, the map must stay fully connected, and the old scatter is the
+   fallback if no layout fits. */
+const RM={on:true,last:null};
+/* parcels: 'W' wall, '#' tall prop (full cover), '+' half cover, 'o' half cover half the time, '.' open.  in = indoor, out = outdoor */
+const RMP=[
+ /* large 8x6 */
+ {k:'L',w:'in',n:'study',g:['WWWW.WWW','W......W','W.+..+..','..+..+.W','W......W','WWW.WWWW']},
+ {k:'L',w:'in',n:'colonnade',g:['#.#..#.#','........','.++..++.','........','#.#..#.#','........']},
+ {k:'L',w:'in',n:'side chapel',g:['WWW..WWW','W......W','W.+..+.W','W......W','W.o++o.W','WWW..WWW']},
+ {k:'L',w:'in',n:'ruined hall',g:['WWWW.W..','W.......','W..+.+..','W.......','.....+.W','..W.WWWW']},
+ {k:'L',w:'any',n:'crypt rows',g:['+++.+++.','........','+++.+++.','........','.+++.+++','........']},
+ {k:'L',w:'any',n:'shrine',g:['#......#','..+..+..','...##...','...##...','..+..+..','#......#']},
+ {k:'L',w:'out',n:'grove',g:['##...#..','#....##.','...+....','..+...+.','.##....#','..#...##']},
+ {k:'L',w:'out',n:'barricade',g:['........','++++.+++','........','.#....#.','..++.++.','........']},
+ {k:'L',w:'out',n:'ruin',g:['WWWW.W..','W.......','W..+.+..','W.......','.....+.W','..W.WWWW']},
+ /* medium 6x5 */
+ {k:'M',w:'in',n:'corner room',g:['WWWW.W','W.....','W..+..','W.....','WW.+..']},
+ {k:'M',w:'in',n:'alcove',g:['WW..WW','W.++.W','W....W','W....W','WWW.WW']},
+ {k:'M',w:'any',n:'tomb rows',g:['......','.+++..','......','..+++.','......']},
+ {k:'M',w:'any',n:'angle',g:['WWW...','W.....','W..++.','......','......']},
+ {k:'M',w:'out',n:'thicket',g:['##.#..','#....+','..+...','.+..##','...##.']},
+ {k:'M',w:'out',n:'wreck',g:['......','.###+.','......','.++.+#','......']},
+ /* small 4x4 */
+ {k:'S',w:'any',n:'pillar pair',g:['#..#','.++.','....','....']},
+ {k:'S',w:'any',n:'block',g:['....','.++.','.++.','....']},
+ {k:'S',w:'any',n:'corner',g:['WW..','W...','..+.','....']},
+ {k:'S',w:'out',n:'stand',g:['#.#.','....','.++.','....']}];
+const RMSZ={L:[8,6],M:[6,5],S:[4,4]};
+/* plots: lots as [col,row,width,height,size]. Rows 0-2 and 19-21 are the deployment zones and stay clear. */
+const RMPL=[
+ {n:'central aisle',s:[[0,3,8,6,'L'],[12,3,8,6,'L'],[0,9,4,4,'S'],[4,9,4,4,'S'],[12,9,4,4,'S'],[16,9,4,4,'S'],[0,13,8,6,'L'],[12,13,8,6,'L']]},
+ {n:'crossroads',s:[[0,3,9,7,'L'],[11,3,9,7,'L'],[0,12,9,7,'L'],[11,12,9,7,'L']]},
+ {n:'plaza',s:[[0,3,6,5,'M'],[14,3,6,5,'M'],[6,8,8,6,'L'],[0,9,4,4,'S'],[16,9,4,4,'S'],[0,14,6,5,'M'],[14,14,6,5,'M']]},
+ {n:'staggered',s:[[0,3,8,6,'L'],[13,3,6,5,'M'],[8,9,4,4,'S'],[14,9,6,5,'M'],[0,10,6,5,'M'],[6,14,8,5,'L'],[16,15,4,4,'S']]},
+ {n:'gauntlet',s:[[0,4,6,5,'M'],[14,4,6,5,'M'],[7,6,6,5,'M'],[0,11,6,5,'M'],[14,11,6,5,'M'],[7,13,6,5,'M']]}];
+const rmR=n=>Math.floor(Math.random()*n);
+function rmTypes(th){const full={},half={};for(const k in th.ob)(X_FULL.has(k)?full:half)[k]=th.ob[k];
+ if(!Object.keys(full).length)Object.assign(full,half);if(!Object.keys(half).length)Object.assign(half,full);return{full,half}}
+function rmBuild(th){const out=!!th.env,ty=rmTypes(th),m=new Map(),plot=RMPL[rmR(RMPL.length)],used=[];
+ const put=(r,c,t)=>{if(r<3||r>SZ-4||c<0||c>=SW)return;const k=r*100+c;if(VOID.has(k)||m.has(k))return;m.set(k,t)};
+ const lot=new Set(),key=typeof WTH!=='undefined'&&WTH[th.n],wall=key?'wl_'+key:wpick(ty.full),pieces=[];
+ for(const[c0,r0,w,h,sz]of plot.s){for(let r=r0;r<r0+h;r++)for(let c=c0;c<c0+w;c++)lot.add(r*100+c);
+  /* a parcel of this size (or one size down), indoor or outdoor to suit the theme */
+  const order=sz==='L'?['L','M']:sz==='M'?['M','S']:['S'];let P=null;
+  for(const k of order){const pool=RMP.filter(p=>p.k===k&&(p.w==='any'||(p.w==='out')===out)&&RMSZ[k][0]<=w&&RMSZ[k][1]<=h);if(pool.length){P=pool[rmR(pool.length)];break}}
+  if(!P||Math.random()<.05)continue; /* now and then a lot is left open ground */
+  const[pw,ph]=[P.g[0].length,P.g.length],fx=Math.random()<.5,fy=Math.random()<.5,ox=c0+rmR(w-pw+1),oy=r0+rmR(h-ph+1);used.push(P.n);
+  for(let y=0;y<ph;y++)for(let x=0;x<pw;x++){const ch=P.g[fy?ph-1-y:y][fx?pw-1-x:x];if(ch==='.')continue;if(ch==='o'&&Math.random()<.5)continue;
+   put(oy+y,ox+x,ch==='W'?wall:wpick(ch==='#'?ty.full:ty.half))}
+  pieces.push([ox,oy,pw,ph,P.k])}
+ /* large set pieces (2x1 or 2x2): inside the bigger parcels, else anywhere along the lanes. They may replace half
+    cover, but never touch a wall, a full-cover prop or another set piece. */
+ const spk=key&&SPTH[key];let nsp=0;
+ const hard=k2=>{const t=m.get(k2);return t&&(/^wl_|^sp_/.test(t)||X_FULL.has(t))};
+ const tryPlace=(ox,oy,pw,ph)=>{const nm=spk[rmR(spk.length)],S=SP[nm],v=S.fp[0]===1&&Math.random()<.4,fr=v?S.fp[1]:S.fp[0],fc=v?S.fp[0]:S.fp[1];
+  for(let t=0;t<40;t++){const r0=oy+rmR(Math.max(1,ph-fr+1)),c0=ox+rmR(Math.max(1,pw-fc+1));let ok=r0>=4&&r0+fr-1<=SZ-5&&c0>=0&&c0+fc<=SW;
+   for(let r=r0-1;ok&&r<=r0+fr;r++)for(let c=c0-1;ok&&c<=c0+fc;c++){const k2=r*100+c,inFp=r>=r0&&r<r0+fr&&c>=c0&&c<c0+fc;if(inFp?(VOID.has(k2)||hard(k2)):hard(k2))ok=false}
+   if(!ok)continue;for(let r=r0;r<r0+fr;r++)for(let c=c0;c<c0+fc;c++)m.set(r*100+c,'sp_'+nm+'_'+(r===r0&&c===c0?(v?'v':'h'):'p'));return true}return false};
+ if(spk){for(const[ox,oy,pw,ph,k]of pieces){if(k==='S'||(k==='M'&&Math.random()<.5))continue;if(tryPlace(ox,oy,pw,ph))nsp++}
+  for(let i=0;i<4&&nsp<2;i++)if(tryPlace(0,5,SW,SZ-10))nsp++}
+ /* small cover pieces along the lanes between lots */
+ for(let r=3;r<=SZ-4;r++)for(let c=0;c<SW;c++){const k=r*100+c;if(lot.has(k)||m.has(k))continue;if(Math.random()<.025)put(r,c,wpick(Math.random()<.25?ty.full:ty.half))}
+ /* a little cover just in front of each deployment zone */
+ for(const r of[3,SZ-4])for(let i=0;i<2;i++){const c=2+rmR(SW-4);if(!m.has(r*100+c))put(r,c,wpick(ty.half))}
+ return{m,plot:plot.n,used,nsp}}
+{const _g=genMap;genMap=function(nm){if(!RM.on||window.__forceSet)return _g.apply(this,arguments);
+  try{const pk=nm===undefined?MAPS:nm?MAPS.filter(m=>m.n===nm):MAPS.filter(m=>!m.env),th=(pk.length?pk:MAPS)[rmR((pk.length?pk:MAPS).length)];
+   VOID=typeof voidFor==='function'?voidFor(th):new Set();let best=null;
+   for(let t=0;t<40&&!best;t++){const b=rmBuild(th);if(b.m.size>=20&&conn(b.m))best=b}
+   if(!best)return _g.call(this,th.n);
+   RM.last={map:th.n,plot:best.plot,parcels:best.used,cells:best.m.size,pieces:best.nsp};
+   window.__forceSet=[...best.m];if(typeof WLTH!=='undefined')WLTH=th.n;try{return _g.call(this,th.n)}finally{window.__forceSet=null;if(typeof WLTH!=='undefined')WLTH=null}}
+  catch(e){console.error('rooms',e);window.__forceSet=null;return _g.apply(this,arguments)}}}
+/* ---------- XCOM-style enemy pods ----------
+   The warband no longer stands in one block at the far edge. It is split into pods (a leader and one to three
+   followers) spread through the map along the "line of play" from your deployment to the objective: a guard pod on
+   the ritual circle or captive's cage (or the strongest pod at the back on a plain battle), the rest staggered through
+   the rooms in between, left and right of the direct route.
+   Pods start unaware. They wander a small area, take no shots, and show an UNAWARE tag. A pod wakes when one of its
+   members sees one of your fighters (a hidden Rogue still can't be seen beyond 1 tile), when one is hurt, or when
+   fighting breaks out nearby. On waking, every member makes a free move into cover facing you ("scamper"), but
+   can't attack until the enemy's next turn. From turn 2, unaware pods start drifting toward you. Pods notice you from 1 tile farther than their normal sight, and pod battles bring about 20% more enemies.
+   Reinforcements get a warning: the ground where they'll arrive is marked one turn ahead.
+   Hold the Line battles and battles against another player keep the old all-awake deployment. */
+const PODS={need:false,et:0,rf:null,inRound:false,mk:[],on:true};
+const POD_NOISE=4,POD_SIGHT=1,POD_DRIFT=2,POD_EXTRA=.2;
+const podOn=()=>PODS.on&&ai&&!(typeof XS!=='undefined'&&XS.obj&&XS.obj.k==='survive');
+const podM=id=>U.filter(u=>!u.dead&&u.s===1&&u.pod===id);
+const podIds=()=>[...new Set(U.filter(u=>!u.dead&&u.s===1&&u.pod!=null&&u.slp).map(u=>u.pod))];
+const podFree=(r,c)=>inb(r,c)&&!isP(r,c)&&!at(r,c);
+/* the cells nearest a point that a pod can stand on */
+function podCells(r0,c0,n,maxR){const out=[],seenK=new Set([r0*100+c0]),q=[[r0,c0]];
+ while(q.length&&out.length<n){const[r,c]=q.shift();if(podFree(r,c)&&r<=maxR)out.push([r,c]);for(const[dr,dc]of DIRS){const nr=r+dr,nc=c+dc,k=nr*100+nc;if(seenK.has(k)||!inb(nr,nc)||Math.abs(nr-r0)>4||Math.abs(nc-c0)>4)continue;seenK.add(k);q.push([nr,nc])}}
+ return out}
+function podPlace(){PODS.rf=null;PODS.fought=false;PODS.flush=false;PODS.et=0;PODS.need=false;podMarkClear();
+ const E=U.filter(u=>!u.dead&&u.s===1);E.forEach(u=>{delete u.pod;delete u.slp});if(!podOn()||E.length<2)return;
+ const val=u=>(EC[u.t]||2)+(T[u.t].boss?99:0)+u.st.hp/10;E.sort((a,b)=>val(b)-val(a));
+ const nP=E.length<=3?1:Math.max(2,Math.min(6,Math.round(E.length/3))),P=[];for(let i=0;i<nP;i++)P.push([E[i]]);
+ E.slice(nP).forEach(u=>{let b=P[0];P.forEach(p=>{if(p.length<b.length)b=p});b.push(u)});
+ /* the line of play: your deployment -> the objective (or the far edge) */
+ const o=XS.obj||{},r0=SZ-2,c0=Math.floor(MX)+(Math.random()<.5?0:1),goal=o.cell!=null?[Math.floor(o.cell/100),o.cell%100]:[1,Math.floor(MX)+(Math.random()<.5?0:1)],dr=goal[0]-r0,dc=goal[1]-c0,len=Math.hypot(dr,dc)||1,pr=-dc/len,pc=dr/len,maxR=SZ-9;
+ /* clear the enemy units off the board first so they don't block each other's spots */
+ E.forEach(u=>{u.r=-50;u.c=-50});
+ P.forEach((pod,i)=>{let zr,zc,rad;
+  if(i===0){zr=goal[0];zc=goal[1];rad=o.cell!=null?1:2;if(o.cell==null){zr=1+Math.floor(Math.random()*2)}}
+  else{const t=nP<=2?.6:.42+(.9-.42)*(i-1)/Math.max(1,nP-2),side=i%2?1:-1,off=side*(2.5+Math.random()*3.5);
+   zr=Math.round(r0+dr*t+pr*off);zc=Math.round(c0+dc*t+pc*off);rad=2}
+  zr=Math.max(0,Math.min(maxR,zr));zc=Math.max(1,Math.min(SW-2,zc));
+  zr=Math.round(zr);zc=Math.round(zc);const cells=podCells(zr,zc,pod.length,maxR);
+  pod.forEach((u,j)=>{let p=cells[j];if(!p){const f=podCells(Math.floor(Math.random()*3),2+Math.floor(Math.random()*(SW-4)),1,maxR);p=f[0]||[0,j]}
+   u.r=p[0];u.c=p[1];u.px=u.c;u.pz=u.r;u.path=null;u.pod=i;u.slp=1;u.pzr=zr;u.pzc=zc;u.prad=rad});
+ });
+ log.unshift(`The enemy is spread through the field in ${nP} groups, unaware of you. Scout ahead and pick your fight.`)}
+/* a pod wakes: every member gets a free move into cover facing your fighters */
+function podWake(id,why){const M=podM(id).filter(u=>u.slp);if(!M.length)return;const foes=U.filter(u=>!u.dead&&u.s===0);
+ M.forEach(u=>{u.slp=0});stall=0;PODS.fought=true;
+ const taken=new Set();
+ M.forEach(u=>{if(!foes.length)return;let near=foes[0];foes.forEach(f=>{if(dist(u,f)<dist(u,near))near=f});
+  const ideal=u.st.rng>1?Math.min(u.st.rng,5):1;let best=null;
+  const opts=[[u.r,u.c]];reach(u).forEach((_,k)=>{const[r,c]=k.split(',').map(Number);opts.push([r,c])});
+  opts.forEach(([r,c])=>{if(taken.has(r*100+c))return;if((r!==u.r||c!==u.c)&&at(r,c))return;const t={r,c},cv=cover(near,t)||0,d=dist(t,near);
+   const sc=cv*5-Math.abs(d-ideal)*1.2-(u.st.rng>1&&d<=1?6:0)+Math.random()*.3;if(!best||sc>best[0])best=[sc,r,c]});
+  if(best){taken.add(best[1]*100+best[2]);if(best[1]!==u.r||best[2]!==u.c){setPath(u,best[1],best[2]);u.r=best[1];u.c=best[2]}}});
+ const L=M[0];try{floater(L,'!','d')}catch(e){}
+ const W={spot:['spots you','spot you'],hit:['is attacked','are attacked'],noise:['hears the fighting','hear the fighting'],hunt:['comes hunting for you','come hunting for you']}[why||'spot']||['spots you','spot you'];
+ log.unshift(`<b>${M.length>1?`${T[L.t].n} and ${M.length-1} other${M.length>2?'s':''}`:T[L.t].n} ${W[M.length>1?1:0]}!</b> ${M.length>1?'They scramble':'It scrambles'} for cover.`);try{sfx('miss')}catch(e){}}
+/* can any member of a sleeping pod see one of your fighters? */
+function podCheck(){if(deploy||!inBattle||over!==null||!podOn())return;let any=false;
+ podIds().forEach(id=>{const M=podM(id);const seesP=M.some(e=>U.some(p=>!p.dead&&p.s===0&&dist(e,p)<=Math.max(1,e.st.vis||4)+POD_SIGHT+(typeof trU==='function'&&trU(p,'heavy')?1:0)&&tLos(e.r,e.c,p.r,p.c)&&visE(e,p)));if(seesP){podWake(id);any=true}});
+ if(any)try{hud()}catch(e){}}
+/* fighting nearby wakes a pod */
+function podNoise(r,c,why){if(!inBattle||deploy||!podOn())return;podIds().forEach(id=>{if(podM(id).some(e=>Math.max(Math.abs(e.r-r),Math.abs(e.c-c))<=POD_NOISE))podWake(id,'noise')})}
+/* unaware pods wander their area; after a few turns the area drifts toward your fighters */
+function podPatrol(){PODS.et++;const foes=U.filter(u=>!u.dead&&u.s===0);
+ /* no stand-offs: once a fight has happened and no enemy is left awake, or from the 6th enemy turn, the rest hunt you down */
+ const awake=U.some(u=>!u.dead&&u.s===1&&!u.slp),left=podIds();
+ if(left.length&&((PODS.fought&&!awake)||PODS.et>=6)){left.forEach(id=>podWake(id,'hunt'));return}
+ podIds().forEach(id=>{const M=podM(id);if(!M.length)return;const L=M[0];
+  if(PODS.et>=POD_DRIFT&&L.prad>1&&foes.length){let fr=0,fc=0;foes.forEach(f=>{fr+=f.r;fc+=f.c});fr/=foes.length;fc/=foes.length;const nr=L.pzr+Math.sign(Math.round(fr)-L.pzr),nc=L.pzc+Math.sign(Math.round(fc)-L.pzc);M.forEach(u=>{u.pzr=nr;u.pzc=nc})}
+  if(Math.random()<.3&&PODS.et<POD_DRIFT)return; /* sometimes they just stand about */
+  const tr=L.pzr+Math.round((Math.random()*2-1)*L.prad),tc=L.pzc+Math.round((Math.random()*2-1)*L.prad);
+  const stepTo=(u,r,c,lim)=>{let best=null;reach(u).forEach((d,k)=>{const[rr,cc]=k.split(',').map(Number);if(dist({r:rr,c:cc},u)>lim||at(rr,cc))return;const s=Math.hypot(rr-r,cc-c)+Math.random()*.2;if(!best||s<best[0])best=[s,rr,cc]});
+   if(best&&(best[1]!==u.r||best[2]!==u.c)){setPath(u,best[1],best[2]);u.r=best[1];u.c=best[2]}};
+  stepTo(L,tr,tc,2);M.slice(1).forEach(u=>stepTo(u,L.r,L.c,2))})}
+/* ---------- hooks ---------- */
+/* fighting pods one at a time is easier than facing the whole warband, so pod battles bring about 20% more enemies */
+{const _gw=genWarband;genWarband=function(tier,boss,node){const w=_gw.apply(this,arguments);try{if(podOn()&&w&&w.types&&w.types.length>=2){const pool=w.types.filter(t=>!T[t].boss);const add=Math.max(1,Math.round(w.types.length*POD_EXTRA));
+  for(let i=0;i<add&&pool.length&&w.types.length<18;i++)w.types.push(pool[Math.floor(Math.random()*pool.length)])}}catch(e){console.error('pods',e)}return w}}
+{const _in=init;init=function(){const r=_in.apply(this,arguments);try{podPlace();hud()}catch(e){console.error('pods',e)}return r}}
+{const _f=fin;fin=function(){try{podCheck()}catch(e){console.error('pods',e)}return _f.apply(this,arguments)}}
+{const _h=hurt;hurt=function(u,d){const r=_h.apply(this,arguments);try{if(u&&u.s===1&&u.slp&&!u.dead)podWake(u.pod,'hit');if(u)podNoise(u.r,u.c)}catch(e){}return r}}
+{const _s=shoot;shoot=function(a,t){const r=_s.apply(this,arguments);try{if(t){if(t.s===1&&t.slp)podWake(t.pod,'hit');podNoise(t.r,t.c)}if(a&&a.s===0)podNoise(a.r,a.c)}catch(e){}return r}}
+{const _e=endTurn;endTurn=function(){const r=_e.apply(this,arguments);if(turn===1)PODS.need=true;
+  /* safety net: twelve turns (six full rounds) with no damage on either side -> every enemy hunts and hidden fighters are found */
+  try{if(podOn()&&inBattle&&over===null&&stall>=12&&!PODS.flush){PODS.flush=true;console.warn('pods stall',JSON.stringify(U.filter(u=>!u.dead).map(u=>[u.s,u.t,u.r,u.c,u.hp,u.slp,u.hid,u.pn])));
+   podIds().forEach(id=>podWake(id,'hunt'));U.forEach(u=>{if(!u.dead&&u.s===0&&u.hid){u.hid=false;try{burst(u,0x3a2a5a,8,true)}catch(e){}}});log.unshift('<b>The enemy picks up your trail.</b>');stall=6}}catch(e){console.error('pods',e)}
+  return r}}
+{const _a=aiStep;aiStep=function(){try{
+  /* Auto mode with no enemy in sight: advance and scout instead of sitting on overwatch */
+  if(turn===0&&podOn()&&U.some(u=>!u.dead&&u.s===1&&u.slp)&&!U.some(u=>!u.dead&&u.s===1&&!u.slp&&seen.has(u.r*100+u.c)))stall=Math.max(stall,4);
+  if(turn===1&&podOn()){if(PODS.need){PODS.need=false;podPatrol();podCheck()}U.forEach(u=>{if(u.s===1&&u.slp)u.ap=0})}}catch(e){console.error('pods',e)}return _a.apply(this,arguments)}}
+/* reinforcements: mark the ground one turn ahead, then they arrive there (awake) */
+function podMarkClear(){PODS.mk.forEach(m=>m.parent&&m.parent.remove(m));PODS.mk=[]}
+function podMark(cells){const g=xGroup();cells.forEach(([r,c])=>{const m=new THREE.Mesh(new THREE.RingGeometry(.22,.46,24),new THREE.MeshBasicMaterial({color:0xff3018,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(c,.04,r);g.add(m);PODS.mk.push(m);
+  const t0=performance.now();XS.anim.push(t=>{if(!m.parent)return true;const k=(t-t0)/500;m.material.opacity=.55+.35*Math.sin(k*3);m.scale.setScalar(1+.12*Math.sin(k*2));m.rotation.z=k*.5})})}
+{const _sp=xSpawnEnemies;xSpawnEnemies=function(n){if(!PODS.inRound||!podOn())return _sp.apply(this,arguments);
+  const o=XS.obj||{},gr=o.cell!=null?Math.floor(o.cell/100):1,gc=o.cell!=null?o.cell%100:Math.floor(MX),cells=[];
+  for(let t=0;t<60&&cells.length<n;t++){const r=Math.max(0,Math.min(3,gr-1+Math.floor(Math.random()*3))),c=Math.max(1,Math.min(SW-2,gc+Math.floor((Math.random()*2-1)*6)));if(podFree(r,c)&&!cells.some(q=>q[0]===r&&q[1]===c))cells.push([r,c])}
+  if(!cells.length)return _sp.apply(this,arguments);
+  PODS.rf={cells};podMark(cells);log.unshift(`<b>The ground stirs at ${cells.length} spot${cells.length>1?'s':''}. Enemy reinforcements arrive next turn.</b>`);return 0}}
+{const _or=xObjRound;xObjRound=function(){
+  /* last turn's marked reinforcements arrive first */
+  if(PODS.rf&&podOn()){const cells=PODS.rf.cells.slice();PODS.rf=null;podMarkClear();const _fc=xFreeCell;let i=0;
+   xFreeCell=function(rows,avoid){while(i<cells.length){const[r,c]=cells[i++];if(podFree(r,c))return r*100+c;const alt=podCells(r,c,1,SZ-9)[0];if(alt)return alt[0]*100+alt[1]}return _fc.apply(this,arguments)};
+   try{xSpawnEnemies(cells.length)}finally{xFreeCell=_fc}}
+  PODS.inRound=true;try{return _or.apply(this,arguments)}finally{PODS.inRound=false}}}
+/* UNAWARE tag on enemies you can see that haven't noticed you */
+{const _hd=hud;hud=function(){const r=_hd.apply(this,arguments);try{U.forEach(u=>{if(!u.tg||u.dead||u.s!==1)return;const has=u.tg.querySelector('.xtg.zz');if(u.slp&&!has)u.tg.insertAdjacentHTML('beforeend','<br><span class="xtg zz" title="Unaware: this group hasn\'t noticed you. It wakes when it sees one of your fighters, when it is attacked, or when fighting breaks out nearby.">UNAWARE</span>');else if(!u.slp&&has){const b=has.previousSibling;if(b&&b.nodeName==='BR')b.remove();has.remove()}})}catch(e){}return r}}
+{const st=document.createElement('style');st.textContent='.xtg.zz{background:#8a9ab0;color:#0a0e14}';document.head.appendChild(st)}
+/* ---------- no square patterns on the battle floor ----------
+   Some floor textures painted square outlines (marble panels, gilt insets) at a size that doesn't match the tiles,
+   so they read as extra grid lines and make the real tiles harder to see. Floors are now painted without them
+   (props using the same textures keep theirs), and the random brighter tiles on the Pit of the Damned are gone. */
+for(const k of['marble','flag']){const f=PT.K[k];PT.K[k]=function(N,s,o){if(!o||!o.plain)return f.apply(this,arguments);const P=CanvasRenderingContext2D.prototype,sr=P.strokeRect;P.strokeRect=function(){};try{return f.apply(this,arguments)}finally{P.strokeRect=sr}}}
+for(const n in PTT){const v=PTT[n].floor;if(v)v[2]=Object.assign({},v[2]||{},{plain:1})}
+for(const m of MAPS)if(m.n==='The Pit of the Damned')delete m.patch;
+/* ---------- personality traits ----------
+   Every fighter (your company, recruits for hire, the volunteers who answer the call) has two traits: one virtue and
+   one flaw, rolled at random and kept for life. They never contradict each other (no one is both Hawk-Eyed and
+   Short-Sighted). Each has a small effect in battle, and they show as tags on the barracks page, the recruit screen,
+   and the squad and battle hover cards (hover a tag to read what it does). */
+const TRV=[
+ {id:'stoic',n:'Stoic',g:'nerve',d:'Never panics.'},
+ {id:'hawk',n:'Hawk-Eyed',g:'sight',d:'+1 sight range.',st:s=>{s.vis=(s.vis||4)+1}},
+ {id:'steady',n:'Steady Hand',g:'aim',d:'+6 aim.',st:s=>{s.aim+=6}},
+ {id:'hardy',n:'Hardy',g:'hp',d:'+2 max health.',st:s=>{s.hp+=2}},
+ {id:'fleet',n:'Fleet-Footed',g:'move',d:'+1 move, but −1 max health.',st:s=>{s.mv+=1;s.hp=Math.max(1,s.hp-1)}},
+ {id:'lucky',n:'Lucky',g:'dodge',d:'+6% dodge.',st:s=>{s.dodge=(s.dodge||0)+6}},
+ {id:'vengeful',n:'Vengeful',g:'grief',d:'When an ally falls, +1 damage for the rest of the battle.'},
+ {id:'inspiring',n:'Inspiring',g:'social',d:'Allies within 2 tiles get +5 aim.'},
+ {id:'brutal',n:'Brutal',g:'dmg',d:'+1 damage, but −4 aim.',st:s=>{s.lo+=1;s.hi+=1;s.aim-=4}}];
+const TRF=[
+ {id:'skittish',n:'Skittish',g:'nerve',d:'Panics more easily.'},
+ {id:'myopic',n:'Short-Sighted',g:'sight',d:'−1 sight range.',st:s=>{s.vis=Math.max(2,(s.vis||4)-1)}},
+ {id:'shaky',n:'Shaky',g:'aim',d:'−5 aim.',st:s=>{s.aim-=5}},
+ {id:'sickly',n:'Sickly',g:'hp',d:'−1 max health.',st:s=>{s.hp=Math.max(1,s.hp-1)}},
+ {id:'reckless',n:'Reckless',g:'dodge',d:'−6% dodge: never thinks to duck.',st:s=>{s.dodge=(s.dodge||0)-6}},
+ {id:'loner',n:'Loner',g:'social',d:'−5 aim with an ally right beside them.'},
+ {id:'superst',n:'Superstitious',g:'haunt',d:'−5 aim in haunted places: the Hollow Graveyard, the Black Chapel, the Drowned Ossuary and the Charnel Pit.'},
+ {id:'heavy',n:'Heavy-Footed',g:'stealth',d:'Unaware enemies notice them from 1 tile farther away.'}];
+const TRA={};TRV.concat(TRF).forEach(t=>TRA[t.id]=t);
+const trHas=(c,id)=>!!(c&&c.tr&&c.tr.includes(id));
+const trU=(u,id)=>!!(u&&u.ch&&trHas(u.ch,id));
+function trRoll(){const v=TRV[Math.floor(Math.random()*TRV.length)],F=TRF.filter(f=>f.g!==v.g),f=F[Math.floor(Math.random()*F.length)];return[v.id,f.id]}
+function trEnsure(c){if(c&&typeof c==='object'&&c.t&&(!Array.isArray(c.tr)||c.tr.length<2||!c.tr.every(id=>TRA[id])))c.tr=trRoll();return c}
+function trAll(){if(typeof G==='undefined'||!G)return;(G.roster||[]).forEach(trEnsure);if(G.rec&&Array.isArray(G.rec.stock))G.rec.stock.forEach(r=>{if(r)trEnsure(r)})}
+/* the tags: virtues in gold, flaws in red; hover for the effect */
+function trHtml(c,k){trEnsure(c);if(!c||!c.tr)return'';return`<div class="trw trw-${k||'x'}">${c.tr.map((id,i)=>{const t=TRA[id];return`<span class="trc ${i?'trf':'trv'}" title="${t.n}: ${t.d}">${t.n}</span>`}).join('')}</div>`}
+{const st=document.createElement('style');st.textContent=`
+.trw{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0 2px;text-align:left}
+.trc{display:inline-block;font:600 10px Cinzel,serif;letter-spacing:.05em;padding:1px 6px 0;border:1px solid;line-height:15px;cursor:help;white-space:nowrap}
+.trc.trv{color:#e8cc80;border-color:#8a6e3a;background:rgba(80,60,20,.35)}
+.trc.trf{color:#e89a8a;border-color:#7a3a30;background:rgba(80,24,18,.35)}
+.trw.trw-rc{display:flex!important;flex-direction:row!important;width:auto!important}.trw .trc{display:inline-block!important;width:auto!important;flex:0 0 auto!important;margin:0!important}
+.trw-hd{margin:5px 0 0}.trw-bt{margin:5px 0 3px}.trw-sq{margin:4px 0 3px}.trw-rc{margin:3px 0 2px}`;document.head.appendChild(st)}
+/* ---------- effects ---------- */
+/* base stats with traits applied (used by the stat summaries on the squad and recruit screens) */
+function trBase(c){const b=Object.assign({},T[c.t]);try{trEnsure(c);(c.tr||[]).forEach(id=>{const t=TRA[id];if(t&&t.st)t.st(b)})}catch(e){}return b}
+{const _ps=passiveStats;passiveStats=function(c,st){const r=_ps.apply(this,arguments);try{trEnsure(c);(c.tr||[]).forEach(id=>{const t=TRA[id];if(t&&t.st)t.st(st)})}catch(e){console.error('traits',e)}return r}}
+/* Stoic never panics, Skittish panics more easily */
+{const _pc=xPanicCheck;xPanicCheck=function(u,sev){if(trU(u,'stoic'))return;if(trU(u,'skittish'))sev+=20;return _pc.call(this,u,sev)}}
+/* aim from company and surroundings */
+const TR_HAUNT=new Set(['The Hollow Graveyard','The Black Chapel','The Drowned Ossuary','The Charnel Pit']);
+function trAim(a){if(!a||!a.ch)return 0;let b=0;
+ if(U.some(x=>x!==a&&!x.dead&&x.s===a.s&&trU(x,'inspiring')&&dist(x,a)<=2))b+=5;
+ if(trU(a,'loner')&&U.some(x=>x!==a&&!x.dead&&x.s===a.s&&dist(x,a)<=1))b-=5;
+ if(trU(a,'superst')&&TR_HAUNT.has(curMap))b-=5;return b}
+{const _ch=chance;chance=function(a,t,re){const p=_ch.apply(this,arguments);const b=trAim(a);return b?Math.max(5,Math.min(95,p+b)):p}}
+/* Vengeful: an ally's death hardens them */
+{const _od=onDeath;onDeath=function(u,by){const r=_od.apply(this,arguments);try{if(u&&u.s===0&&u.ch)U.forEach(x=>{if(x===u||x.dead||x.s!==0||!trU(x,'vengeful')||x.trVg)return;x.trVg=1;x.st.lo+=1;x.st.hi+=1;try{floater(x,'Vengeful!','d')}catch(e){}log.unshift(`<b style="color:#e8a070">${esc(x.nm||T[x.t].n)} swears vengeance for ${esc(u.nm||T[u.t].n)}!</b>`)})}catch(e){console.error('traits',e)}return r}}
+/* everyone gets traits: existing saves, new companies, recruits, volunteers */
+{const _m=migrate;migrate=function(){const r=_m.apply(this,arguments);try{trAll()}catch(e){}return r}}
+{const _sv=save;save=function(){try{trAll()}catch(e){}return _sv.apply(this,arguments)}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;

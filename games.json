@@ -115,9 +115,17 @@
       "patchNotes": [
         {
           "version": "Beta 0.1.7",
-          "title": "Steadier hands",
-          "date": "2026-11-03",
+          "title": "Into the halls",
+          "date": "2026-11-04",
           "notes": [
+            "XCOM-style battle maps: every battlefield is now a hand-made floor plan filled with rooms and features that fit the map, flipped at random, with loose cover along the lanes between them. You get real routes to choose between instead of evenly scattered single pieces.",
+            "Walls that form rooms, with new hand-painted textures for each map: book-lined library walls, scorched ruined brick, packed skulls, carved gothic tracery, thorn hedges, mossy root banks, a sharpened palisade, crypt walls with iron railings and glowing obsidian. Walls are full cover, block sight and can be smashed.",
+            "Large set pieces covering two or four tiles: great bookcases, sarcophagi, bone heaps, pews, fallen giant trunks, supply crates, mausoleums and brimstone altars.",
+            "Enemy pods: the warband is now split into groups spread through the map along your route to the objective, one guarding the objective itself. Pods start unaware (look for the UNAWARE tag) and wake when they see you, when they're hurt, or when fighting breaks out nearby. On waking, every member scrambles into cover. From turn 2 they start closing in, and the rest hunt you down once the fighting dies away.",
+            "Pod battles bring about 20% more enemies, and pods notice you from 1 tile farther away, so ambushes have to be earned. Scout ahead with your Rogue.",
+            "Enemy reinforcements are now announced: the ground glows red where they will arrive, one turn ahead.",
+            "Personality traits: every fighter has a virtue and a flaw, such as Stoic, Hawk-Eyed, Hardy or Inspiring alongside Skittish, Shaky, Loner or Heavy-Footed. Each has a small effect in battle. You'll see them on the barracks, recruit, squad and battle cards, and your existing company gets theirs on first load.",
+            "Floors are cleaner: the square outlines that didn't line up with the tiles (Occult Castle, Cathedral of Ash, Black Chapel) and the random bright tiles in the Pit of the Damned are gone, so the real grid is easier to read.",
             "Smoother battles: the floor tiles and fog of war are now drawn in a few batches instead of nearly 900 separate pieces, cutting the work per frame by about two thirds. Blood that has settled is merged into the floor less often, so there are no more hitches mid-fight.",
             "Fixed audio stutter in the rain: the rain patter is now prepared once instead of being built from hundreds of tiny sounds every second. Music is also scheduled further ahead, so it no longer skips when the game is busy.",
             "Fixed the camera slowly zooming in on its own after many battles.",
