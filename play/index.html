@@ -9768,19 +9768,22 @@ function trAim(a){if(!a||!a.ch)return 0;let b=0;
    and the music on/off button. Each song's level is matched to the old music, so your volume settings still feel
    the same. Played with plain audio elements (no Web Audio routing), so it works from the desktop app's local files,
    the web version and the website alike. */
+/* each entry: [file, loudness in dB, seconds to skip on a fresh start]. The songs are cut to loop seamlessly, so each
+   begins with the ring-out of its own final chord; starting fresh, that sounds like a stray note, so a fresh start
+   skips past it (the loop itself still wraps to the very beginning, where that chord belongs). */
 const MP3={dir:'music/',target:-26,cur:null,els:{},fades:new Map(),
- T:{'Main Menu':['Main Menu - The Grim Gambit.mp3',-20.3],
-  'Barracks':['Barracks - The Mustering Hall.mp3',-22.46],
-  'Occult Castle':['Occult Castle - The Iron Wardens Gate.mp3',-18.9],
-  'The Gloomwood':['The Gloomwood - Moon-Cursed Hunt.mp3',-19.11],
-  'The Broken Field':['The Broken Field - Ash of a Hundred Wars.mp3',-19.14],
-  'The Rotting Mire':['The Rotting Mire - Black Water Colossus.mp3',-18.6],
-  'The Black Chapel':['The Black Chapel - The Mad Organist.mp3',-19.15],
-  'The Charnel Pit':['The Charnel Pit - Bones of the One-Eyed.mp3',-18.62],
-  'The Drowned Ossuary':['The Drowned Ossuary - The Bog Witchs Waltz.mp3',-19.97],
-  'The Hollow Graveyard':['The Hollow Graveyard - Lament of the Weeping Queen.mp3',-19.03],
-  'The Pit of the Damned':['The Pit of the Damned - Seraphiels Fall.mp3',-18.98],
-  'The Cathedral of Ash':['The Cathedral of Ash - Throne of the Devil.mp3',-19.71]},
+ T:{'Main Menu':['Main Menu - The Grim Gambit.mp3',-20.3,2.95],
+  'Barracks':['Barracks - The Mustering Hall.mp3',-22.46,0],
+  'Occult Castle':['Occult Castle - The Iron Wardens Gate.mp3',-18.9,0.65],
+  'The Gloomwood':['The Gloomwood - Moon-Cursed Hunt.mp3',-19.11,1.6],
+  'The Broken Field':['The Broken Field - Ash of a Hundred Wars.mp3',-19.14,1.3],
+  'The Rotting Mire':['The Rotting Mire - Black Water Colossus.mp3',-18.6,2.55],
+  'The Black Chapel':['The Black Chapel - The Mad Organist.mp3',-19.15,0.9],
+  'The Charnel Pit':['The Charnel Pit - Bones of the One-Eyed.mp3',-18.62,0.9],
+  'The Drowned Ossuary':['The Drowned Ossuary - The Bog Witchs Waltz.mp3',-19.97,0.55],
+  'The Hollow Graveyard':['The Hollow Graveyard - Lament of the Weeping Queen.mp3',-19.03,1.65],
+  'The Pit of the Damned':['The Pit of the Damned - Seraphiels Fall.mp3',-18.98,0.7],
+  'The Cathedral of Ash':['The Cathedral of Ash - Throne of the Devil.mp3',-19.71,1.8]},
  /* the Mad Organist's tempo, so the Black Chapel's organist keeps time with the song */
  beat:{'The Black Chapel':[138,.427]}};
 const mpKey=n=>n==='title'?'Main Menu':n==='menu'?'Barracks':MP3.T[n]?n:(typeof curMap!=='undefined'&&MP3.T[curMap]?curMap:'Main Menu');
@@ -9797,7 +9800,7 @@ music=function(n){want=n;
  const k=musicOn&&n?mpKey(n):null;if(k===MP3.cur){if(k){const a=mpEl(k);if(a.paused)a.play().catch(()=>{})}return}
  const old=MP3.cur?MP3.els[MP3.cur]:null;if(old)mpFade(old,0,1.6,()=>{if(MP3.els[MP3.cur]!==old)old.pause()});
  MP3.cur=k;if(!k)return;
- const a=mpEl(k);if(a.paused){try{a.currentTime=0}catch(e){}a.volume=0}a.play().catch(()=>{});mpFade(a,mpLevel(k),old?1.8:1.2)};
+ const a=mpEl(k);if(a.paused){try{a.currentTime=MP3.T[k][2]||0}catch(e){}a.volume=0}a.play().catch(()=>{});mpFade(a,mpLevel(k),old?1.8:1.2)};
 try{titlePlay=function(){};cstPlay=function(){}}catch(e){}
 {const _av=applyVol;applyVol=function(){const r=_av.apply(this,arguments);try{if(MP3.cur){const a=MP3.els[MP3.cur];const f=MP3.fades.get(a);if(f)f.to=mpLevel(MP3.cur);else a.volume=mpLevel(MP3.cur)}}catch(e){}return r}}
 /* the organist follows the song's beat (in sixteenth notes) */
