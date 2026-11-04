@@ -7670,7 +7670,7 @@ function orgSet(th){if(ORG.g){S.remove(ORG.g);ORG.g=null}if(th.n!=='The Black Ch
 {const _hs=hallSet;hallSet=function(th){_hs(th);try{orgSet(th)}catch(e){console.error(e)}}}
 (function(){let last=performance.now();function f(now){const dt=Math.min(.1,(now-last)/1000);last=now;requestAnimationFrame(f);if(!ORG.g||!ORG.g.visible)return;
  /* follow the music: which 16th-note step is sounding right now */
- let st=now/1000*7,bpm=100;try{if(AC&&track&&track.bpm){bpm=track.bpm;const sd=60/bpm/4;st=step-(nextT-AC.currentTime)/sd}}catch(e){}
+ let st=now/1000*7,bpm=100;try{const mb=typeof mpBeat==='function'?mpBeat():null;if(mb){bpm=mb.bpm;st=mb.st}else if(AC&&track&&track.bpm){bpm=track.bpm;const sd=60/bpm/4;st=step-(nextT-AC.currentTime)/sd}}catch(e){}
  const ph=st%1,beat=Math.floor(st),down=beat%4===0,P=ORG.p;
  /* hands: alternate strikes on every step, leaping to new keys each time */
  P.arms.forEach((a,i)=>{const mine=(beat+i)%2===0,hit=mine?Math.pow(1-ph,3):0;if(mine&&ph<dt*bpm/15*1.2+.02){ORG.tgt[i]=(i?.05:-.55)+Math.random()*.5}
@@ -9761,6 +9761,47 @@ function trAim(a){if(!a||!a.ch)return 0;let b=0;
 /* everyone gets traits: existing saves, new companies, recruits, volunteers */
 {const _m=migrate;migrate=function(){const r=_m.apply(this,arguments);try{trAll()}catch(e){}return r}}
 {const _sv=save;save=function(){try{trAll()}catch(e){}return _sv.apply(this,arguments)}}
+/* ---------- the soundtrack: recorded MP3s replace the synthesized music ----------
+   One song per place: the Main Menu theme on the title screen, the Barracks theme on the campaign map, camp and
+   recruiter screens, and each battle map its own song. The files sit in music/ next to the game, named after the
+   place they play in. Songs loop, cross-fade when you change place, and follow the Master and Music volume sliders
+   and the music on/off button. Each song's level is matched to the old music, so your volume settings still feel
+   the same. Played with plain audio elements (no Web Audio routing), so it works from the desktop app's local files,
+   the web version and the website alike. */
+const MP3={dir:'music/',target:-26,cur:null,els:{},fades:new Map(),
+ T:{'Main Menu':['Main Menu - The Grim Gambit.mp3',-20.3],
+  'Barracks':['Barracks - The Mustering Hall.mp3',-22.46],
+  'Occult Castle':["Occult Castle - The Iron Warden's Gate.mp3",-18.9],
+  'The Gloomwood':['The Gloomwood - Moon-Cursed Hunt.mp3',-19.11],
+  'The Broken Field':['The Broken Field - Ash of a Hundred Wars.mp3',-19.14],
+  'The Rotting Mire':['The Rotting Mire - Black Water Colossus.mp3',-18.6],
+  'The Black Chapel':['The Black Chapel - The Mad Organist.mp3',-19.15],
+  'The Charnel Pit':['The Charnel Pit - Bones of the One-Eyed.mp3',-18.62],
+  'The Drowned Ossuary':["The Drowned Ossuary - The Bog Witch's Waltz.mp3",-19.97],
+  'The Hollow Graveyard':['The Hollow Graveyard - Lament of the Weeping Queen.mp3',-19.03],
+  'The Pit of the Damned':["The Pit of the Damned - Seraphiel's Fall.mp3",-18.98],
+  'The Cathedral of Ash':['The Cathedral of Ash - Throne of the Devil.mp3',-19.71]},
+ /* the Mad Organist's tempo, so the Black Chapel's organist keeps time with the song */
+ beat:{'The Black Chapel':[138,.427]}};
+const mpKey=n=>n==='title'?'Main Menu':n==='menu'?'Barracks':MP3.T[n]?n:(typeof curMap!=='undefined'&&MP3.T[curMap]?curMap:'Main Menu');
+function mpLevel(k){const v=VOL(),e=MP3.T[k];return Math.max(0,Math.min(1,v.m*v.mu*Math.pow(10,(MP3.target-e[1])/20)))}
+function mpEl(k){if(MP3.els[k])return MP3.els[k];const a=new Audio();a.loop=true;a.preload='auto';a.src=MP3.dir+encodeURIComponent(MP3.T[k][0]);a.volume=0;return MP3.els[k]=a}
+/* volume fades (plain audio elements have no gain ramps) */
+function mpFade(a,to,sec,done){MP3.fades.set(a,{from:a.volume,to,t0:performance.now(),d:Math.max(.05,sec)*1000,done});if(!MP3.ft)MP3.ft=setInterval(()=>{const now=performance.now();
+  MP3.fades.forEach((f,el)=>{const k=Math.min(1,(now-f.t0)/f.d);try{el.volume=Math.max(0,Math.min(1,f.from+(f.to-f.from)*k))}catch(e){}if(k>=1){MP3.fades.delete(el);if(f.done)f.done()}});
+  if(!MP3.fades.size){clearInterval(MP3.ft);MP3.ft=null}},40)}
+music=function(n){want=n;
+ /* the old synthesized tracks never start again */
+ try{if(typeof track!=='undefined'&&track){if(typeof ymOut==='function')ymOut(track,.6);track=null}}catch(e){}
+ if(!AC)return; /* browsers only allow sound after the first click; the game calls music(want) again then */
+ const k=musicOn&&n?mpKey(n):null;if(k===MP3.cur){if(k){const a=mpEl(k);if(a.paused)a.play().catch(()=>{})}return}
+ const old=MP3.cur?MP3.els[MP3.cur]:null;if(old)mpFade(old,0,1.6,()=>{if(MP3.els[MP3.cur]!==old)old.pause()});
+ MP3.cur=k;if(!k)return;
+ const a=mpEl(k);if(a.paused){try{a.currentTime=0}catch(e){}a.volume=0}a.play().catch(()=>{});mpFade(a,mpLevel(k),old?1.8:1.2)};
+try{titlePlay=function(){};cstPlay=function(){}}catch(e){}
+{const _av=applyVol;applyVol=function(){const r=_av.apply(this,arguments);try{if(MP3.cur){const a=MP3.els[MP3.cur];const f=MP3.fades.get(a);if(f)f.to=mpLevel(MP3.cur);else a.volume=mpLevel(MP3.cur)}}catch(e){}return r}}
+/* the organist follows the song's beat (in sixteenth notes) */
+function mpBeat(){const k=MP3.cur,b=k&&MP3.beat[k];if(!b)return null;const a=MP3.els[k];if(!a||a.paused)return null;return{bpm:b[0],st:(a.currentTime-b[1])*b[0]/15}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
