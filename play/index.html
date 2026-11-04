@@ -9764,22 +9764,22 @@ function trAim(a){if(!a||!a.ch)return 0;let b=0;
 /* ---------- the soundtrack: recorded MP3s replace the synthesized music ----------
    One song per place: the Main Menu theme on the title screen, the Barracks theme on the campaign map, camp and
    recruiter screens, and each battle map its own song. The files sit in music/ next to the game, named after the
-   place they play in. Songs loop, cross-fade when you change place, and follow the Master and Music volume sliders
+   place they play in (letters, numbers, spaces and dashes only, which the launcher's file check requires). Songs loop, cross-fade when you change place, and follow the Master and Music volume sliders
    and the music on/off button. Each song's level is matched to the old music, so your volume settings still feel
    the same. Played with plain audio elements (no Web Audio routing), so it works from the desktop app's local files,
    the web version and the website alike. */
 const MP3={dir:'music/',target:-26,cur:null,els:{},fades:new Map(),
  T:{'Main Menu':['Main Menu - The Grim Gambit.mp3',-20.3],
   'Barracks':['Barracks - The Mustering Hall.mp3',-22.46],
-  'Occult Castle':["Occult Castle - The Iron Warden's Gate.mp3",-18.9],
+  'Occult Castle':['Occult Castle - The Iron Wardens Gate.mp3',-18.9],
   'The Gloomwood':['The Gloomwood - Moon-Cursed Hunt.mp3',-19.11],
   'The Broken Field':['The Broken Field - Ash of a Hundred Wars.mp3',-19.14],
   'The Rotting Mire':['The Rotting Mire - Black Water Colossus.mp3',-18.6],
   'The Black Chapel':['The Black Chapel - The Mad Organist.mp3',-19.15],
   'The Charnel Pit':['The Charnel Pit - Bones of the One-Eyed.mp3',-18.62],
-  'The Drowned Ossuary':["The Drowned Ossuary - The Bog Witch's Waltz.mp3",-19.97],
+  'The Drowned Ossuary':['The Drowned Ossuary - The Bog Witchs Waltz.mp3',-19.97],
   'The Hollow Graveyard':['The Hollow Graveyard - Lament of the Weeping Queen.mp3',-19.03],
-  'The Pit of the Damned':["The Pit of the Damned - Seraphiel's Fall.mp3",-18.98],
+  'The Pit of the Damned':['The Pit of the Damned - Seraphiels Fall.mp3',-18.98],
   'The Cathedral of Ash':['The Cathedral of Ash - Throne of the Devil.mp3',-19.71]},
  /* the Mad Organist's tempo, so the Black Chapel's organist keeps time with the song */
  beat:{'The Black Chapel':[138,.427]}};
