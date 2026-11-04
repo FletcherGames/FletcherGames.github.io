@@ -3566,7 +3566,7 @@ const BGF=t=>{const m=BGM.find(([r])=>r.test(t));return BGI[m?m[1]:'stormgate']}
 const SCTH=[[/OSSUARY/,'grave'],[/Plague|Graveyard/,'grave'],[/Barracks|Armory|Chest/,'battle'],[/Black Market/,'swamp'],[/Road to/,'hell'],[/Abilit|Talent|Skill/,'grave'],[/Recruit|Squad|Storage|Loadout/,'forest']];
 function show(h){const t=(h.match(/<h[12][^>]*>(.*?)<\/h[12]>/)||[])[1]||'',th=(SCTH.find(([r])=>r.test(t))||[0,'forest'])[1];SCR.dataset.th=th;ambScr(t);SCR.style.setProperty('--sc',BGF(t)||scn(th));{const op=SCR.querySelector('.pn'),st=op?op.scrollTop:0,same=op&&window._lastT===t&&SCR.classList.contains('on');window._lastT=t;SCR.innerHTML=`<div class="pn">${h}</div>`;SCR.classList.add('on');if(same&&st){const np=SCR.querySelector('.pn');if(np)np.scrollTop=st}if(/class="cmp"/.test(h)&&!/Armory|Black Market|Plague|Recruiter|Abilit/.test(t))SCR.insertAdjacentHTML('beforeend',goldHtml());if(/Armory|Black Market|Plague|Recruiter|Abilit/.test(t)){SCR.insertAdjacentHTML('beforeend',goldHtml());const np=SCR.querySelector('.pn');if(np){np.style.marginBottom='46px';np.style.maxHeight='calc(100vh - 80px)'}}}}
 const card=(k,btn)=>{const it=ITEMS[k];return `<div class="it" style="border-color:${RC[it.r]}"><b style="color:${RC[it.r]}">${it.n}</b><i>${RN[it.r]} ${SL[it.s].toLowerCase()}${it.cc?` · <span style="color:#e8a870">${clsTag(it)}</span>`:''}</i><span>${it.d}</span><em>${it.p} gold</em><div class="r2">${btn}</div></div>`};
-let gfxInit=false;function openMenu(){if(!gfxInit){gfxInit=true;GFXHI=!(G&&G.gfx==='lo');applyGfx()}music('title');armed=false;show(`<h1 class="tt">Grim Gambit</h1><div class="mn"><button data-a="camp">Campaign</button><button data-a="skirm">Skirmish</button><button data-a="opt">Options</button><button data-a="how">How to play</button></div>`)}
+let gfxInit=false;function openMenu(){if(!gfxInit){gfxInit=true;GFXHI=!(G&&G.gfx==='lo');applyGfx()}music('title');armed=false;show(`<h1 class="tt">Grim Gambit</h1><div class="mn"><button data-a="camp">Campaign</button><button data-a="skirm">Skirmish</button><button data-a="opt">Options</button></div>`)}
 const ZC=['#1c2438','#3a1315','#16301f','#3a3128','#1c2538','#52160c'];
 /* the barracks hall: a place, not a menu */
 let HALL_BG=(()=>{let o=`<svg class="hbg" viewBox="0 0 1600 1000" preserveAspectRatio="none"><defs>
@@ -9192,7 +9192,7 @@ const FS={
   /* refresh the button text once the window has changed */
   setTimeout(()=>{try{SCR.querySelectorAll('[data-a="fsx"]').forEach(b=>b.textContent=FS.label())}catch(e){}},500)}};
 A.fsx=()=>FS.toggle();
-{const _om=openMenu;openMenu=function(){const r=_om.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"],[data-a="fs"]')){const q=m.querySelector('[data-a="quit"]');(q?q:m.lastElementChild).insertAdjacentHTML(q?'beforebegin':'afterend',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
+/* (the Fullscreen button lives in Options only, not on the main menu) */
 {const _oo=openOpt;openOpt=function(){const r=_oo.apply(this,arguments);try{const m=SCR.querySelector('.mn');if(m&&FS.ok()&&!m.querySelector('[data-a="fsx"]')){const g=m.querySelector('[data-a="gxopen"]')||m.querySelector('[data-a="tips"]');(g||m.firstElementChild).insertAdjacentHTML('beforebegin',`<button data-a="fsx">${FS.label()}</button>`)}}catch(e){}return r}}
 ['fullscreenchange','webkitfullscreenchange'].forEach(k=>document.addEventListener(k,()=>{try{SCR.querySelectorAll('[data-a="fsx"]').forEach(b=>b.textContent=FS.label())}catch(e){}}));
 /* ---------- Choose your squad: the company waits in a dark, foggy castle hall ----------
@@ -9849,6 +9849,69 @@ function orgMusic(){let t=null;if(typeof window.__orgT==='number')t=window.__org
  const L=(+ORGM.env[Math.max(0,Math.min(ORGM.env.length-1,Math.floor(t*10)))]||0)/9;
  const hand=ev=>{const i=orgLast(ev,t);if(i<0)return{i,since:9,pos:.5,str:0};return{i,since:t-ev[i][0],pos:ev[i][1],str:ev[i][2]}};
  return{t,L,hd:[hand(ORGM.l),hand(ORGM.h)]}}
+/* ---------- Grimoire: the menus as pages torn from a cursed tome ----------
+   Menu panels become burnt, torn parchment; headings are blackletter in blood-red ink; text buttons are stitched
+   leather. Every menu gets film grain and a dark vignette. The main menu gets a storm: darker clouds, fog, lightning
+   that strikes now and then (with a roll of thunder), and a blackletter title with a tagline.
+   Text that a screen colours for a dark panel (gold, cream, pale blue...) would vanish on parchment, so an ink pass
+   re-inks any light text sitting directly on a page in a darker shade of the same colour. Text inside dark boxes
+   (skill trees, inventories, item cards) is left alone. */
+const GRM={paper:null,leather:null,flashT:0,next:0};
+function grTex(){if(GRM.paper)return;
+ const N=256,c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d');g.fillStyle='#b9a27a';g.fillRect(0,0,N,N);const R=PT.rng(77);
+ PT.blots(g,N,R,40,10,60,'120,90,50',.25);PT.blots(g,N,R,14,20,70,'60,40,20',.18);PT.blots(g,N,R,10,6,18,'90,20,14',.18);PT.strokes(g,N,R,300,30,.1,'rgba(70,50,30,1)',.08);
+ PT.specks(g,N,R,1500,1.4,'#3a2a18',.25);PT.cracks(g,N,R,3,'rgba(60,40,20,.35)','rgba(255,240,200,.15)',.8);
+ GRM.paper='url('+c.toDataURL('image/jpeg',.86)+')';GRM.leather='url('+PT.K.leather(256,305,{}).toDataURL('image/jpeg',.86)+')'}
+function grCSS(){grTex();const grain=`url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`;
+ const st=document.createElement('style');st.id='grimoire';st.textContent=`
+#scr::before{filter:saturate(.6) contrast(1.28) brightness(.9) hue-rotate(-12deg)}
+#scr.grmain>*:not(.grfx){position:relative;z-index:2}
+.grfx{position:absolute;inset:0;pointer-events:none}
+.grgrain{z-index:4;background:${grain};opacity:.3;mix-blend-mode:overlay}
+.grvig{z-index:3;background:radial-gradient(ellipse 75% 70% at 50% 45%,transparent 45%,rgba(0,0,0,.82) 100%)}
+.grstorm{z-index:0;background:radial-gradient(ellipse 60% 30% at 70% 8%,rgba(150,160,190,.16),transparent 70%),linear-gradient(180deg,rgba(6,6,12,.6) 0%,rgba(10,10,16,.2) 30%,transparent 50%,rgba(0,0,0,.45) 84%,rgba(0,0,0,.9) 100%)}
+.grflash{z-index:1;opacity:0;background:radial-gradient(ellipse 40% 45% at var(--bx,76%) 18%,rgba(215,222,255,.55),rgba(150,160,210,.12) 55%,transparent 75%)}
+.grbolt{z-index:1;opacity:0}
+.grtag{display:block;font:600 13px Cinzel,serif;letter-spacing:.5em;text-transform:uppercase;color:#a89a84;margin:-10px 0 26px;text-shadow:0 2px 3px #000}
+#scr .tt{font-family:'UnifrakturMaguntia','UnifrakturCook',serif!important;letter-spacing:.02em;font-size:clamp(56px,10vw,120px)!important;color:#e6d3a8!important;text-shadow:0 0 1px #000,2px 2px 0 #7a0e0a,-1px -1px 0 #3a0605,0 8px 18px #000,0 0 40px rgba(170,20,16,.75)!important}
+#scr .pn{background:${GRM.paper};background-size:280px;border:none;outline:none;color:#2a1a0e;box-shadow:inset 0 0 40px rgba(60,30,10,.85),inset 0 0 120px rgba(30,15,5,.6),0 18px 44px #000;clip-path:polygon(0 1.2%,3% 0,30% .8%,55% 0,80% 1%,100% 0,99.3% 30%,100% 60%,99% 100%,70% 99.3%,40% 100%,10% 99%,0 100%,.7% 60%)}
+#scr .pn>h2,#scr .pn h2{font-family:'UnifrakturCook',serif!important;color:#7a1410!important;font-size:34px;letter-spacing:.04em;text-shadow:none!important}
+#scr .pn>h2::after{filter:sepia(1) saturate(3) hue-rotate(-30deg) brightness(.5)}
+#scr button:not(:has(img,canvas,svg)){background:linear-gradient(180deg,rgba(80,30,20,.35),rgba(20,8,5,.7)),${GRM.leather};background-size:auto,160px;border:1px dashed rgba(220,180,120,.5);outline:2px solid #1a0a05;outline-offset:-1px;color:#ecd9b0;text-shadow:0 1px 0 #000}
+#scr button:not(:has(img,canvas,svg)):hover:not(:disabled){color:#ffd98a;background-color:#5a1a10;filter:brightness(1.15)}
+#scr button:disabled{filter:grayscale(.6) brightness(.7)}
+#scr .mn button{letter-spacing:.14em;font-family:'IM Fell English',serif;font-size:17px}
+#scr .pn input[type=range]{accent-color:#7a1410}
+#scr .pn .sl,#scr .pn label{color:#3a2414}
+#scr .pn hr{border-color:rgba(60,30,10,.35)}`;document.head.appendChild(st)}
+/* re-ink light text that sits straight on a parchment page */
+const grLum=c=>{const m=c.match(/[\d.]+/g);if(!m)return 0;const[r,g,b]=m.map(Number);return(.2126*r+.7152*g+.0722*b)/255};
+const grAlpha=c=>{const m=c.match(/[\d.]+/g);return m&&m.length>3?+m[3]:(c.startsWith('rgba')?0:1)};
+function grInkColor(c){const m=c.match(/[\d.]+/g);let[r,g,b]=m.map(Number).map(v=>v/255);const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0;const l=(mx+mn)/2,d=mx-mn;
+ if(d){s=d/(1-Math.abs(2*l-1));h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;if(h<0)h+=360}
+ return s<.12?'#2a1a0e':`hsl(${Math.round(h)},${Math.round(Math.min(.75,s+.1)*100)}%,${h>30&&h<70?20:24}%)`}
+function grInk(){const pns=SCR.querySelectorAll('.pn');pns.forEach(pn=>{if(getComputedStyle(pn).backgroundImage==='none')return;pn.querySelectorAll('*').forEach(el=>{
+  if(el.dataset.grk)return;el.dataset.grk='0';let txt=false;for(const n of el.childNodes)if(n.nodeType===3&&n.textContent.trim()){txt=true;break}if(!txt)return;
+  /* what is this text sitting on? the first ancestor with a solid background or an image */
+  let onPage=true;for(let a=el;a&&a!==pn;a=a.parentElement){if(a.tagName==='BUTTON'||a.tagName==='INPUT'||a.tagName==='SELECT'){onPage=false;break}const cs=getComputedStyle(a);if(cs.backgroundImage!=='none'||grAlpha(cs.backgroundColor)>.35){onPage=false;break}}
+  if(!onPage)return;const col=getComputedStyle(el).color;if(grLum(col)<.42)return;
+  el.dataset.grk=1;el.style.setProperty('color',grInkColor(col),'important');el.style.setProperty('text-shadow','none','important')})})}
+/* the storm on the main menu */
+function grFx(){if(!SCR)return;const main=!!SCR.querySelector('.mn [data-a="camp"]');SCR.classList.toggle('grmain',main);
+ const have=SCR.querySelector('.grgrain');if(!have){const mk=(c,h)=>{const d=document.createElement('div');d.className='grfx '+c;if(h)d.innerHTML=h;SCR.prepend(d);return d};mk('grgrain');mk('grvig')}
+ if(main&&!SCR.querySelector('.grstorm')){const mk=(c,h)=>{const d=document.createElement('div');d.className='grfx '+c;if(h)d.innerHTML=h;SCR.prepend(d);return d};
+  mk('grbolt','<svg width="100%" height="100%" viewBox="0 0 1280 760" preserveAspectRatio="none"><defs><filter id="grgl"><feGaussianBlur stdDeviation="4"/></filter></defs><g class="grbp" stroke="#dfe6ff" fill="none" stroke-linecap="round"></g></svg>');mk('grflash');mk('grstorm');
+  const t=SCR.querySelector('.tt');if(t&&!SCR.querySelector('.grtag'))t.insertAdjacentHTML('afterend','<span class="grtag">Lead the damned · Spend them well</span>');GRM.next=performance.now()+2500}}
+function grBoltPath(x){let p=`M${x} 0`,y=0,cx=x;const br=[];while(y<300+Math.random()*120){y+=30+Math.random()*45;cx+=(Math.random()-.55)*60;p+=` L${cx.toFixed(0)} ${y.toFixed(0)}`;if(Math.random()<.3){let bx=cx,by=y,q=`M${cx.toFixed(0)} ${y.toFixed(0)}`;for(let i=0;i<2;i++){bx+=(Math.random()-.5)*70;by+=25+Math.random()*30;q+=` L${bx.toFixed(0)} ${by.toFixed(0)}`}br.push(q)}}return{p,br}}
+function grStrike(){const b=SCR.querySelector('.grbolt'),f=SCR.querySelector('.grflash');if(!b||!f)return;const x=780+Math.random()*380,{p,br}=grBoltPath(x);
+ b.querySelector('.grbp').innerHTML=`<path d="${p}" stroke-width="7" opacity=".5" filter="url(#grgl)"/><path d="${p}" stroke-width="2.2"/>`+br.map(q=>`<path d="${q}" stroke-width="1.2" opacity=".75"/>`).join('');
+ f.style.setProperty('--bx',(x/1280*100).toFixed(0)+'%');const seq=[[0,1],[70,.15],[130,.9],[260,0]];seq.forEach(([t,o])=>setTimeout(()=>{b.style.opacity=o;f.style.opacity=o},t));
+ /* thunder rolls in a moment later */
+ try{if(AC&&NB&&sfxG&&AC.state==='running'){const t0=AC.currentTime+.5+Math.random()*.9,s=AC.createBufferSource();s.buffer=NB;s.loop=true;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=160;const g=AC.createGain();g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.9,t0+.08);g.gain.exponentialRampToValueAtTime(.3,t0+.6);g.gain.exponentialRampToValueAtTime(.001,t0+3.2);s.connect(lp);lp.connect(g);g.connect(sfxG);s.start(t0);s.stop(t0+3.3)}}catch(e){}}
+(function(){let q=0;const run=()=>{q=0;try{grFx();grInk()}catch(e){console.error('grimoire',e)}};
+ try{grCSS()}catch(e){console.error('grimoire css',e)}
+ new MutationObserver(()=>{if(!q)q=requestAnimationFrame(run)}).observe(SCR,{childList:true,subtree:true});run();
+ setInterval(()=>{if(!SCR.classList.contains('on')||!SCR.querySelector('.grstorm'))return;const now=performance.now();if(now>=GRM.next){grStrike();GRM.next=now+9000+Math.random()*10000}},500)})();
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
@@ -10096,7 +10159,7 @@ G=load()||fresh();migrate();G.roster.forEach(c=>{if(c.tal)for(const id in c.tal)
    <div class="mn row"><button data-a="csup">Save to cloud now</button><button data-a="cscr">Create account</button><button data-a="cssi">Sign in</button></div>`;
   else body=`<p>Signed in as <b>${esc(u.email||'your account')}</b>. Sign in with the same email on any device to continue where you left off.</p>
    <div class="mn row"><button data-a="csup">Save to cloud now</button><button data-a="csdl">Load cloud save</button><button data-a="csout">Sign out</button></div>`;
-  show(`<div class="csw"><h2>Cloud Save</h2><p class="sub">${status}${CS.row&&CS.row.at?` · cloud copy from ${esc(CS.row.device||'')} ${when(CS.row.at)}`:''}</p>${msg?`<p class="msg">${msg}</p>`:''}${body}<div class="mn row"><button data-a="menu">Back</button></div></div>`)}
+  show(`<div class="csw"><h2>Cloud Save</h2><p class="sub">${status}${CS.row&&CS.row.at?` · cloud copy from ${esc(CS.row.device||'')} ${when(CS.row.at)}`:''}</p>${msg?`<p class="msg">${msg}</p>`:''}${body}<div class="mn row"><button data-a="opt">Back</button></div></div>`)}
  A.cloud=()=>{CS.flow=null;openCloud()};
  A.csx=()=>{CS.flow=null;pw='';openCloud()};
  A.csup=async()=>{await upload();openCloud(CS.state==='ok'?'Saved to the cloud.':'')};
@@ -10116,7 +10179,8 @@ G=load()||fresh();migrate();G.roster.forEach(c=>{if(c.tal)for(const id in c.tal)
  A.csout=async()=>{await upload();await sb.auth.signOut();const m=meta();delete m.cloudAt;setMeta(m);location.reload()};
 
  /* ---------- menu button, status line, and a last upload when quitting ---------- */
- {const _om=openMenu;openMenu=function(){_om.apply(this,arguments);try{const r=SCR.querySelector('.mn');if(r&&!r.querySelector('[data-a="cloud"]')){const q=r.querySelector('[data-a="board"]');q?q.insertAdjacentHTML('afterend','<button data-a="cloud">Cloud Save</button>'):r.insertAdjacentHTML('beforeend','<button data-a="cloud">Cloud Save</button>')}}catch(e){}}}
+ /* the Cloud Save button lives in Options (above Back), not on the main menu */
+ {const _oo=openOpt;openOpt=function(){_oo.apply(this,arguments);try{const r=SCR.querySelector('.mn');if(r&&!r.querySelector('[data-a="cloud"]')){const q=r.querySelector('[data-a="menu"]');q?q.insertAdjacentHTML('beforebegin','<button data-a="cloud">Cloud Save</button>'):r.insertAdjacentHTML('beforeend','<button data-a="cloud">Cloud Save</button>')}}catch(e){}}}
  A.menu=()=>openMenu();
  const tag=document.createElement('div');tag.id='ggcs';document.body.appendChild(tag);
  function paint(){const m=meta();tag.textContent=CS.state==='syncing'?'☁ Saving…':CS.state==='error'?'☁ Cloud save offline':CS.state==='conflict'?'☁ Choose a save':CS.state==='ok'?`☁ Saved ${ago(m.syncedAt)}`:'☁ …';tag.classList.toggle('bad',CS.state==='error'||CS.state==='conflict')}
@@ -10128,7 +10192,7 @@ G=load()||fresh();migrate();G.roster.forEach(c=>{if(c.tal)for(const id in c.tal)
 .csc{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}.csb{flex:1 1 220px;border:1px solid #4a3a22;background:rgba(10,7,5,.75);padding:10px 14px}.csb h3{margin:0;font-family:Cinzel,serif;color:#e8d8a8;font-size:15px}.csb small{color:#8a7a5a}.csb p{margin:8px 0 0;font-size:14px}.csb b{color:#ffd98a}
 .csf{display:grid;gap:8px;max-width:360px;margin:10px auto}.csf label{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#b8a070;font-size:13px}
 .csf input{flex:1;background:#0e0b09;border:1px solid #6a5a3a;color:#e8d8a8;font:inherit;font-size:14px;padding:6px 8px;user-select:text}`;document.head.appendChild(st);
- if(SCR&&SCR.querySelector('.mn [data-a="board"]'))openMenu();
+ if(SCR&&SCR.querySelector('.mn [data-a="board"]'))openMenu();if(SCR&&SCR.querySelector('.mn [data-a="gfx"]'))openOpt();
  paint();startup();
 })();
 
