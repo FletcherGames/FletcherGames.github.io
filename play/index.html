@@ -7644,7 +7644,7 @@ function lavaShore(){let moat=null;SKT.g&&SKT.g.traverse(o=>{if(o.isMesh&&o.mate
 /* ================= THE BLACK CHAPEL: a hooded figure hunched at the pipe organ, hammering the keys in time with the map's music.
    Hands strike on the beat and leap across the manual, the body rocks, the head jerks on downbeats — and now and then he turns
    to stare back over his shoulder with burning eyes ================= */
-const ORG={g:null,p:{},look:0,next:8,hx:[0,0],tgt:[-.3,.3]};
+const ORG={g:null,p:{},look:0,next:8,hx:[0,0],tgt:[-.3,.3],li:[-2,-2]};
 function orgBuild(){const HZ=SZ/2+3.2,g=new THREE.Group();g.position.set(MX,.32,MZ-HZ+1.4);g.scale.setScalar(1.7);
  const cl=new THREE.MeshLambertMaterial({color:0x1c1424,flatShading:true}),cl2=new THREE.MeshLambertMaterial({color:0x2a1c32,flatShading:true}),sk=new THREE.MeshLambertMaterial({color:0xcfc4b0,flatShading:true}),
   wd=new THREE.MeshLambertMaterial({color:0x2a1418}),eye=new THREE.MeshBasicMaterial({color:0xff2a1a}),add=(p,geo,m,x,y,z,rx=0,ry=0,rz=0)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.rotation.set(rx,ry,rz);p.add(o);return o};
@@ -7672,6 +7672,21 @@ function orgSet(th){if(ORG.g){S.remove(ORG.g);ORG.g=null}if(th.n!=='The Black Ch
  /* follow the music: which 16th-note step is sounding right now */
  let st=now/1000*7,bpm=100;try{const mb=typeof mpBeat==='function'?mpBeat():null;if(mb){bpm=mb.bpm;st=mb.st}else if(AC&&track&&track.bpm){bpm=track.bpm;const sd=60/bpm/4;st=step-(nextT-AC.currentTime)/sd}}catch(e){}
  const ph=st%1,beat=Math.floor(st),down=beat%4===0,P=ORG.p;
+ /* playing the recorded song: drive everything from the song's own notes */
+ const OM=typeof orgMusic==='function'?orgMusic():null;
+ if(OM){const L=OM.L;
+  P.arms.forEach((a,i)=>{const h=OM.hd[i];if(h.i!==ORG.li[i]){ORG.li[i]=h.i;ORG.tgt[i]=i?(.0+h.pos*.55):(-.6+h.pos*.5)}
+   const hit=h.since<.6?Math.exp(-h.since*9)*(.55+.45*h.str):0;ORG.hx[i]+=(ORG.tgt[i]-ORG.hx[i])*Math.min(1,dt*22);
+   const lift=(1-hit)*(.05+.09*L)+.012*Math.sin(now*.011+i*2);
+   const hp=new THREE.Vector3(ORG.hx[i]-a.s*.2,-.44+lift-hit*.03,-.385);a.Hd.position.copy(hp);a.A.rotation.set(0,0,0);
+   const Ln=hp.length();a.sl.position.copy(hp).multiplyScalar(.5);a.sl.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),hp.clone().normalize());a.sl.scale.set(1,Ln/.5,1);a.Hd.rotation.set(-.3-hit*.45,0,0)});
+  const bh=OM.hd[0],bass=bh.since<.5&&bh.str>.4?Math.exp(-bh.since*7)*bh.str:0;ORG.sw=(ORG.sw||0)+dt*(1.1+L*1.6);
+  P.body.rotation.set(-.1-.08*L+.05*bass+.04*Math.sin(ORG.sw*1.3),0,(.03+.11*L)*Math.sin(ORG.sw));P.body.position.y=.54+.015*bass+.01*L*Math.abs(Math.sin(ORG.sw*2));
+  ORG.next-=dt;if(ORG.next<=0&&ORG.look<=0&&L<.45){ORG.look=2.4;ORG.next=12+Math.random()*12}
+  if(ORG.look>0){ORG.look-=dt;const k=Math.min(1,Math.min(ORG.look,2.4-ORG.look)*3);P.head.rotation.set(-.1,Math.PI*.75*k,.15*k)}
+  else P.head.rotation.set(.2+.1*L+.35*bass,.12*Math.sin(ORG.sw*.4),.1*Math.sin(ORG.sw*.7));
+  const glow=ORG.look>0?1:.25+.55*L+.3*bass;[P['e-1'],P.e1].forEach(e=>e.material.color.setRGB(Math.min(1,glow),Math.min(1,glow)*.18,Math.min(1,glow)*.08));
+  const fk=.7+.3*Math.sin(now*.03)*Math.sin(now*.017);P.fl.material.opacity=fk;P.pl.intensity=1.1+.5*fk;return}
  /* hands: alternate strikes on every step, leaping to new keys each time */
  P.arms.forEach((a,i)=>{const mine=(beat+i)%2===0,hit=mine?Math.pow(1-ph,3):0;if(mine&&ph<dt*bpm/15*1.2+.02){ORG.tgt[i]=(i?.05:-.55)+Math.random()*.5}
   ORG.hx[i]+= (ORG.tgt[i]-ORG.hx[i])*Math.min(1,dt*18);const lift=(mine?(1-hit)*.12:.1+.04*Math.sin(now*.02+i)),reach=-.42;
@@ -9583,10 +9598,24 @@ function rmBuild(th){const out=!!th.env,ty=rmTypes(th),m=new Map(),plot=RMPL[rmR
  /* a little cover just in front of each deployment zone */
  for(const r of[3,SZ-4])for(let i=0;i<2;i++){const c=2+rmR(SW-4);if(!m.has(r*100+c))put(r,c,wpick(ty.half))}
  return{m,plot:plot.n,used,nsp}}
+/* ---------- the Black Chapel gets its own floor plan ----------
+   The chapel nave is narrow, so rooms and walls crammed it. Instead it is laid out like a real chapel: rows of
+   pews (half cover) either side of a clear centre aisle (the red carpet), a cross aisle through the middle, and
+   stone pillars (full cover) along the side aisles. Pews go missing here and there, so no two battles are the same. */
+function rmChapel(th){const m=new Map(),put=(r,c,t)=>{const k=r*100+c;if(r<3||r>SZ-4||VOID.has(k)||m.has(k))return false;m.set(k,t);return true};
+ const a0=Math.floor(MX),a1=a0+1,L=[[a0-5,a0-4],[a0-2,a0-1]],R=[[a1+1,a1+2],[a1+4,a1+5]];
+ const rows=[5,8,13,16];const cross=10+Math.floor(Math.random()*2);
+ rows.forEach(r=>{[...L,...R].forEach(([c0,c1])=>{if(Math.random()<.25)return;const k0=r*100+c0,k1=r*100+c1;if(VOID.has(k0)||VOID.has(k1)||m.has(k0)||m.has(k1))return;m.set(k0,'sp_pews_h');m.set(k1,'sp_pews_p')})});
+ /* pillars along both side aisles, and a pair framing the cross aisle */
+ [4,8,12,16].forEach(r=>{if(r===cross)return;[a0-6,a1+6].forEach(c=>{if(Math.random()<.8)put(r,c,'pillar')})});
+ [a0-1,a1+1].forEach(c=>put(cross,c,'pillar'));
+ /* a few low tombs and an altar off to the sides of the cross aisle */
+ const lo=Object.keys(th.ob).filter(k=>!X_FULL.has(k));for(let i=0;i<3;i++){const c=Math.random()<.5?a0-3-Math.floor(Math.random()*2):a1+3+Math.floor(Math.random()*2),r=cross+(Math.random()<.5?0:1);put(r,c,lo[Math.floor(Math.random()*lo.length)]||'tomb')}
+ return{m,plot:'chapel nave',used:['pews','pillars'],nsp:[...m.values()].filter(t=>/_h$/.test(t)).length}}
 {const _g=genMap;genMap=function(nm){if(!RM.on||window.__forceSet)return _g.apply(this,arguments);
   try{const pk=nm===undefined?MAPS:nm?MAPS.filter(m=>m.n===nm):MAPS.filter(m=>!m.env),th=(pk.length?pk:MAPS)[rmR((pk.length?pk:MAPS).length)];
    VOID=typeof voidFor==='function'?voidFor(th):new Set();let best=null;
-   for(let t=0;t<40&&!best;t++){const b=rmBuild(th);if(b.m.size>=20&&conn(b.m))best=b}
+   for(let t=0;t<40&&!best;t++){const b=th.n==='The Black Chapel'?rmChapel(th):rmBuild(th);if(b.m.size>=(th.n==='The Black Chapel'?10:20)&&conn(b.m))best=b}
    if(!best)return _g.call(this,th.n);
    RM.last={map:th.n,plot:best.plot,parcels:best.used,cells:best.m.size,pieces:best.nsp};
    window.__forceSet=[...best.m];if(typeof WLTH!=='undefined')WLTH=th.n;try{return _g.call(this,th.n)}finally{window.__forceSet=null;if(typeof WLTH!=='undefined')WLTH=null}}
@@ -9805,6 +9834,21 @@ try{titlePlay=function(){};cstPlay=function(){}}catch(e){}
 {const _av=applyVol;applyVol=function(){const r=_av.apply(this,arguments);try{if(MP3.cur){const a=MP3.els[MP3.cur];const f=MP3.fades.get(a);if(f)f.to=mpLevel(MP3.cur);else a.volume=mpLevel(MP3.cur)}}catch(e){}return r}}
 /* the organist follows the song's beat (in sixteenth notes) */
 function mpBeat(){const k=MP3.cur,b=k&&MP3.beat[k];if(!b)return null;const a=MP3.els[k];if(!a||a.paused)return null;return{bpm:b[0],st:(a.currentTime-b[1])*b[0]/15}}
+/* ---------- the Black Chapel organist plays The Mad Organist note for note ----------
+   A map of the song, worked out from the recording: every low note (left hand / pedals) and high note (right hand)
+   with how high it sits and how hard it lands, plus the loudness through the song. While the song plays, each hand
+   strikes on its own notes and reaches along the keyboard to follow the pitch, the body sways harder in loud
+   passages and settles in quiet ones, and the head jerks on the big bass hits. */
+const ORGM={"dur": 110.43, "env": "776544432433432111122233320122223222222233333333321112222210000000000111111111111010011020000000001111212343332212343222000111111000000000000000100000000222101111111103455566666555666665555656777677775443322222111100001100110000001111101112222211111111100001111100000000000011223222222111111110100000000000001211001001111220013323323244445554443323444233335443332234332344556544444454443433454433332344435556555434444544444435664455555555454556554455445443434445433433445454656766666666666665555666555656656566676766676676667666555566665566776776777756666666666666667666666666677668766666656666655667655565666677677777888887777787676788888877877877678788888788788887676777767877777678998888767778877887888988876787888778888777787776777778897777778999878899876655443433322221332233321112210001333222222111121213444335555667778887765555554545555665445444555455556665565565545565566665555556665666776655555565545545677556556665556556666665655545466666655455555566777788999997777898888799999889877888778899999899998997788878887767989898888998898888998988999989988989899988999899998888887789998899987899989989", "L": "812,k64,c54,m24,1m42,i64,i32,i42,1a43,m55,c52,1054,c66,m33,y55,q62,1m42,w12,w02,i43,1633,2u94,i99,u93,g93,o93,q93,w92,m92,k95,m93,c92,i94,e92,k92,c92,q74,u53,1o22,w42,1453,e43,w46,1k15,i13,1y43,s42,g52,g32,k42,e32,o03,i13,i32,e13,e03,c13,i13,q12,c12,g14,e13,e26,1062,e83,c74,1k74,1053,u53,u54,k52,1062,q72,m82,u82,e72,i92,m62,g55,c55,1k56,c58,e42,s52,e64,e43,e44,i32,g33,c43,s42,c34,q34,u53,y23,2i33,c36,1a45,k42,e22,i12,o22,w14,1q82,c43,1a13,e04,e04,g15,e23,i52,1452,s47,1y64,c43,1442,c53,k73,w22,q24,2o07,i33,g25,1804,k52,m42,c33,k24,c24,1i64,g42,g04,c26,g42,q85,o62,k13,g33,i52,q63,i14,1g85,o42,k24,k63,o53,s32,c52,1a92,c52,e52,i36,g32,c83,g73,g63,g08,c14,k13,m56,c33,m22,c23,1642,g32,s12,m05,k59,w73,c25,1674,g63,e42,g35,e52,1672,u33,2602,2453,k12,c73,w62,w02,w13,o32,k24,c25,1g94,c42,m13,m64,c02,g73,i43,q42,1u63,e04,c25,k12,m86,o43,i14,q62,k52,u02,1k72,g53,i63,i42,i72,g92,y04,m53,w55,m25,m32,w43,s35,s06,k04,m54,m64,c93,k44,s73,i62,e63,g25,i52,q93,c72,w26,1842,1805,c02,s82,o63,i32,e62,e66,u32,k03,e24,k14,i72,k73,i23,i22,y86,y24,1e72,q84,m17,e42,k63,s52,e05,i52,y92,o62,k16,1473,e33,m04,c03,q62,i72,i43,q35,g52,k72,m72,g03,c13,1854,m23,m14,e13,c73,1e13,w02,k54,i63,g74,c46,u72,c72,e84,k34,w22,1g42,e33,y52,i33,w14,1692,k52,o43,m63,w32,e43,e32,q42,k52,s43,1i63,c42,1642,c53,u33,1i73,k85,c82,e72,q73,i82,k82,o63,w93,e94,o94,1094,g93,i93,y93,u96,c93,1i73,m62,g73,c83,g63,k73,m54,m72,m62,m73,e42,o22,1452,1e62,k82,k63,i16,1c52,q54,m15,q64,1c12,c16,m15,m92,c52,c42,c62,1072,g72,w12,c22,k12,m53,c32,m22,k22,i73,g53,q32,g04,c03,w48,m83,c83,s53,g62,1g37,g53,o72,1c25,y52,u43,e13,g42,1m52,c42,s64,1423,g02,c04,m14,1834,c26,1a62,i64,m23,m73,s72,m82,g73,o73,k84,1623,o53,u84,m76,k24,c62,e83,1i42,1g73,c52,c63,i45,i63,q94,c73,m13,m62,w54,m37,m24,i23,q62,g13,i22,u22,m57,m54,c74,1g82,y33,w32,i82,g82,i52,e45,q63,i53,u33,c23,q62,g93,1a13,o92,i73,1822,1833,g72,g34", "H": "i41,4081,m93,m91,k92,k91,1291,1a93,1e81,6601,1o88,m63,m72,3g83,k74,m22,k71,k61,2c72,6a01,3035,k32,o41,i32,k61,m42,k91,g81,e61,c81,m91,1491,2g61,g97,4y62,k81,c51,u51,2c31,3271,w51,1662,2g71,2e81,c82,w92,1892,1k71,u92,m82,1s91,2g94,y91,1g51,c61,2473,2g91,1672,1881,1u51,k61,1a51,1473,1858,g41,g42,m42,m54,m46,m64,1i62,y61,w41,m52,m52,k52,1863,w41,c53,1643,o52,k42,e41,k61,1i74,1872,m42,k43,1832,w61,1861,m63,m53,c41,1652,w41,c32,k51,m73,m22,c52,1i62,w61,c53,1644,1844,1863,w22,1i53,o32,k32,1833,u31,c43,1856,c43,m22,g81,1241,1642,1851,m61,c81,1g62,1842,g51,s32,o41,k31,1841,u41,c32,1a51,k41,m41,o31,i21,s51,g53,1853,m53,1u71,w51,1i41,y31,2o42,y31,1i42,1841,1653,1851,2g41,1652,1853,m42,m42,3m52,4w41,2u41,q61,1862,1852,2261,c61,1852,m42,3001,1822,1832,2841,2m61,1u71,i61,1a41,1a21,1231,q51,i41,1853,c42,3y21,1801,k11,1u02,c01,m01,k11,m21,c01,k15,c11,m02,w13,k32,c41,m21,m21,m12,s01,g02,g01,g12,c11,w31,1241,g41,1i41,w41,c42,w51,w41,c21,1i32,w42,1i44,o31,k43,y31,1i63,e61,s23,m21,c31,1i32,w31,1i54,c22,k22,c31,1822,1812,1623,m21,c31,1i32,w42,c32,1633,1832,1822,1653,1823,m12,c22,1g12,y31,w21,m25,m24,m43,1821,1642,1813,m31,m01,1801,w11,1i12,m21,m11,2e31,1642,1021,q21,s21,o31,i32,1842,m42,m23,1q21,o13,1812,m01,m01,1601,i21,q02,1822,1801,1u21,k12,1871,m11,m01,1811,w31,1g53,c34,c32"};
+function orgDecode(s){const out=[];let t=0;(s||'').split(',').forEach(x=>{if(!x)return;const d=parseInt(x.slice(0,-2),36);t+=d;out.push([t/100,+x[x.length-2]/9,+x[x.length-1]/9])});return out}
+ORGM.l=orgDecode(ORGM.L);ORGM.h=orgDecode(ORGM.H);
+function orgLast(ev,t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m][0]<=t){r=m;lo=m+1}else hi=m-1}return r}
+/* where the song is right now, or null when the organist should fall back to keeping time on his own */
+function orgMusic(){let t=null;if(typeof window.__orgT==='number')t=window.__orgT;
+ else{try{if(MP3.cur!=='The Black Chapel')return null;const a=MP3.els[MP3.cur];if(!a||a.paused)return null;t=a.currentTime}catch(e){return null}}
+ const L=(+ORGM.env[Math.max(0,Math.min(ORGM.env.length-1,Math.floor(t*10)))]||0)/9;
+ const hand=ev=>{const i=orgLast(ev,t);if(i<0)return{i,since:9,pos:.5,str:0};return{i,since:t-ev[i][0],pos:ev[i][1],str:ev[i][2]}};
+ return{t,L,hd:[hand(ORGM.l),hand(ORGM.h)]}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
