@@ -9,7 +9,7 @@
       "title": "Grim Gambit",
       "featured": true,
       "status": "playable",
-      "statusLabel": "Beta 0.1.8",
+      "statusLabel": "Beta 0.1.9",
       "genre": "Tactics RPG",
       "platform": "Windows 10/11 · Browser · Phones & tablets",
       "tagline": "Lead the company. Bury the dead. Do not look back.",
@@ -113,6 +113,22 @@
         ]
       ],
       "patchNotes": [
+        {
+          "version": "Beta 0.1.9",
+          "title": "Into the Dark",
+          "date": "2026-11-04",
+          "notes": [
+            "True darkness in the fog of war: anything your fighters cannot see sinks into shadow (floor, walls, props and trees), with soft edges that follow your vision as it changes.",
+            "Firelight: candles, torches, lanterns and braziers glow and flicker, the corner braziers burn brighter, and the busiest clusters of flames on each map cast real warm light on the floor and fighters around them.",
+            "Fighter shadows no longer double up where a fighter, their weapon and the shadow under their feet overlap.",
+            "No more stutter when blood flies: droplets only test props they can actually reach, and blood textures and shaders are prepared while you deploy instead of on the first hit.",
+            "Balance: knights deal 50% less damage and berserkers 30% less (yours and the enemy's), and all of your fighters deal 10% less damage. Enemies are otherwise unchanged.",
+            "New Game+: recruits arrive one level higher for every NG+ level, with no cap, along with the matching talent points.",
+            "Class items now roll their +skill bonuses from the class's whole talent tree, so the same item can carry a different skill each time it drops or is crafted.",
+            "The rain on the Hollow Graveyard is much quieter.",
+            "Already playing on Windows? Open the launcher and it downloads this update automatically. The browser version is already updated."
+          ]
+        },
         {
           "version": "Beta 0.1.8",
           "title": "The Pit Stirs",

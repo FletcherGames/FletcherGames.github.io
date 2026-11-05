@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.8"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.9"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -2620,7 +2620,7 @@ const shg=new THREE.CircleGeometry(.45,20);shg.rotateX(-Math.PI/2);const rgg=new
 const csG=(()=>{const g=new THREE.CylinderGeometry(.2,.27,.95,8);g.translate(0,.48,0);return g})(),csM=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false});
 function mk(t,s,r,c,id,lk){
   const mat=new THREE.MeshBasicMaterial({map:texForB(t,lk),transparent:true,alphaTest:.05,side:THREE.DoubleSide}),m=new THREE.Mesh(sg,mat);
-  const sh=new THREE.Mesh(shg,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.55})),rg=new THREE.Mesh(rgg,new THREE.MeshBasicMaterial({color:s?0x8a1a14:0xc9a24a,transparent:true,opacity:.85}));
+  const sh=new THREE.Mesh(shg,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.55,stencilWrite:true,stencilRef:1,stencilFunc:THREE.NotEqualStencilFunc,stencilZPass:THREE.ReplaceStencilOp,stencilFail:THREE.KeepStencilOp,stencilZFail:THREE.KeepStencilOp})),rg=new THREE.Mesh(rgg,new THREE.MeshBasicMaterial({color:s?0x8a1a14:0xc9a24a,transparent:true,opacity:.85}));
   const tg=document.createElement('div');tg.className='tag';$('tags').appendChild(tg);const cs=mkCaster(sg,texForB(t,lk));
   if(T[t].big){const b=T[t].big;sh.scale.set(b,b,b);rg.scale.set(b,b,b)}
   const u={t,s,r,c,id,hp:T[t].hp,ap:s===0?2:0,ow:false,hid:t==='rg'&&s===0,dead:false,m,sh,rg,cs,tg,px:c,pz:r,fl:0};
@@ -2643,10 +2643,16 @@ function init(){
 function floater(u,txt,k){const v=new THREE.Vector3(u.c,1.5,u.r).project(cam),d=document.createElement('div');
   d.className='fl '+k;d.textContent=txt;d.style.transform=`translate(${(v.x*.5+.5)*innerWidth}px,${(-v.y*.5+.5)*innerHeight}px)`;
   $('fls').appendChild(d);setTimeout(()=>d.remove(),1200)}
+/* damage tuning per class (both sides): knights deal half damage, berserkers 30% less (rounded up or down at random so the average is exact) */
+const DMGM={kn:.5,bk:.7},DMGP=.9;
+/* your fighters deal 10% less damage across the board (enemies are unchanged) */
+const dmgF=u=>(DMGM[u.t]||1)*(u&&u.s===0?DMGP:1);
+const pdm=(u,d)=>{const f=dmgF(u);return f===1?d:Math.max(1,Math.floor(d*f+Math.random()))};
+const dmgRange=u=>{const f=dmgF(u);return f!==1?Math.max(1,Math.floor(u.st.lo*f))+'–'+Math.max(1,Math.ceil(u.st.hi*f)):u.st.lo+'–'+u.st.hi};
 function shoot(a,t,re){
   const p=chance(a,t,re),hit=Math.random()*100<p;
   let m=`${T[a.t].n} ${re?'on overwatch ':''}fires at ${T[t.t].n} (${Math.round(p)}%). `,d=0;
-  if(hit){d=a.st.lo+Math.floor(Math.random()*(a.st.hi-a.st.lo+1));if(a.st.crit&&Math.random()*100<a.st.crit){d+=2;m+='Critical! '}if(a.hid){d+=2;m+='Ambush! '}d=Math.max(1,d-(t.st.arm||0));t.hp-=d;if(t.hid){t.hid=false;m+=` The ${T[t.t].n} is revealed!`}a.xg=(a.xg||0)+2;m+=`Hit for ${d}.`;
+  if(hit){d=a.st.lo+Math.floor(Math.random()*(a.st.hi-a.st.lo+1));if(a.st.crit&&Math.random()*100<a.st.crit){d+=2;m+='Critical! '}if(a.hid){d+=2;m+='Ambush! '}{const f=dmgF(a);if(f!==1)d=Math.max(1,Math.floor(d*f+Math.random()))}d=Math.max(1,d-(t.st.arm||0));t.hp-=d;if(t.hid){t.hid=false;m+=` The ${T[t.t].n} is revealed!`}a.xg=(a.xg||0)+2;m+=`Hit for ${d}.`;
     if(a.st.drain&&a.hp<a.st.hp){a.hp++;m+=' It drains life.'}
     if(t.hp<=0){t.dead=true;t.dk={by:a.nm||T[a.t].n,ab:DKAB,re:!!re};a.kills=(a.kills||0)+1;a.xg=(a.xg||0)+4;m+=' It is unmade.'}}
   else m+='Missed.';
@@ -2779,7 +2785,7 @@ function hud(){
   U.forEach(u=>{u.tg.style.display=u.dead||!isVis(u)?'none':'block';
     u.tg.innerHTML=(hl.includes(u)?'<b class="pc" style="border-color:#7fd08a;color:#b8ffc0">+'+((ax?abV(ax.a,'hl',ax.r):3)+(sel.st.hv||0))+'</b><br>':'')+(tg.includes(u)?`<b class="pc">${mode==='bomb'?'3 dmg':ax?Math.max(5,Math.min(95,chance(sel,u,false)+abV(ax.a,'am',ax.r)))+'%':chance(sel,u,false)+'%'}</b><br>`:'')+`<i class="hp${u.s===0?' al':''}"><b style="width:${Math.max(0,u.hp)/u.st.hp*100}%"></b></i>`+(u.s===turn?`<span class="ap">${'◆'.repeat(u.ap)}</span>`:'')+(u.ow?'<span class="ap">◉</span>':'')+(u.hid?'<span class="ap" style="color:#c8a8ff;font-size:10px;letter-spacing:.08em">HIDDEN</span>':'')+(covU(u)?'<span class="cvb" title="In cover: attackers on the blocked side take −30% to hit">⛨ COVER</span>':'')});
   const b=$('banner'),w=over===null?turn:over;b.textContent=over===null?SIDE[turn]:`${SIDE[over]} prevail`;b.style.color=SC[w];
-  $('info').innerHTML=deploy?depTxt(sel):sel?`<div class="up"><div class="pt big"><img alt="" data-pk="${pcls(sel)}"></div><div class="ud"><h2>${sel.nm?sel.nm+' · ':''}${T[sel.t].n}</h2><div class="hpb${sel.s===0?' al':''}"><b style="width:${Math.max(0,sel.hp)/sel.st.hp*100}%"></b><span>${sel.hp} / ${sel.st.hp}</span></div><div class="aps">Actions ${'<i class="on"></i>'.repeat(Math.max(0,sel.ap))+'<i class="off"></i>'.repeat(Math.max(0,2-sel.ap))}</div></div></div><p class="stt">Move ${sel.st.mv} · Range ${sel.st.rng} · Vision ${sel.st.vis} · Dmg ${sel.st.lo}–${sel.st.hi} · Aim ${sel.st.aim}%</p><p class="ds">${T[sel.t].d}</p>${sel.items?'<p class="ds">'+sel.items+'</p>':''}${sel.tals?'<p class="ds">Abilities: '+sel.tals+'</p>':''}${sel.s===0&&sel.ch&&(sel.xg||sel.dead)?'<p class="ds">XP this battle: +'+(sel.xg||0)+'</p>':''}`
+  $('info').innerHTML=deploy?depTxt(sel):sel?`<div class="up"><div class="pt big"><img alt="" data-pk="${pcls(sel)}"></div><div class="ud"><h2>${sel.nm?sel.nm+' · ':''}${T[sel.t].n}</h2><div class="hpb${sel.s===0?' al':''}"><b style="width:${Math.max(0,sel.hp)/sel.st.hp*100}%"></b><span>${sel.hp} / ${sel.st.hp}</span></div><div class="aps">Actions ${'<i class="on"></i>'.repeat(Math.max(0,sel.ap))+'<i class="off"></i>'.repeat(Math.max(0,2-sel.ap))}</div></div></div><p class="stt">Move ${sel.st.mv} · Range ${sel.st.rng} · Vision ${sel.st.vis} · Dmg ${dmgRange(sel)} · Aim ${sel.st.aim}%</p><p class="ds">${T[sel.t].d}</p>${sel.items?'<p class="ds">'+sel.items+'</p>':''}${sel.tals?'<p class="ds">Abilities: '+sel.tals+'</p>':''}${sel.s===0&&sel.ch&&(sel.xg||sel.dead)?'<p class="ds">XP this battle: +'+(sel.xg||0)+'</p>':''}`
    :`<h2>Choose a unit</h2><p class="ds">2 actions each. Moving costs one; firing ends the unit’s turn. Half cover −20%, full cover −40%; high ground +15% aim. Blue tiles keep an action, gold tiles are a dash. Drag to turn the view, scroll to zoom.</p>`;
   {const od=U.filter(u=>(!u.dead&&isVis(u))||(u.s===0&&u.dead)).sort((a,b)=>((a.s===turn?0:1)-(b.s===turn?0:1))||a.id-b.id);let h=`<div class="trn" style="color:${SC[over===null?turn:over]}">${over===null?SIDE[turn]:SIDE[over]+' prevail'}</div>`,ls=-1;
    od.forEach(u=>{if(ls!==-1&&ls!==u.s)h+='<div class="dv"></div>';ls=u.s;h+=`<div class="ii ${u.s===0?'ally':'foe'}${u.s===turn?' on':''}${sel===u?' sel':''}${u.dead?' dead':''}" data-id="${u.id}" title="${esc((u.nm?u.nm+' · ':'')+T[u.t].n)}"><div class="pt"><img alt="" data-pk="${pcls(u)}"></div><i class="hb"><b style="width:${Math.max(0,u.hp)/u.st.hp*100}%"></b></i>${u.s===0&&u.s===turn&&u.ap>0&&!u.dead?'<span class="ipp">'+u.ap+'</span>':''}</div>`});
@@ -2806,7 +2812,7 @@ function doAb(u,x,o,r,c){const a=x.a,R=x.r,v=k=>abV(a,k,R),nm=u.nm||T[u.t].n;try
     u.st.aim=sa;u.st.lo=sl;u.st.hi=sh;u.st.ignc=si;
     if(v('po')&&o.hp<h0&&!o.dead){const ps=[o];if(v('pa'))U.forEach(e=>{if(!e.dead&&e.s!==u.s&&e!==o&&dist(e,o)<=v('pa')&&!(e.hid&&dist(u,e)>1))ps.push(e)});ps.forEach(e=>{psnAdd(e,v('po'),v('pt'),u)});log.unshift(`${ps.length>1?ps.length+' foes are':T[o.t].n+' is'} poisoned.`)}
     if(o.hp<h0)mgEff(u,o,v);if(v('dr')&&o.hp<h0&&!u.dead){u.hp=Math.min(u.st.hp,u.hp+v('dr'));floater(u,'+'+v('dr'),'h')}
-    if(v('sp')){U.filter(e=>!e.dead&&e.s!==u.s&&e!==o&&!(e.hid&&dist(u,e)>1)&&Math.max(Math.abs(e.r-o.r),Math.abs(e.c-o.c))<=1).forEach(e=>{e.hp-=v('sp');e.bdm=v('sp');u.xg=(u.xg||0)+(e.hp<=0?5:1);log.unshift(`${T[e.t].n} is caught in the blast.`+(e.hp<=0?' It is unmade.':''));if(e.hp<=0){e.dead=true;e.dk={by:u.nm||T[u.t].n,ab:a.n,bl:1};u.kills=(u.kills||0)+1}if(a.n==='Frost Nova'||a.n==='Absolute Zero')elemHit(u,e,'ice',Math.max(300,dist(u,e)*70));else bombFx(u,e);mgEff(u,e,v)})}
+    if(v('sp')){U.filter(e=>!e.dead&&e.s!==u.s&&e!==o&&!(e.hid&&dist(u,e)>1)&&Math.max(Math.abs(e.r-o.r),Math.abs(e.c-o.c))<=1).forEach(e=>{{const q=pdm(u,v('sp'));e.hp-=q;e.bdm=q}u.xg=(u.xg||0)+(e.hp<=0?5:1);log.unshift(`${T[e.t].n} is caught in the blast.`+(e.hp<=0?' It is unmade.':''));if(e.hp<=0){e.dead=true;e.dk={by:u.nm||T[u.t].n,ab:a.n,bl:1};u.kills=(u.kills||0)+1}if(a.n==='Frost Nova'||a.n==='Absolute Zero')elemHit(u,e,'ice',Math.max(300,dist(u,e)*70));else bombFx(u,e);mgEff(u,e,v)})}
     if(v('cn'))chainRun(u,o,v,a);ap=v('keep')?ap:0;if(o.dead&&v('rf'))ap=Math.max(ap,1);bf(u,'arm',v('ar'));bf(u,'dodge',v('dd'))}
   else if(a.k==='heal'){const hv=Math.min(v('hl')+(u.st.hv||0),o.st.hp-o.hp);o.hp+=hv;u.xg=(u.xg||0)+2;floater(o,'+'+hv,'h');burst(o,0x9fffb0,10,true);log.unshift(`${nm} uses ${a.n} on ${o.nm||T[o.t].n}.`);bf(o,'arm',v('ar'));ap=0}
   else if(a.k==='buf'){const ws=v('rd')?U.filter(e=>!e.dead&&e.s===u.s&&dist(u,e)<=v('rd')):[u];
@@ -4930,7 +4936,7 @@ function mgTurn(u){if(u.dead)return;
 function chainPath(u,o,n){const out=[],hit=new Set([o]);let last=o;for(let i=0;i<n;i++){const nx=U.filter(e=>!e.dead&&e.s!==u.s&&!hit.has(e)&&dist(e,last)<=3).sort((p,q)=>dist(p,last)-dist(q,last))[0];if(!nx)break;hit.add(nx);out.push(nx);last=nx}return out}
 function elemHit(u,e,kind,delay){setTimeout(()=>{const n=performance.now();try{ST(t=>{if(kind==='ice')SS.ice(t,.3);else{SS.zap(t,.22);SS.crackle(t,.2,.12)}})}catch(x){}
   if(e.dead)setTimeout(()=>deathSnd(e),150);e.fl=1;e.hitT=n;floater(e,'-'+(e.bdm||1),'d');burst(e,kind==='ice'?0x9ad8ff:0xfff070,12);burst(e,kind==='ice'?0xe8fbff:0xffffff,6);if(e.dead)e.dyAt=n},delay||300)}
-function chainRun(u,o,v,a){const nx=chainPath(u,o,v('cn')),dmg=Math.max(1,v('cx'));let dly=Math.max(260,dist(u,o)*60)+200;
+function chainRun(u,o,v,a){const nx=chainPath(u,o,v('cn')),dmg=(typeof pdm==='function'?pdm(u,Math.max(1,v('cx'))):Math.max(1,v('cx')));let dly=Math.max(260,dist(u,o)*60)+200;
   nx.forEach(e=>{e.hp-=dmg;e.bdm=dmg;u.xg=(u.xg||0)+(e.hp<=0?5:1);log.unshift(`${T[e.t].n} is struck by the arcing lightning.`+(e.hp<=0?' It is unmade.':''));if(e.hp<=0){e.dead=true;e.dk={by:u.nm||T[u.t].n,ab:a.n};u.kills=(u.kills||0)+1}
     elemHit(u,e,'zap',dly);mgEff(u,e,v);dly+=220})}
 function mgSplash(u,e,v,a){mgEff(u,e,v)}
@@ -7755,7 +7761,7 @@ function rnPatter(len){const sr=AC.sampleRate,n=Math.floor(sr*len),L=new Float32
  for(let t=0;t<len;t+=-Math.log(1-Math.random())/V.grain.rate)burst(t,Rg(V.grain.f),Rg(V.grain.len),Rg(V.grain.g)*.52,V.grain.q);
  for(let t=0;t<len;t+=-Math.log(1-Math.random())/V.drop.rate)burst(t,Rg(V.drop.f),Rg(V.drop.len),Rg(V.drop.g)*.38,2.2);
  const b=AC.createBuffer(2,n,sr);b.copyToChannel(L,0);b.copyToChannel(R,1);return b}
-rnStart=function(){if(RNY.nodes||!AC||!sfxG)return;const g=AC.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(.55,AC.currentTime+2.5);g.connect(sfxG);
+rnStart=function(){if(RNY.nodes||!AC||!sfxG)return;const g=AC.createGain();g.gain.value=0;g.gain.linearRampToValueAtTime(.2,AC.currentTime+2.5);g.connect(sfxG);
  /* the continuous wash and wind stay live (a handful of looping nodes) */
  const r=rainBuild(AC,g,'C');
  RNS.r=r;RNS.g=g;RNY.nodes=r.nodes.slice();RNY.th=6+Math.random()*10;
@@ -10227,6 +10233,135 @@ function nemArrive(){const n=nemS();const[r,c]=NEMB.mark;const at0=at(r,c);let c
 {const st=document.createElement('style');st.textContent='.nemc{max-width:460px;margin:4px auto;padding:3px 10px;font-size:13px;color:#3a1008;border-top:1px solid rgba(90,20,10,.3);border-bottom:1px solid rgba(90,20,10,.3)}.nemc b{font:700 12px Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;color:#7a1410}.nemc i{font-style:normal;font-weight:700}.nemc.dead{opacity:.7;text-decoration:line-through}';document.head.appendChild(st)}
 /* Marked fighters aim better at the nemesis */
 {const _ch=chance;chance=function(a,t){const p=_ch.apply(this,arguments);try{if(t&&t.nem&&trEU(a,'marked'))return Math.min(95,p+10)}catch(e){}return p}}
+/* ---------- gore performance 2: no stutter when blood first flies ----------
+   - Droplet-vs-prop tracing only runs the full triangle test on props whose bounding box the droplet's path actually
+     crosses (most droplets cross none), and at most 6 full tests run per frame.
+   - At the start of each battle, while you deploy, the blood textures for every fluid in this battle (red, rot, ichor,
+     ash...) are painted and uploaded a few at a time in idle moments, and every gore shader is compiled up front, so
+     the first hit of the battle no longer stalls the frame. */
+/* each prop's box is measured the first time a droplet comes near it (and ahead of time while you deploy) */
+const GBB=new WeakMap();function gBox(o){let b=GBB.get(o);if(b===undefined){b=new THREE.Box3().setFromObject(o);b=b.isEmpty()?null:b.expandByScalar(.03);GBB.set(o,b)}return b}
+const GRY=new THREE.Ray(),GRP=new THREE.Vector3();
+gRay=function(x,y,z,to){GV.set(to.x-x,to.y-y,to.z-z);const L=GV.length();if(L<1e-4)return null;GV.divideScalar(L);
+ GRY.origin.set(x,y,z);GRY.direction.copy(GV);
+ const roots=gNear(to.x,to.z).filter(o=>{const b=gBox(o);if(!b)return false;if(b.containsPoint(GRY.origin))return true;const p=GRY.intersectBox(b,GRP);return !!p&&p.distanceTo(GRY.origin)<=L+.03});
+ if(!roots.length)return null;
+ if(GORE.rf===GORE.fr){if(GORE.rn>=6)return null;GORE.rn++}else{GORE.rf=GORE.fr;GORE.rn=1}
+ GRC.set(GRY.origin.clone(),GV);GRC.far=L+.02;
+ const hs=GRC.intersectObjects(roots,true);for(const h of hs){const o=h.object;if(!o.visible||!h.face||o.isSprite||o.isPoints||o.isLine)continue;{const mt=Array.isArray(o.material)?o.material[0]:o.material;if(!mt||mt.isMeshBasicMaterial||(mt.transparent&&mt.opacity<.95)||mt.blending===THREE.AdditiveBlending||mt.depthWrite===false)continue}let vis=true;for(let q=o;q;q=q.parent)if(!q.visible){vis=false;break}if(!vis)continue;if(GORE.g&&gIn(o,GORE.g))continue;
+  if(h.point.y<.06)continue;const n=h.face.normal.clone().transformDirection(o.matrixWorld);if(n.dot(GV)>0)n.negate();return{point:h.point,n,o}}return null};
+/* warm-up: paint + upload this battle's blood textures in idle time, compile every gore shader once */
+const GWU={id:0};
+function gWarm(){const id=++GWU.id;let pals;try{pals=new Set(['red']);U.forEach(u=>{const k=gKind(u);pals.add(gFluid(k))})}catch(e){return}
+ const jobs=[];pals.forEach(p=>['splat','drips','pool'].forEach(k=>{for(let v=0;v<8;v++)jobs.push([k,p,v])}));
+ let boxes=0;const ric=window.requestIdleCallback||(f=>setTimeout(()=>f({timeRemaining:()=>8}),30));
+ const step=dl=>{if(id!==GWU.id||!inBattle)return;const t0=performance.now();
+  let n=0;while(jobs.length&&(n++<1||(performance.now()-t0<6&&(!dl||dl.didTimeout||dl.timeRemaining()>2)))){const j=jobs.shift();if(!Array.isArray(j)){gBox(j);continue}const[k,p,v]=j;try{const m=gMat(k,p,v);R.initTexture(m.map);if(m.normalMap)R.initTexture(m.normalMap)}catch(e){}}
+  if(jobs.length)ric(step,{timeout:400});else if(!boxes){boxes=1;try{const g=gGrid();g.big.forEach(o=>jobs.push(o));g.cells.forEach(l=>l.forEach(o=>jobs.push(o)))}catch(e){}if(jobs.length)ric(step,{timeout:400})}};
+ setTimeout(()=>{if(id!==GWU.id)return;gCompile(pals);ric(step,{timeout:400})},600)}
+function gCompile(pals){try{const grp=new THREE.Group(),cv=document.createElement('canvas');cv.width=cv.height=4;const tx=new THREE.CanvasTexture(cv);
+ pals.forEach(p=>{grp.add(new THREE.Mesh(GPG,gMat('splat',p,0)));const glow=GLOW[p],col=new THREE.Color(`rgb(${GPAL[p][1].join(',')})`);
+  const dm=GSM[p]||(GSM[p]=glow?new THREE.MeshBasicMaterial({color:col}):new THREE.MeshPhongMaterial({color:col,shininess:80,specular:0x553333}));grp.add(new THREE.Mesh(GDG,dm))});
+ /* the wound overlay painted onto a fighter's sprite */
+ grp.add(new THREE.Mesh(GPG,new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,alphaTest:.02,side:THREE.DoubleSide})));
+ grp.position.set(-999,-999,-999);S.add(grp);R.compile(S,cam);S.remove(grp);tx.dispose()}catch(e){console.warn('gore warm',e)}}
+{const _sb=startBattle;startBattle=function(){const r=_sb.apply(this,arguments);try{gWarm()}catch(e){}return r}}
+/* ---------- true darkness in the fog of war ----------
+   Every lit object on the board (floor, walls, props, trees, particles, shadows) is darkened by where it stands: tiles
+   your fighters can see are lit as normal, tiles they can't see fall almost to black, with soft edges between them.
+   The darkness is a small board-sized texture read by every built-in material, fed each frame from the existing fog
+   tiles, so it follows vision exactly and fades in and out with it. Glowing things (flames, embers, magic) keep a faint
+   glimmer in the dark. Scenery beyond the board fades back to its normal light a few tiles out. */
+const FOW={w:0,h:0,data:null,tex:null,u:{fowT:{value:null},fowB:{value:new THREE.Vector4(1,1,0,0)}},DARK:.3,
+ dummy:new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1,THREE.RGBAFormat)};
+FOW.dummy.needsUpdate=true;FOW.u.fowT.value=FOW.dummy;
+function fowEnsure(){if(typeof SW==='undefined')return false;if(FOW.w===SW&&FOW.h===SZ&&FOW.tex)return true;
+ FOW.w=SW;FOW.h=SZ;FOW.data=new Uint8Array(SW*SZ*4).fill(255);if(FOW.tex)FOW.tex.dispose();
+ FOW.tex=new THREE.DataTexture(FOW.data,SW,SZ,THREE.RGBAFormat);FOW.tex.magFilter=FOW.tex.minFilter=THREE.LinearFilter;FOW.tex.wrapS=FOW.tex.wrapT=THREE.ClampToEdgeWrapping;FOW.tex.needsUpdate=true;
+ FOW.u.fowT.value=FOW.tex;FOW.u.fowB.value.x=SW;FOW.u.fowB.value.y=SZ;return true}
+/* shader injection: wraps whatever onBeforeCompile a material already has */
+function fowInject(sh,m){if(sh.vertexShader.indexOf('vFowW')>=0)return;if(sh.vertexShader.indexOf('#include <fog_vertex>')<0||sh.fragmentShader.indexOf('#include <fog_fragment>')<0)return;
+ sh.uniforms.fowT=FOW.u.fowT;sh.uniforms.fowB=FOW.u.fowB;
+ const hasT=sh.vertexShader.indexOf('#include <begin_vertex>')>=0;
+ sh.vertexShader='varying vec2 vFowW;\n'+sh.vertexShader.replace('#include <fog_vertex>',`#include <fog_vertex>
+ {vec4 fowP=vec4(${hasT?'transformed':'0.,0.,0.'},1.);
+ #ifdef USE_INSTANCING
+  fowP=instanceMatrix*fowP;
+ #endif
+ vFowW=(modelMatrix*fowP).xz;}`);
+ const glow=m&&m.blending===THREE.AdditiveBlending;
+ sh.fragmentShader='varying vec2 vFowW;\nuniform sampler2D fowT;\nuniform vec4 fowB;\n'+sh.fragmentShader.replace('#include <fog_fragment>',`#include <fog_fragment>
+ if(fowB.z>.5){vec2 fq=(vFowW+.5)/fowB.xy;float fv=texture2D(fowT,fq).r;
+  float fo=max(max(-fq.x,fq.x-1.)*fowB.x,max(-fq.y,fq.y-1.)*fowB.y);fv=mix(fv,1.,smoothstep(3.,9.,fo));
+  ${glow?'fv=max(fv,.35);':''}gl_FragColor.rgb*=fv;}`)}
+{const P=THREE.Material.prototype,base=P.onBeforeCompile;
+ Object.defineProperty(P,'onBeforeCompile',{configurable:true,
+  get(){if(!this.__fowFn){const m=this;this.__fowFn=function(sh,r){if(m.__ubc)m.__ubc.call(m,sh,r);try{fowInject(sh,m)}catch(e){console.error('fow',e)}}}return this.__fowFn},
+  set(f){this.__ubc=f===base?null:f;this.__fowFn=null}});
+ /* programs must still be told apart by each material's own hook (plus whether it glows) */
+ P.customProgramCacheKey=function(){return(this.__ubc?this.__ubc.toString():'')+'|fow'+(this.blending===THREE.AdditiveBlending?'g':'')}}
+/* each frame: copy the fog tiles' darkness into the texture */
+function fowTick(){const B=FOW.u.fowB.value;const on=typeof inBattle!=='undefined'&&inBattle&&typeof fogP!=='undefined'&&fogP.length&&fowEnsure();B.z=on?1:0;if(!on)return;
+ const d=FOW.data;let ch=false;for(let i=0;i<fogP.length;i++){const m=fogP[i],r=m.userData.tr,c=m.userData.tc;if(r>=SZ||c>=SW)continue;
+  const op=m.visible?m.material.opacity:0,v=Math.round(255*(1-(1-FOW.DARK)*Math.min(1,op/.72))),k=(r*SW+c)*4;
+  if(d[k]!==v){d[k]=d[k+1]=d[k+2]=v;ch=true}}
+ if(ch)FOW.tex.needsUpdate=true}
+{const raf=requestAnimationFrame;const f=()=>{try{fowTick()}catch(e){}raf(f)};raf(f)}
+/* materials that set their own shader hook before this point are moved behind the wrapper and rebuilt */
+function fowAdopt(root){(root||S).traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];ms.forEach(m=>{if(!m)return;
+ if(Object.prototype.hasOwnProperty.call(m,'onBeforeCompile')){const f=m.onBeforeCompile;delete m.onBeforeCompile;m.onBeforeCompile=f}m.needsUpdate=true})})}
+try{fowAdopt()}catch(e){console.error('fow adopt',e)}
+/* ---------- light sources stand out ----------
+   The flat fill light is turned down a notch and the fire does more of the work: every flame on the map (candles,
+   torches, braziers, lanterns) gets a soft flickering halo, the corner braziers burn brighter and reach further, and the
+   brightest flame clusters on the board get a real flickering light of their own that throws warm light on nearby
+   floor, walls and fighters. */
+const LPOP={halos:[],lights:[],keep:null,AMB:.9,SUN:.92,MAXL:6,tex:null};
+function lpTex(){if(LPOP.tex)return LPOP.tex;const N=128,c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d'),gr=g.createRadialGradient(N/2,N/2,0,N/2,N/2,N/2);
+ gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.18,'rgba(255,255,255,.55)');gr.addColorStop(.45,'rgba(255,255,255,.16)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,N,N);return LPOP.tex=new THREE.CanvasTexture(c)}
+const LPC=new THREE.Color(),LPH={},LPB=new THREE.Box3(),LPS=new THREE.Vector3();
+/* a flame: a small, bright, warm, unlit mesh or glow sprite */
+function lpIsFlame(o){if(o.userData&&(o.userData.u||o.userData.lpop))return false;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||!m.color)return false;
+ if(!(m.isMeshBasicMaterial||m.isSpriteMaterial))return false;if(m.opacity!==undefined&&m.opacity<.2)return false;
+ m.color.getHSL(LPH);if(!(LPH.h<.15||LPH.h>.97)||LPH.s<.55||LPH.l<.45)return false;
+ if(o.isSprite){return Math.max(o.scale.x,o.scale.y)<2.2}
+ if(!o.geometry)return false;LPB.setFromObject(o);LPB.getSize(LPS);return Math.max(LPS.x,LPS.y,LPS.z)<.75}
+function lpClear(){LPOP.halos.forEach(h=>h.parent&&h.parent.remove(h));LPOP.lights.forEach(l=>l.parent&&l.parent.remove(l));LPOP.halos=[];LPOP.lights=[]}
+function lpBuild(){lpClear();const found=[],wp=new THREE.Vector3();S.updateMatrixWorld(true);
+ S.traverse(o=>{if(!(o.isMesh||o.isSprite)||!o.visible)return;for(let q=o.parent;q;q=q.parent)if(!q.visible)return;if(!lpIsFlame(o))return;o.getWorldPosition(wp);found.push({p:wp.clone(),c:(Array.isArray(o.material)?o.material[0]:o.material).color.clone(),o})});
+ /* one halo per flame (flames that sit on top of each other share one) */
+ const used=[];found.forEach(f=>{if(used.some(u=>u.p.distanceToSquared(f.p)<.04))return;used.push(f);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:lpTex(),color:f.c.clone().lerp(new THREE.Color(0xffa040),.5),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:.55}));
+  s.userData.lpop={ph:Math.random()*6.28,o:f.o,big:f.p.y>.9?1.5:1.1};s.position.copy(f.p);s.scale.setScalar(s.userData.lpop.big);s.renderOrder=3;S.add(s);LPOP.halos.push(s)});
+ /* real lights on the densest flame clusters that stand on or near the board */
+ const cand=used.filter(f=>f.p.x>-3&&f.p.x<SW+2&&f.p.z>-3&&f.p.z<SZ+2).map(f=>({f,n:used.filter(g=>g.p.distanceTo(f.p)<2).length}));cand.sort((a,b)=>b.n-a.n);
+ const pick=[];for(const c of cand){if(pick.length>=LPOP.MAXL)break;if(pick.some(p=>p.f.p.distanceTo(c.f.p)<3.5))continue;
+  if(typeof br!=='undefined'&&br.some(b=>b.l.position.distanceTo(c.f.p)<2.5))continue;pick.push(c)}
+ pick.forEach((c,i)=>{const l=new THREE.PointLight(0xff8a3a,0,4.2+Math.min(3,c.n)*.5,2);l.position.copy(c.f.p).add(new THREE.Vector3(0,.25,0));l.userData.lpop={ph:i*1.9,k:1+Math.min(3,c.n)*.18};S.add(l);LPOP.lights.push(l)})}
+function lpTick(t){if(typeof inBattle==='undefined'||!inBattle)return;
+ if(!LPOP.keep){LPOP.keep={amb:amb.intensity,sun:sun.intensity};amb.intensity*=LPOP.AMB;sun.intensity*=LPOP.SUN}
+ if(typeof br!=='undefined')br.forEach(b=>{b.l.intensity*=1.6;b.l.distance=15});
+ LPOP.halos.forEach(s=>{const d=s.userData.lpop;s.visible=!!(d.o&&d.o.parent)&&d.o.visible;const k=.85+Math.sin(t*.009+d.ph)*.1+Math.random()*.06;s.scale.setScalar(d.big*k);s.material.opacity=.5*k});
+ LPOP.lights.forEach(l=>{const d=l.userData.lpop;l.intensity=(1.15+Math.sin(t*.011+d.ph)*.12+Math.random()*.1)*d.k})}
+{const raf=requestAnimationFrame;const f=t=>{try{lpTick(t)}catch(e){}raf(f)};raf(f)}
+/* rebuild after each map is laid out; ambient/sun get re-read since each map sets its own */
+{const _sb=startBattle;startBattle=function(){if(LPOP.keep){amb.intensity=LPOP.keep.amb;sun.intensity=LPOP.keep.sun;LPOP.keep=null}const r=_sb.apply(this,arguments);try{lpBuild()}catch(e){console.error('lightpop',e)}return r}}
+{const _lv=leave;leave=function(){const r=_lv.apply(this,arguments);try{lpClear();if(LPOP.keep){amb.intensity=LPOP.keep.amb;sun.intensity=LPOP.keep.sun;LPOP.keep=null}}catch(e){}return r}}
+/* ---------- more variety in +skill items ----------
+   Class items used to always carry the same skill bonus (every Prayer Beads gave +2 Second Breath). Now, whenever a
+   class item drops or is crafted, each of its skill bonuses is rolled fresh from that class's whole talent tree: any
+   ranked skill of the class (no two the same on one item), or now and then "+N to all learned <tree> skills".
+   "+N to all skills" stays as it is. Items already in your stash or worn keep what they have, and the Forge never
+   rerolls an item you own. */
+function skPool(c){const L=[];(TREES[c]||[]).forEach(t=>(t.sk||[]).forEach(o=>{if(o&&o.n&&(o.mx||1)>1)L.push(o)}));return L}
+function skReroll(d){if(!d||!d.sk||!d.sk.length||d.skR||d.set||window.__noSkR)return;const c=d.cc&&d.cc[0],P=skPool(c);if(P.length<3)return;
+ const trees=[...new Set(P.map(o=>o.tree))],used=new Set();
+ d.sk=d.sk.map(([n,v])=>{if(n==='*')return[n,v];if(Math.random()<(n[0]==='@'?.6:.12)){let t;for(let k=0;k<10;k++){t=trees[Math.floor(Math.random()*trees.length)];if(!used.has('@'+t))break}used.add('@'+t);return['@'+t,Math.max(1,Math.min(2,v))]}
+  let o;for(let k=0;k<30;k++){o=P[Math.floor(Math.random()*P.length)];if(!used.has(o.n))break}used.add(o.n);return[o.n,Math.max(1,Math.min(v+(Math.random()<.2?1:0),o.mx||v))]});d.skR=1}
+{const _x=xiNew;xiNew=function(d){try{skReroll(d)}catch(e){console.error('itemsk',e)}return _x.apply(this,arguments)}}
+{const _f=forgeEnsure;forgeEnsure=function(){window.__noSkR=1;try{return _f.apply(this,arguments)}finally{window.__noSkR=0}}}
+/* ---------- recruits in New Game+ arrive one level higher per NG+ level (no cap) ---------- */
+{const _rl=recLv;recLv=function(){const L=_rl()+(G.ng||0);while(XPT.length<L){const k=XPT.length;XPT.push(Math.round(320+(k-9)*40+(k-9)*(k-9)*2.2))}return L}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
