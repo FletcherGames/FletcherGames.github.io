@@ -126,6 +126,7 @@
             "New Game+: recruits arrive one level higher for every NG+ level, with no cap, along with the matching talent points.",
             "Class items now roll their +skill bonuses from the class's whole talent tree, so the same item can carry a different skill each time it drops or is crafted.",
             "The rain on the Hollow Graveyard is much quieter.",
+            "Fixed: the campaign map's doom meter, Dark Events and nemesis card now show as soon as you open the map, not only after clicking a node.",
             "Already playing on Windows? Open the launcher and it downloads this update automatically. The browser version is already updated."
           ]
         },

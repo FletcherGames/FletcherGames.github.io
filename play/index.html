@@ -10362,6 +10362,12 @@ function skReroll(d){if(!d||!d.sk||!d.sk.length||d.skR||d.set||window.__noSkR)re
 {const _f=forgeEnsure;forgeEnsure=function(){window.__noSkR=1;try{return _f.apply(this,arguments)}finally{window.__noSkR=0}}}
 /* ---------- recruits in New Game+ arrive one level higher per NG+ level (no cap) ---------- */
 {const _rl=recLv;recLv=function(){const L=_rl()+(G.ng||0);while(XPT.length<L){const k=XPT.length;XPT.push(Math.round(320+(k-9)*40+(k-9)*(k-9)*2.2))}return L}}
+/* ---------- buttons always reach the latest version of a screen ----------
+   A few buttons were bound straight to the original screen functions when the game started, so the screens that
+   later modules extend (the campaign map's doom meter, Dark Events and nemesis card, the Options additions, ...)
+   only appeared after reopening them another way. Point those buttons at the current functions. */
+A.map=function(){return openMap.apply(this,arguments)};A.camp=function(){return openCamp.apply(this,arguments)};A.chests=function(){return openChests.apply(this,arguments)};
+A.menu=function(){return openMenu.apply(this,arguments)};A.opt=function(){return openOpt.apply(this,arguments)};
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
