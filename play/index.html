@@ -447,7 +447,7 @@ img.ico{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;b
 <div id="scr"></div>
 <script src="lib/three.min.js"></script>
 <script src="lib/supabase.js"></script>
-<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.7.1"};</script>
+<script>window.GG_SUPABASE={"url": "https://ctpblfocbjoslsdwgafp.supabase.co", "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cGJsZm9jYmpvc2xzZHdnYWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMzAyOTEsImV4cCI6MjEwODgwNjI5MX0.8gn6xHNV54XxUPlhZrK6RtWqfRxeNReuutfYyvOxSyU"};window.GG_WEB={version:"Beta 0.1.8"};</script>
 <script src="leaderboard-supabase.js"></script>
 <script>
 const T={
@@ -3165,7 +3165,7 @@ function enterNode(){
   cp.done.push(n.id);cp.at=n.id;cp.node=Math.floor((n.f+1)*6/MFL);
   const p={t:n.t};
   if(n.t==='m'){const pool=Object.keys(ITEMS).filter(k=>(ITEMS[k].sh==='a'||ITEMS[k].sh==='b')&&(!ITEMS[k].cc||G.roster.some(c=>ITEMS[k].cc.includes(c.t))));p.st=[];while(p.st.length<5&&pool.length){const k=pool.splice(Math.floor(Math.random()*pool.length),1)[0];p.st.push(k)}}
-  if(n.t==='v')p.k=Math.floor(Math.random()*EVS.length);
+  if(n.t==='v'){if(typeof evPick==='function')evPick(p);else p.k=Math.floor(Math.random()*EVS.length)}
   if(n.t==='t'){p.z=Math.max(0,mpDepth(n)-1)+Math.min(1,G.ng||0);p.g=40+Math.floor(Math.random()*50)+n.f*3}
   cp.pend=p;save();openNode()}
 function endNode(){G.cp.pend=null;nodeSel=null;mapSY=null;save();openMap()}
@@ -9895,7 +9895,7 @@ function grInk(){const pns=SCR.querySelectorAll('.pn');pns.forEach(pn=>{if(getCo
   /* what is this text sitting on? the first ancestor with a solid background or an image */
   let onPage=true;for(let a=el;a&&a!==pn;a=a.parentElement){if(a.tagName==='BUTTON'||a.tagName==='INPUT'||a.tagName==='SELECT'){onPage=false;break}const cs=getComputedStyle(a);if(cs.backgroundImage!=='none'||grAlpha(cs.backgroundColor)>.35){onPage=false;break}}
   if(!onPage)return;const col=getComputedStyle(el).color;if(grLum(col)<.42)return;
-  el.dataset.grk=1;el.style.setProperty('color',grInkColor(col),'important');el.style.setProperty('text-shadow','none','important')})})}
+  el.dataset.grk=1;el.style.setProperty('color',el.classList.contains('msg')?'#3a1a0a':grInkColor(col),'important');el.style.setProperty('text-shadow','none','important')})})}
 /* the storm on the main menu */
 function grFx(){if(!SCR)return;const main=!!SCR.querySelector('.mn [data-a="camp"]');SCR.classList.toggle('grmain',main);
  const have=SCR.querySelector('.grgrain');if(!have){const mk=(c,h)=>{const d=document.createElement('div');d.className='grfx '+c;if(h)d.innerHTML=h;SCR.prepend(d);return d};mk('grgrain');mk('grvig')}
@@ -9912,6 +9912,321 @@ function grStrike(){const b=SCR.querySelector('.grbolt'),f=SCR.querySelector('.g
  try{grCSS()}catch(e){console.error('grimoire css',e)}
  new MutationObserver(()=>{if(!q)q=requestAnimationFrame(run)}).observe(SCR,{childList:true,subtree:true});run();
  setInterval(()=>{if(!SCR.classList.contains('on')||!SCR.querySelector('.grstorm'))return;const now=performance.now();if(now>=GRM.next){grStrike();GRM.next=now+9000+Math.random()*10000}},500)})();
+/* =====================================================================================================
+   A RICHER CAMPAIGN: earned traits, a big pool of road events, the doom clock ("The Pit Stirs") and
+   Dark Events (three enemy schemes per land, stop only one).
+   ===================================================================================================== */
+
+/* ---------- earned traits: fighters change with what happens to them ----------
+   On top of their virtue and flaw, fighters earn traits from battle and from events. Some last for life, some fade
+   after a few battles. They show as purple tags beside the others. */
+const TRE={
+ death:{n:'Death-Touched',d:'Survived a battle with 2 health or less. +8% dodge.',st:s=>{s.dodge=(s.dodge||0)+8}},
+ unbreak:{n:'Unbreakable',d:'Last one standing when the battle was won. Never panics, +1 max health.',st:s=>{s.hp+=1}},
+ haunted:{n:'Haunted',d:'Watched their bonded partner die. −5 aim and panics more easily. Fades after 5 battles.',st:s=>{s.aim-=5},fade:5},
+ butcher:{n:'Butcher',d:'Has slain 25 foes. +1 damage.',st:s=>{s.lo+=1;s.hi+=1}},
+ avenger:{n:'Avenger',d:'Killed the foe that slew an ally. +6 aim.',st:s=>{s.aim+=6}},
+ cursed:{n:'Cursed',d:'Carries a curse from the road. −2 max health. Fades after 6 battles.',st:s=>{s.hp=Math.max(1,s.hp-2)},fade:6},
+ blessed:{n:'Blessed',d:'Carries a blessing from the road. +2 max health. Fades after 6 battles.',st:s=>{s.hp+=2},fade:6},
+ grave:{n:'Grave-Walker',d:'Came back from the grave. +1 sight, −1 max health.',st:s=>{s.vis=(s.vis||4)+1;s.hp=Math.max(1,s.hp-1)}},
+ marked:{n:'Marked',d:'The nemesis knows their face. +10 aim against the nemesis.'},
+ slayer:{n:'Nemesis-Slayer',d:'Struck down the nemesis. +1 damage, never panics.',st:s=>{s.lo+=1;s.hi+=1}}};
+const trEHas=(c,id)=>!!(c&&c.trE&&c.trE.some(e=>e.id===id));
+const trEU=(u,id)=>!!(u&&u.ch&&trEHas(u.ch,id));
+function trEAdd(c,id){if(!c||!TRE[id])return false;c.trE=c.trE||[];const e=c.trE.find(x=>x.id===id);if(e){if(TRE[id].fade)e.b=TRE[id].fade;return false}
+ c.trE.push({id,b:TRE[id].fade||0});return true}
+function trEDel(c,id){if(c&&c.trE)c.trE=c.trE.filter(e=>e.id!==id)}
+{const _h=trHtml;trHtml=function(c,k){let h=_h.apply(this,arguments);try{if(c&&c.trE&&c.trE.length){const tags=c.trE.map(e=>{const t=TRE[e.id];return t?`<span class="trc tre" title="${t.n}: ${t.d}${e.b?` (${e.b} battle${e.b>1?'s':''} left)`:''}">${t.n}</span>`:''}).join('');h=h.replace(/<\/div>$/,tags+'</div>')}}catch(e){}return h}}
+{const st=document.createElement('style');st.textContent='.trc.tre{color:#d8b8ff;border-color:#5a3a8a;background:rgba(50,24,80,.4)}';document.head.appendChild(st)}
+{const _ps=passiveStats;passiveStats=function(c,st){const r=_ps.apply(this,arguments);try{(c&&c.trE||[]).forEach(e=>{const t=TRE[e.id];if(t&&t.st)t.st(st)})}catch(e){}return r}}
+{const _pc=xPanicCheck;xPanicCheck=function(u,sev){if(trEU(u,'unbreak')||trEU(u,'slayer'))return;if(trEU(u,'haunted'))sev+=15;return _pc.call(this,u,sev)}}
+/* avengers: remember who killed whom during the battle */
+{const _lk=lkill;lkill=function(u,by,how){const was=u&&u.dead;const r=_lk.apply(this,arguments);try{if(!was&&u&&u.dead&&by){if(u.s===0&&by.s===1)by.slew=1;if(u.s===1&&by.s===0&&u.slew)by.avenged=1}}catch(e){}return r}}
+/* after each campaign battle */
+function trEAfter(won){const out=[];if(!camp)return out;const sq=U.filter(u=>u.s===0&&u.ch);const alive=sq.filter(u=>!u.dead);
+ const say=(c,id)=>{if(trEAdd(c,id))out.push(`<b>${esc(c.nm)}</b> is now <span style="color:#c8a0ff">${TRE[id].n}</span>.`)};
+ /* fade the temporary ones first (so a trait earned this battle keeps its full length) */
+ sq.forEach(u=>{const c=u.ch;if(!c.trE)return;c.trE.forEach(e=>{if(e.b>0){e.b--;if(!e.b)out.push(`${esc(c.nm)} is no longer ${TRE[e.id].n}.`)}});c.trE=c.trE.filter(e=>!(TRE[e.id].fade&&e.b<=0))});
+ alive.forEach(u=>{const c=u.ch;if(u.hp<=2)say(c,'death');c.kt=(c.kt||0)+(u.kills||0);if(c.kt>=25)say(c,'butcher');if(u.avenged)say(c,'avenger')});
+ if(won&&alive.length===1&&sq.length>=3)say(alive[0].ch,'unbreak');
+ try{const B=G.bnd&&G.bnd.m;if(B)alive.forEach(u=>{const pid=B[u.ch.id];if(pid==null)return;const p=sq.find(x=>x.ch.id===+pid);if(p&&p.dead)say(u.ch,'haunted')})}catch(e){}
+ return out}
+
+/* ---------- campaign state helpers ---------- */
+const CPX=()=>{const cp=G.cp;if(!cp)return null;cp.fl=cp.fl||{};if(cp.doom==null)cp.doom=0;cp.de=cp.de||{};return cp};
+const chOf=id=>G.roster.find(c=>c.id===id);
+const cNm=c=>c?esc(c.nm):'someone';
+const pickC=(pred,from)=>{const a=(from||sqd()).filter(c=>!pred||pred(c));return a.length?rndOf(a):null};
+const matAdd2=(k,n)=>{G.mat=G.mat||{};G.mat[k]=(G.mat[k]||0)+n};
+const chestAdd=z=>{(G.chests||(G.chests=[])).push(Math.max(0,z))};
+const zNow=()=>{try{return Math.max(0,mpDepth(G.cp.mp[G.cp.at]))}catch(e){return 0}};
+
+/* ---------- the doom clock: The Pit Stirs ---------- */
+const DOOM=[[25,'The Dead Stir','Undead enemies have 25% more health.'],[50,'Grave Fog','Your fighters see 1 tile less in battle.'],[75,'Endless Host','Every battle brings one more enemy.'],[100,'The Pit Opens','All enemies have 15% more health and damage.']];
+function doomAdd(n,quiet){const cp=CPX();if(!cp)return '';const a=cp.doom;cp.doom=Math.max(0,Math.min(100,a+n));let msg=quiet||!n?'':`<br><span style="color:${n>0?'#9a2a14':'#3a6a2a'}">The Pit ${n>0?'stirs':'falls back'} (${n>0?'+':'−'}${Math.abs(n)}, now ${cp.doom}/100).</span>`;DOOM.forEach(([t,nm,d])=>{if(a<t&&cp.doom>=t)msg+=`<br><b style="color:#e06050">The Pit stirs: ${nm}.</b> ${d}`;if(a>=t&&cp.doom<t)msg+=`<br><b style="color:#a0d0a0">${nm} lifts.</b>`});return msg}
+const doomOn=t=>{const cp=G.cp;return !!(camp&&cp&&cp.doom>=t)};
+function doomHtml(){const cp=CPX();if(!cp)return'';const v=cp.doom;
+ const ticks=DOOM.map(([t,nm,d])=>`<i class="dmk${v>=t?' on':''}" style="left:${t}%" title="${t}: ${nm}. ${d}"></i>`).join('');
+ const act=DOOM.filter(([t])=>v>=t).map(([t,nm,d])=>`<span title="${d}">${nm}</span>`).join(' · ');
+ return `<div class="doom" title="The Pit stirs a little with every floor you travel, and faster when you rest or take the safe roads. Elite battles, boss kills and some events push it back."><b>The Pit Stirs</b><div class="dbar"><span style="width:${v}%"></span>${ticks}</div><small>${v}/100${act?' · '+act:' · nothing has woken yet'}</small></div>`}
+
+/* ---------- Dark Events: three enemy schemes per land, stop one ---------- */
+const SCH={
+ raise:{n:'The Necromancers Raise the Fallen',d:'Two more skeletons join every battle.'},
+ wells:{n:'The Wells Are Poisoned',d:'Your fighters start every battle 2 health down.'},
+ bounty:{n:'A Bounty on Your Heads',d:'Enemies have +8 aim.'},
+ iron:{n:'The Forges Burn Black',d:'Enemies have +1 armor.'},
+ hunt:{n:'The Night Hunt',d:'Enemies move 1 tile farther and see 1 tile farther.'},
+ fog:{n:'The Witch’s Fog',d:'Your fighters see 1 tile less.'},
+ plunder:{n:'The Plunderers',d:'You earn 30% less gold from battles.'},
+ bats:{n:'The Swarm Gathers',d:'Three blood bats join every battle.'}};
+function secOfFloor(f){for(let i=0;i<MSEC.length;i++){if(f>=MSEC[i][0]&&f<=MBOSS[i])return i}return MSEC.length-1}
+/* reveal the schemes when the company first stands at the edge of a land */
+function deReveal(){const cp=CPX();if(!cp||cp.won)return '';const atN=cp.at>=0?cp.mp[cp.at]:null,f=atN?atN.f+1:0,si=secOfFloor(f);if(cp.de[si])return '';
+ const [a,b]=MSEC[si];const cands=cp.mp.filter(n=>n.t==='b'&&n.f>=a+1&&n.f<=b-1&&!cp.done.includes(n.id)&&!n.de);if(cands.length<3)return '';
+ const ks=Object.keys(SCH).sort(()=>Math.random()-.5).slice(0,3),used=new Set(),picked=[];
+ for(const k of ks){const pool=cands.filter(n=>!used.has(n.id)&&!picked.some(p=>p.f===n.f&&Math.abs(p.l-n.l)<2));const n=rndOf(pool.length?pool:cands.filter(n=>!used.has(n.id)));if(!n)break;used.add(n.id);picked.push(n);n.de=k}
+ cp.de[si]={st:'open',ks:picked.map(n=>n.de),nodes:picked.map(n=>n.id),stop:null};
+ return `<br><b style="color:#e06050">The enemy schemes.</b> Three plots are under way in this land, marked on the road. You can only stop one: win its battle and the other two take hold until this land’s boss falls.`}
+function deActive(){const cp=G.cp;if(!camp||!cp||!cp.de)return [];const atN=cp.at>=0?cp.mp[cp.at]:null;let f=atN?atN.f+1:0;try{const sp=CUR;if(sp&&sp.idx!=null)f=cp.mp[sp.idx].f}catch(e){}const d=cp.de[secOfFloor(f)];return d&&d.st==='closed'?d.ks.filter(k=>k!==d.stop):[]}
+const deOn=k=>deActive().includes(k);
+/* the window closes once you fight a scheme battle, or walk past the last of them */
+function deCheck(nodeId,won){const cp=CPX();if(!cp)return '';let msg='';for(const si in cp.de){const d=cp.de[si];if(d.st!=='open')continue;
+  if(d.nodes.includes(nodeId)){if(won){d.stop=cp.mp[nodeId].de;d.st='closed';msg+=`<br><b style="color:#a0d0a0">Scheme broken: ${SCH[d.stop].n}.</b> The other two take hold.`}}
+  else{const maxF=Math.max(...d.nodes.map(i=>cp.mp[i].f));const atN=cp.mp[nodeId];if(atN&&atN.f>=maxF){d.st='closed';msg+=`<br><b style="color:#e06050">You let the schemes run.</b> All three take hold until this land’s boss falls.`}}}
+ return msg}
+function deClear(si){const cp=CPX();if(cp&&cp.de[si]){cp.de[si].st='over'}}
+function deHtml(){const cp=CPX();if(!cp)return'';const atN=cp.at>=0?cp.mp[cp.at]:null,f=atN?atN.f+1:0,d=cp.de[secOfFloor(f)];if(!d)return'';
+ const rows=d.ks.map((k,i)=>{const s=SCH[k],stp=d.stop===k,on=d.st==='closed'&&!stp;return `<div class="sch${stp?' stp':on?' on':''}"><b>${['I','II','III'][i]}</b><span><i>${s.n}</i><small>${s.d}</small></span><em>${stp?'Broken':on?'In effect':'Stop it on the road'}</em></div>`}).join('');
+ return `<div class="schw"><b class="sht">The Enemy Schemes</b>${rows}</div>`}
+
+/* ---------- applying doom and schemes to battles ---------- */
+{const _gw=genWarband;genWarband=function(tier,boss,node){const w=_gw.apply(this,arguments);try{if(camp&&w&&w.types){if(doomOn(75)){const p=w.types.filter(t=>!T[t].boss);if(p.length)w.types.push(rndOf(p))}
+  if(deOn('raise'))w.types.push('sk','sk');if(deOn('bats'))w.types.push('bt','bt','bt')}}catch(e){console.error('campaign',e)}return w}}
+{const _as=applyStats;applyStats=function(){const r=_as.apply(this,arguments);try{if(camp)U.forEach(u=>{if(!u.st)return;
+  if(u.s===1){let hm=1,dm=1;if(doomOn(25)&&UNDEAD.has(u.t))hm*=1.25;if(doomOn(100)){hm*=1.15;dm*=1.15}if(hm!==1||dm!==1){const f=u.hp/Math.max(1,u.st.hp);u.st.hp=Math.round(u.st.hp*hm);u.st.lo=Math.max(1,Math.round(u.st.lo*dm));u.st.hi=Math.max(u.st.lo,Math.round(u.st.hi*dm));u.hp=Math.max(1,Math.round(u.st.hp*f))}
+   if(deOn('bounty'))u.st.aim+=8;if(deOn('iron'))u.st.arm=(u.st.arm||0)+1;if(deOn('hunt')){u.st.mv+=1;u.st.vis=(u.st.vis||4)+1}}
+  else if(u.s===0){if(doomOn(50))u.st.vis=Math.max(2,(u.st.vis||4)-1);if(deOn('fog'))u.st.vis=Math.max(2,(u.st.vis||4)-1)}})}catch(e){console.error('campaign',e)}return r}}
+{const _sb=startBattle;startBattle=function(c){const r=_sb.apply(this,arguments);try{if(camp){if(deOn('wells'))U.forEach(u=>{if(u.s===0&&!u.dead)u.hp=Math.max(1,u.hp-2)});
+  const parts=[...DOOM.filter(([t])=>doomOn(t)).map(x=>x[1]),...deActive().map(k=>SCH[k].n)];if(parts.length){log.unshift(`<span style="color:#d08070">Against you: ${parts.join(' · ')}.</span>`);hud()}}}catch(e){}return r}}
+
+/* ---------- the road: doom on every step, schemes on the map ---------- */
+{const _en=enterNode;enterNode=function(){const cp=CPX(),n=cp&&cp.mp[nodeSel];const r=_en.apply(this,arguments);try{if(n&&G.cp.pend){let m=doomAdd(3+(n.t==='r'?4:0)+(n.t==='t'||n.t==='m'?1:0),true);m+=deCheck(n.id,false);if(m)G.cp.pend.dm=m}}catch(e){console.error('campaign',e)}return r}}
+{const _sc=settleCamp;settleCamp=function(sp,won){const cp=CPX();let extra='';try{if(cp&&won&&!sp.rep){const n=cp.mp[sp.idx];extra+=doomAdd(n.t==='B'?-10:n.t==='e'?1:3,n.t!=='B');extra+=deCheck(n.id,true);if(n.t==='B')deClear(secOfFloor(n.f))}}catch(e){console.error('campaign',e)}
+  let r=_sc.apply(this,arguments);return (r||'')+extra}}
+{const _st=settle;settle=function(){const g0=G?G.gold:0,was=settled;const r=_st.apply(this,arguments);try{if(!was&&camp){if(deOn('plunder')){const gain=G.gold-g0;if(gain>0){const cut=Math.round(gain*.3);G.gold-=cut}}
+  const lines=trEAfter(over===0);if(lines.length){const rw=$('rw');if(rw)rw.insertAdjacentHTML('beforeend','<div class="tre-l">'+lines.join('<br>')+'</div>');save()}}}catch(e){console.error('campaign',e)}return r}}
+/* doom news from a campfire, merchant or event shows on the map afterwards */
+{const _end=endNode;endNode=function(){const dm=G.cp&&G.cp.pend&&G.cp.pend.dm;const r=_end.apply(this,arguments);try{if(dm)openMap(dm.replace(/^<br>/,''))}catch(e){}return r}}
+/* the map shows the doom meter and the schemes; schemes are marked on their battles */
+{const _om=openMap;openMap=function(msg){let extra='';try{if(G.cp&&!G.cp.pend)extra=deReveal()}catch(e){console.error(e)}const r=_om.call(this,extra?((msg||'')+extra).replace(/^<br>/,''):msg);try{if(!G.cp||G.cp.pend)return r;
+  const h=SCR.querySelector('.pn>h2,.pn h2');const ngb=SCR.querySelector('.ngb');(ngb||h).insertAdjacentHTML('afterend',doomHtml()+deHtml());
+  const svg=SCR.querySelector('.cmap svg');if(svg){const X=n=>n.t==='B'?165:38+n.l*63.5,Y=f=>74+(MFL-1-f)*54+34*MBOSS.filter(b=>b>=f).length;let add='';
+   for(const si in G.cp.de){const d=G.cp.de[si];if(d.st!=='open')continue;d.nodes.forEach((id,i)=>{const n=G.cp.mp[id];if(!n||G.cp.done.includes(id))return;add+=`<g transform="translate(${X(n)+15},${Y(n.f)-15})"><circle r="9" fill="#5a0a0a" stroke="#e06050" stroke-width="1.5"/><text y="4" text-anchor="middle" font-size="10" fill="#ffd0c0" font-family="Cinzel,serif">${['I','II','III'][i]}</text><title>${SCH[d.ks[i]].n}: ${SCH[d.ks[i]].d}</title></g>`})}
+   svg.insertAdjacentHTML('beforeend',add)}}catch(e){console.error('campaign',e)}return r}}
+{const st=document.createElement('style');st.textContent=`
+.doom{max-width:420px;margin:6px auto 4px;text-align:center}.doom>b{font:700 13px Cinzel,serif;letter-spacing:.18em;color:#7a1410;text-transform:uppercase}
+.dbar{position:relative;height:10px;margin:4px 0 2px;background:#1a0a06;border:1px solid #3a1a0e;box-shadow:inset 0 1px 3px #000}.dbar>span{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#5a1008,#c02a10,#ff7a30);box-shadow:0 0 8px #c02a10}
+.dmk{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:#3a2414}.dmk.on{background:#ffb070}
+.doom small{font-size:12px;color:#5a2a14}
+.schw{max-width:520px;margin:6px auto;text-align:left}.sht{display:block;text-align:center;font:700 13px Cinzel,serif;letter-spacing:.18em;color:#7a1410;text-transform:uppercase;margin-bottom:3px}
+.sch{display:flex;gap:8px;align-items:center;padding:3px 6px;border-top:1px solid rgba(60,30,10,.25);font-size:13px}.sch>b{font:700 12px Cinzel,serif;color:#fff;background:#5a0a0a;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex:none}
+.sch span{flex:1;display:flex;flex-direction:column}.sch i{font-style:normal;font-weight:600;color:#3a1a0a}.sch small{color:#5a3a1a}.sch em{font-size:11px;font-style:normal;color:#7a1410;white-space:nowrap}
+.sch.stp i{text-decoration:line-through;color:#4a5a2a}.sch.stp em{color:#3a6a2a}.sch.on em{color:#c02a10;font-weight:700}
+.tre-l{margin-top:6px;color:#d8c8f0}`;document.head.appendChild(st)}
+/* ---------- the road's events: 24 new encounters on top of the original three ----------
+   Many hang on who is in your company: their traits, their bonds, the fallen in the graveyard, the forge's materials
+   and the doom clock. Some choices are only open to the right fighter (a Superstitious one won't set foot in a
+   haunted crypt), some start chains that come back later in the run. An event isn't repeated within a run. */
+const bondPairs=()=>{const m=(G.bnd&&G.bnd.m)||{},s=sqd(),out=[];s.forEach(a=>{const b=s.find(c=>c.id===+m[a.id]);if(b&&a.id<b.id)out.push([a,b])});return out};
+const hasT=(c,id)=>trHas(c,id)||trEHas(c,id);
+const trNm=id=>(TRA[id]||TRE[id]||{n:id}).n;
+const EV2=[
+ /* ---- traits ---- */
+ {id:'crypt',n:'The Sealed Crypt',when:()=>sqd().length>=2,set:p=>{const s=pickC(c=>trHas(c,'superst'))||pickC();p.a=s.id;p.b=(pickC(c=>c.id!==p.a&&hasT(c,'stoic'))||pickC(c=>c.id!==p.a)).id},
+  d:p=>`A crypt door hangs open, cold breath rolling from the dark. Something glints on the bier inside.`,c:[
+  {l:p=>`Send ${cNm(chOf(p.a))} in`,ok:p=>trHas(chOf(p.a),'superst')?`${cNm(chOf(p.a))} refuses: Superstitious`:true,f:p=>{const c=chOf(p.a);if(Math.random()<.6){chestAdd(zNow());return `${cNm(c)} comes back pale but grinning, a sealed chest under one arm. It waits in the hall.`}trEAdd(c,'cursed');return `${cNm(c)} screams in the dark and stumbles out. Something followed them. ${cNm(c)} is Cursed.`}},
+  {l:p=>`Send ${cNm(chOf(p.b))}${hasT(chOf(p.b),'stoic')?' (Stoic)':''}`,f:p=>{const c=chOf(p.b);const ok=hasT(c,'stoic')||Math.random()<.5;if(ok){chestAdd(zNow());giveXp(c,10);return `${cNm(c)} walks in without a word and walks out with a chest. +10 XP.`}trEAdd(c,'cursed');return `${cNm(c)} disturbs the dead. ${cNm(c)} is Cursed.`}},
+  {l:()=>'Seal it and move on',f:()=>'You wedge the door shut with a dead branch.'}]},
+ {id:'duel',n:'The Black Knight’s Challenge',when:()=>sqd().length>=1,set:p=>{const s=sqd().slice().sort((a,b)=>clv(b)-clv(a));p.a=s[0].id},
+  d:p=>`A knight in soot-black plate bars the bridge. “Your best, against me. Win, and my purse is yours.” He points at ${cNm(chOf(p.a))}.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} accepts`,f:p=>{const c=chOf(p.a);let w=.55+(hasT(c,'steady')?.1:0)+(hasT(c,'brutal')?.1:0)-(hasT(c,'shaky')?.1:0);if(Math.random()<w){G.gold+=150;giveXp(c,20);return `Steel on steel, then silence. ${cNm(c)} stands over him. +150 gold, +20 XP.`}c.hp=1;trEAdd(c,'death');return `${cNm(c)} is beaten into the mud and left for dead, but lives. Down to 1 health, and now Death-Touched.`}},
+  {l:()=>'Pay the toll (40 gold)',g:40,f:()=>{G.gold-=40;return 'He takes the coin and lets you pass, laughing.'}},
+  {l:()=>'Turn back and go around',f:()=>'The long way round costs you time.'+doomAdd(3)}]},
+ {id:'wolves',n:'Eyes in the Dark',when:()=>true,set:p=>{const h=pickC(c=>hasT(c,'hawk'));p.a=h?h.id:null},
+  d:p=>p.a?`${cNm(chOf(p.a))} stops the column with a raised hand. Hawk-eyed, they’ve seen what the others missed: wolves, circling the camp.`:`Night falls. Somewhere close, something is circling the camp.`,c:[
+  {l:p=>p.a?`Let ${cNm(chOf(p.a))} lead you around them`:'Keep watch all night',f:p=>{if(p.a){giveXp(chOf(p.a),10);return `You slip past in the dark. ${cNm(chOf(p.a))} gains 10 XP.`}const c=pickC();hurtC(c,3);return `They come at dawn. ${cNm(c)} drives them off but is mauled (−3 health).`}},
+  {l:()=>'Light every torch and wait',f:()=>'The wolves keep their distance, but you lose half a day.'+doomAdd(4)}]},
+ {id:'confessor',n:'The Confessor',when:()=>G.gold>=60,set:p=>{p.a=pickC().id},
+  d:p=>`A hooded priest sits by a cold shrine. “Tell me your sins, child, and I will take one from you.” He is looking at ${cNm(chOf(p.a))}.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} confesses (120 gold): trade their flaw for another`,g:120,f:p=>{G.gold-=120;const c=chOf(p.a);const old=c.tr[1];const F=TRF.filter(f=>f.id!==old&&f.g!==TRA[c.tr[0]].g);const nf=rndOf(F);c.tr[1]=nf.id;return `${cNm(c)} weeps, then laughs. No longer ${trNm(old)}... but now ${nf.n}.`}},
+  {l:()=>'Ask for a blessing (60 gold)',g:60,f:p=>{G.gold-=60;const c=chOf(p.a);trEAdd(c,'blessed');return `He marks ${cNm(c)}’s brow with ash. ${cNm(c)} is Blessed.`}},
+  {l:()=>'Leave him to his prayers',f:()=>'He does not look up as you go.'}]},
+ {id:'mirror',n:'The Mirror of Ash',when:()=>true,set:p=>{p.a=pickC().id},
+  d:p=>`A tall mirror stands alone in a burnt field. ${cNm(chOf(p.a))} looks into it, and sees their own death.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} stares it down`,f:p=>{const c=chOf(p.a);if(hasT(c,'stoic')||Math.random()<.5){trEAdd(c,'death');return `${cNm(c)} watches it to the end and does not flinch. Death-Touched.`}trEAdd(c,'haunted');return `${cNm(c)} turns away too late. They will dream of it. Haunted.`}},
+  {l:()=>'Smash the mirror',f:()=>{const m=doomAdd(-6); return 'The glass shrieks as it breaks. Somewhere below, the Pit flinches.'+m}}]},
+ /* ---- bonds ---- */
+ {id:'bridge',n:'The Rotten Bridge',when:()=>bondPairs().length>0,set:p=>{const[a,b]=rndOf(bondPairs());p.a=a.id;p.b=b.id},
+  d:p=>`The planks give way under ${cNm(chOf(p.a))}. They hang over the gorge by one hand. ${cNm(chOf(p.b))}, their bonded partner, is closest.`,c:[
+  {l:p=>`${cNm(chOf(p.b))} dives for them`,f:p=>{const a=chOf(p.a),b=chOf(p.b);hurtC(b,2);[a,b].forEach(c=>giveXp(c,15));try{const k=xKey(a.id,b.id);G.bnd.l[k]=Math.min(3,(G.bnd.l[k]||1)+1)}catch(e){}return `${cNm(b)} hauls ${cNm(a)} up, tearing their own arm on the rope (−2 health). Their bond deepens. Both gain 15 XP.`}},
+  {l:()=>'Throw a rope and pull',f:p=>{const a=chOf(p.a);if(Math.random()<.7){giveXp(a,5);return `You haul ${cNm(a)} up, shaking. +5 XP.`}hurtC(a,4);return `The rope burns through their hands. ${cNm(a)} drops to a ledge and climbs back up broken (−4 health).`}}]},
+ {id:'watch',n:'The Last Watch',when:()=>bondPairs().length>0,set:p=>{const[a,b]=rndOf(bondPairs());p.a=a.id;p.b=b.id},
+  d:p=>`${cNm(chOf(p.a))} and ${cNm(chOf(p.b))} take the last watch together, talking low by the dying fire.`,c:[
+  {l:()=>'Let them talk until dawn',f:p=>{[chOf(p.a),chOf(p.b)].forEach(c=>{giveXp(c,12);if(trEHas(c,'haunted'))trEDel(c,'haunted')});healAll(.25);return `By morning they are lighter somehow. Both gain 12 XP, and any haunting lifts. The company rests a little.`}},
+  {l:()=>'Wake the company early and march',f:()=>{const m=doomAdd(-4); return 'You steal a march on the dark.'+m}}]},
+ {id:'leftbehind',n:'Left Behind',when:()=>bondPairs().length>0&&sqd().some(c=>missHp(c)>2),set:p=>{const pr=bondPairs().find(([a,b])=>missHp(a)>2||missHp(b)>2)||rndOf(bondPairs());const[a,b]=missHp(pr[0])>=missHp(pr[1])?pr:[pr[1],pr[0]];p.a=a.id;p.b=b.id},
+  d:p=>`${cNm(chOf(p.a))} can barely walk. The company must move fast. ${cNm(chOf(p.b))} won’t leave them behind.`,c:[
+  {l:p=>`${cNm(chOf(p.b))} carries them`,f:p=>{const a=chOf(p.a);a.hp=null;const m=doomAdd(4); return `${cNm(chOf(p.b))} carries ${cNm(a)} through the night, and ${cNm(a)} is whole again by dawn. It slows you down.`+m}},
+  {l:()=>'Leave them at a chapel to heal',f:p=>{const a=chOf(p.a);a.hp=null;trEAdd(chOf(p.b),'haunted');return `${cNm(a)} is tended by the nuns and catches up healed, but ${cNm(chOf(p.b))} could not sleep for worry. Haunted.`}}]},
+ /* ---- the graveyard ---- */
+ {id:'returned',n:'One of Your Own',when:()=>(G.grave||[]).length>0&&G.roster.length<12,set:p=>{const g=G.grave;p.g=G.grave.length-1-Math.floor(Math.random()*Math.min(3,g.length))},
+  d:p=>{const f=G.grave[p.g];return `A figure waits at the crossroads, grey-skinned, eyes like cold coals. It is ${esc(f.nm)}, the ${T[f.t].n} who fell at ${esc(f.at)}. “I came back,” they say. “Will you have me?”`},c:[
+  {l:p=>`Take ${esc(G.grave[p.g].nm)} back into the company`,f:p=>{const f=G.grave[p.g];const c={id:G.nextId++,t:f.t,nm:(f.nm+' the Returned').slice(0,20),m:{hp:0,aim:0,mv:0,rng:0,dmg:0},eq:NOEQ(),lk:f.lk,tal:{},tp:0,xp:XPT[Math.max(0,(f.lv||1)-1)],pick:[]};c.tp=1+tpGain(1,clv(c));trEnsure(c);trEAdd(c,'grave');G.roster.push(c);G.grave.splice(p.g,1);return `${esc(f.nm)} walks with you again, at level ${clv(c)}. Something came back with them: Grave-Walker.`}},
+  {l:p=>`Lay ${esc(G.grave[p.g].nm)} to rest`,f:p=>{const f=G.grave[p.g];sqd().forEach(c=>giveXp(c,8));return `You build a pyre and say the words. The company stands a little straighter. Everyone gains 8 XP.`}}]},
+ {id:'graverob',n:'Grave Robbers',when:()=>(G.grave||[]).length>0,set:p=>{p.g=Math.floor(Math.random()*G.grave.length)},
+  d:p=>`Lantern light in a cemetery. Three robbers are digging, and the name on the stone is ${esc(G.grave[p.g].nm)}.`,c:[
+  {l:()=>'Drive them off',f:p=>{const c=pickC();hurtC(c,2);const k=chestRoll(zNow());G.inv.push(k);return `${cNm(c)} takes a shovel to the face (−2 health), but the robbers flee and drop their haul: ${esc(ITEMS[k].n)}.`}},
+  {l:()=>'Let the dead lie',f:()=>{const m=doomAdd(2); return 'You look away. Behind you, the digging goes on.'+m}}]},
+ /* ---- the forge ---- */
+ {id:'emberspirit',n:'The Ember Spirit',when:()=>true,set:p=>{p.a=pickC().id},
+  d:()=>`A wisp of living flame hovers over a cracked anvil. “I have iron that sings and embers that never die. I ask only a little warmth in return.”`,c:[
+  {l:()=>'Take its gifts (3 Ember Shards, 3 Rusted Iron)',f:p=>{matAdd2('ember',3);matAdd2('iron',3);const c=chOf(p.a);trEAdd(c,'cursed');return `The materials are yours. The warmth it takes is ${cNm(c)}’s: they are Cursed.`}},
+  {l:()=>'Take a little (1 Ember Shard)',f:()=>{matAdd2('ember',1);return 'It gives you a single shard, disappointed.'}},
+  {l:()=>'Douse it',f:()=>{const m=doomAdd(-3); return 'It hisses out in a curl of black smoke.'+m}}]},
+ {id:'bloodsmith',n:'The Blood Smith',when:()=>true,set:p=>{p.a=pickC().id},
+  d:p=>`A smith with stitched lips works a forge fed by blood, not coal. He holds out a bowl to ${cNm(chOf(p.a))}.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} bleeds for him (−4 health)`,f:p=>{const c=chOf(p.a);hurtC(c,4);matAdd2('blood',3);matAdd2('scrap',4);return `He fills the bowl and pays in kind: 3 Vampire Blood and 4 Scrap.`}},
+  {l:()=>'Pay him in gold (50)',g:50,f:()=>{G.gold-=50;matAdd2('scrap',4);return 'He sneers at the coin, but gives you 4 Scrap.'}},
+  {l:()=>'Walk on',f:()=>'His hammer keeps time behind you for a long way.'}]},
+ /* ---- the doom clock ---- */
+ {id:'shrine',n:'The Shrine of the Pit',w:2,when:()=>CPX()&&G.cp.doom>=15,set:p=>{p.a=pickC().id},
+  d:p=>`A shrine of black stone pulses like a heart. Every night your company spends on this road, it beats a little stronger. (The Pit Stirs: ${G.cp.doom}/100)`,c:[
+  {l:p=>`Desecrate it (${cNm(chOf(p.a))} does the deed)`,f:p=>{const c=chOf(p.a);const m=doomAdd(-20);if(Math.random()<.5){trEAdd(c,'haunted');return `The shrine cracks and goes still. ${cNm(c)} heard it scream. Haunted.`+m}hurtC(c,3);return `The stone bursts and cuts ${cNm(c)} (−3 health), but the beating stops.`+m}},
+  {l:()=>'Leave it be',f:()=>'You give it a wide berth.'}]},
+ {id:'bloodmoon',n:'The Blood Moon Rite',when:()=>CPX()&&true,set:p=>{p.a=pickC().id},
+  d:()=>`In a ring of standing stones, cultists chant under a red moon. Their ritual is almost done.`,c:[
+  {l:()=>'Break up the rite',f:p=>{const c=chOf(p.a);hurtC(c,3);G.gold+=40;const m=doomAdd(-10); return `${cNm(c)} takes a knife in the scuffle (−3 health). The cultists scatter, leaving 40 gold.`+m}},
+  {l:()=>'Let it finish and loot the stones after',f:()=>{G.gold+=90;const m=doomAdd(10); return 'The moon goes black for a breath. Afterwards you find 90 gold among the ashes.'+m}}]},
+ {id:'shortcut',n:'The Smugglers’ Tunnel',when:()=>CPX()&&G.cp.doom>=10,set:()=>{},
+  d:()=>`A smuggler offers you a tunnel under the hills. “Saves you three days. Costs you a little gold, and maybe your nerve.”`,c:[
+  {l:()=>'Pay for the tunnel (60 gold)',g:60,f:()=>{G.gold-=60;const m=doomAdd(-8); return 'The tunnel stinks, but it is fast.'+m}},
+  {l:()=>'Take the tunnel without paying',f:()=>{const c=pickC();hurtC(c,3);const m=doomAdd(-8); return `The smuggler’s friends don’t like freeloaders. ${cNm(c)} is beaten (−3 health), but you get through.`+m}},
+  {l:()=>'Keep to the road',f:()=>'You keep to the road.'}]},
+ /* ---- chains ---- */
+ {id:'cultist',n:'A Cultist Begs for Mercy',when:()=>!CPX().fl.cult,set:()=>{},
+  d:()=>`A young cultist, robes torn, throws himself at your feet. “Spare me and I’ll tell you what they’re planning. I swear it.”`,c:[
+  {l:()=>'Spare him',f:()=>{G.cp.fl.cult='spared';return 'He runs into the dark. You wonder if you will see him again.'}},
+  {l:()=>'Put him to the sword',f:()=>{G.cp.fl.cult='dead';const m=doomAdd(-3); return 'It is quick.'+m}}]},
+ {id:'cultist2',n:'The Cultist Returns',w:3,when:()=>CPX().fl.cult==='spared'&&!G.cp.fl.cult2,set:()=>{},
+  d:()=>`The young cultist you spared is waiting by the road, older now, with ash on his hands.`,c:[
+  {l:()=>'Hear him out',f:()=>{G.cp.fl.cult2=1;if(Math.random()<.65){const m=doomAdd(-15);G.gold+=60;return `He keeps his word: their rites, their hiding places, 60 gold stolen from their coffers. The Pit loses ground.`+m}const c=pickC();hurtC(c,4);const m=doomAdd(8); return `It was a trap. Knives in the dark; ${cNm(c)} is badly cut (−4 health).`+m}},
+  {l:()=>'Drive him off',f:()=>{G.cp.fl.cult2=1;return 'He looks at you a long moment, then goes.'}}]},
+ {id:'gambler2',n:'The Dealer Again',w:2,when:()=>G.gold>=100&&!CPX().fl.gamb,set:()=>{},
+  d:()=>`The hooded dealer from the bone-dice table is here, ahead of you on the road somehow. “Double or nothing, friend? One throw.”`,c:[
+  {l:()=>'Bet 100 gold',g:100,f:()=>{G.cp.fl.gamb=1;if(Math.random()<.45){G.gold+=150;return 'Sixes. He laughs and pays: +150 gold.'}G.gold-=100;return 'The dice show a skull on every face. You lose 100 gold.'}},
+  {l:()=>'Bet a fighter’s luck instead',f:()=>{G.cp.fl.gamb=1;const c=pickC();if(Math.random()<.5){trEAdd(c,'blessed');return `He rolls, frowns, and taps ${cNm(c)} on the brow. Blessed.`}trEAdd(c,'cursed');return `He rolls and smiles. ${cNm(c)} feels the cold settle in. Cursed.`}},
+  {l:()=>'Walk away',f:()=>{G.cp.fl.gamb=1;return 'You do not look back. You can hear the dice anyway.'}}]},
+ {id:'hermit',n:'The Hermit’s Draught',when:()=>true,set:p=>{p.a=pickC().id},
+  d:p=>`An old hermit offers ${cNm(chOf(p.a))} a steaming cup. “It will make you stronger. Probably.”`,c:[
+  {l:p=>`${cNm(chOf(p.a))} drinks`,f:p=>{const c=chOf(p.a),r=Math.random();if(r<.45){trEAdd(c,'blessed');c.hp=null;return `Warmth floods through ${cNm(c)}. Healed and Blessed.`}if(r<.75){giveXp(c,20);return `${cNm(c)} sees visions for an hour and wakes wiser. +20 XP.`}hurtC(c,4);return `${cNm(c)} is sick in the bushes for a long time (−4 health).`}},
+  {l:()=>'Politely decline',f:()=>'He drinks it himself and smiles.'}]},
+ {id:'plaguecart',n:'The Plague Cart',when:()=>true,set:p=>{p.a=pickC().id},
+  d:()=>`A cart stacked with plague dead blocks the lane. Under the bodies, the glint of a strongbox.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} digs for the box`,f:p=>{const c=chOf(p.a);G.gold+=80;matAdd2('bone',2);if(Math.random()<.5){trEAdd(c,'cursed');return `+80 gold and 2 Bone Dust, but ${cNm(c)} breathed the sickness. Cursed.`}return '+80 gold and 2 Bone Dust. No one fell sick... yet.'}},
+  {l:()=>'Burn the cart',f:()=>{const m=doomAdd(-5); return 'The smoke is black and smells of sweet rot.'+m}}]},
+ {id:'deserter',n:'The Deserter',when:()=>G.roster.length<12,set:p=>{const t=rtPick();p.t=t;p.nm=genName(t)},
+  d:p=>`A ragged ${T[p.t].n} stumbles out of the trees. “${esc(p.nm)}. I ran from the last battle. Let me fight for you and I won’t run again.”`,c:[
+  {l:p=>`Take ${esc(p.nm)} in`,f:p=>{const c={id:G.nextId++,t:p.t,nm:p.nm,m:{hp:0,aim:0,mv:0,rng:0,dmg:0},eq:NOEQ(),lk:genLook(),tal:{},tp:1,xp:0,pick:[]};trEnsure(c);c.tr[1]='skittish';if(TRA[c.tr[0]].g==='nerve')c.tr[0]='hardy';G.roster.push(c);return `${esc(p.nm)} joins the company. Skittish, but grateful.`}},
+  {l:()=>'Turn him in for the bounty',f:()=>{G.gold+=60;return 'The garrison pays 60 gold. You do not ask what they do with him.'}},
+  {l:()=>'Send him on his way',f:()=>'He goes, looking back once.'}]},
+ {id:'chapelruin',n:'The Ruined Chapel',when:()=>true,set:p=>{const s=pickC(c=>trHas(c,'superst'));p.a=s?s.id:null},
+  d:p=>`A roofless chapel, its saint’s statue weeping black water.${p.a?` ${cNm(chOf(p.a))} crosses themselves twice and won’t go near it.`:''}`,c:[
+  {l:()=>'Pray at the statue',f:()=>{const n=healAll(.35);sqd().forEach(c=>{if(trEHas(c,'cursed')&&Math.random()<.5)trEDel(c,'cursed')});return `The water runs clear for a moment. Wounds ease, and some curses wash away.`}},
+  {l:()=>'Take the silver from the altar',f:()=>{G.gold+=70;const c=pickC();trEAdd(c,'cursed');return `+70 gold. ${cNm(c)} carried the plate. Cursed.`}}]},
+ {id:'crows',n:'The Carrion Field',when:()=>sqd().some(c=>T[c.t].rng>=4),set:p=>{p.a=pickC(c=>T[c.t].rng>=4).id},
+  d:p=>`A battlefield from some older war, black with crows. Among the dead, a captain’s corpse still wears his rings.`,c:[
+  {l:p=>`${cNm(chOf(p.a))} shoots the crows off`,f:p=>{const c=chOf(p.a);giveXp(c,10);G.gold+=50;return `${cNm(c)} clears the field shot by shot. +10 XP and 50 gold from the captain’s rings.`}},
+  {l:()=>'Search the whole field',f:()=>{matAdd2('iron',3);matAdd2('scrap',3);const m=doomAdd(4); return '3 Rusted Iron and 3 Scrap, and a long day among the dead.'+m}}]},
+ {id:'lantern',n:'The Lantern in the Marsh',when:()=>true,set:p=>{const h=pickC(c=>hasT(c,'hawk'));p.a=h?h.id:null},
+  d:p=>`A lantern bobs out over the marsh, just out of reach.${p.a?` ${cNm(chOf(p.a))} squints: no one is holding it.`:' It seems to wait for you.'}`,c:[
+  {l:()=>'Follow it',f:()=>{if(Math.random()<.5){chestAdd(zNow()+1);return 'It leads you to a drowned shrine and a chest of old gold. The chest waits in the hall.'}const c=pickC();hurtC(c,4);return `It leads you into the mire. ${cNm(c)} is dragged under for a terrible moment (−4 health).`}},
+  {l:()=>'Let it go',f:p=>p.a?`${cNm(chOf(p.a))} nods. Wise.`:'It fades into the mist.'}]}];
+const EV2I={};EV2.forEach(e=>EV2I[e.id]=e);
+/* pick an event for an event node: new ones that fit the company, plus the original three; no repeats in a run */
+function evPick(p){const cp=CPX();cp.fl.seen=cp.fl.seen||[];const pool=[];
+ EV2.forEach(e=>{try{if(!cp.fl.seen.includes(e.id)&&e.when())pool.push([e.id,e.w||1.2])}catch(er){}});
+ EVS.forEach((e,i)=>{if(!cp.fl.seen.includes('o'+i))pool.push(['o'+i,1])});
+ if(!pool.length){p.k=Math.floor(Math.random()*EVS.length);return}
+ let x=Math.random()*pool.reduce((a,q)=>a+q[1],0),id=pool[0][0];for(const[q,w]of pool){x-=w;if(x<=0){id=q;break}}
+ cp.fl.seen.push(id);if(id[0]==='o'&&!EV2I[id]){p.k=+id.slice(1);return}
+ p.x=id;try{EV2I[id].set(p)}catch(er){console.error('event',er);delete p.x;p.k=0}}
+{const _oe=openEvent;openEvent=function(){const p=G.cp.pend;if(!p||!p.x||!EV2I[p.x])return _oe.apply(this,arguments);const e=EV2I[p.x];
+  if(p.res){show(`<h2>${e.n}</h2><p class="msg" style="text-align:center">${p.res}</p>${contBtn}`);return}
+  const btn=(c,i)=>{let ok=true;try{ok=c.ok?c.ok(p):true}catch(er){}const poor=c.g&&G.gold<c.g;const lab=c.l(p);return `<button data-a="evx" data-v="${i}" ${ok!==true||poor?'disabled':''} title="${ok!==true?esc(String(ok)):''}">${lab}${ok!==true?` <small>(${ok})</small>`:''}</button>`};
+  show(`<h2>${e.n}</h2><p class="msg" style="text-align:center">${e.d(p)}</p><div class="mn row" style="flex-direction:column">${e.c.map(btn).join('')}</div>`)}}
+A.evx=i=>{const p=G.cp.pend;if(!p||p.res||!p.x)return;const c=EV2I[p.x].c[+i];if(!c)return;if(c.g&&G.gold<c.g)return;try{if(c.ok&&c.ok(p)!==true)return}catch(er){}
+ try{p.res=c.f(p)}catch(er){console.error('event',er);p.res='The moment passes.'}save();openEvent()};
+/* ---------- the nemesis: a villain who hunts your company through the whole run ----------
+   One per campaign, chosen at random: a hollow knight, a witch-hunter, a mad sorceress or an executioner. From the
+   third floor on they may arrive partway through a battle (the ground is marked a turn ahead), taunting your
+   fighters by name. They learn: if your archers did the damage last time they come back harder to hit, if your
+   blades did, they come back in heavier armour. Hurt badly, they flee at the start of their turn and come back a
+   level stronger, so you have to finish them in one push. Kill one of your fighters and they take that fighter's
+   weapon, and fight with it. Strike them down for good and you get their bounty, chests, every weapon they took,
+   and the title Nemesis-Slayer. */
+const NEMS=[
+ {nm:'Ser Malric the Hollow',base:'kn',d:'A knight whose armour is empty but for a cold voice. He keeps the weapons of the dead.',lines:['{X}. I remember your face.','Kneel, {X}, and I will make it quick.','Your company is already in my ledger.','Another sword for my wall, {X}?']},
+ {nm:'Vorag the Witch-Hunter',base:'cb',d:'A hunter of heretics who has decided your company is heresy enough.',lines:['There you are, {X}. I followed the smell of sin.','I have a bolt with your name on it, {X}.','Burn, all of you.','Run, {X}. I like it when they run.']},
+ {nm:'Mother Ysolde of the Ash',base:'mg',d:'A sorceress who sees your company in her fire every night.',lines:['I dreamt of you, {X}. You were screaming.','The ash knows your names now.','Come closer, {X}. Let me see you burn.','Your little band amuses me.']},
+ {nm:'The Pale Executioner',base:'bk',d:'Hooded, silent, with an axe that has never been cleaned.',lines:['...{X}.','*the axe scrapes stone, slowly, toward {X}*','*he counts your fighters on his fingers*','*he points the axe at {X}*']}];
+const NEMB={plan:false,round:0,mark:null,slain:false,esc:false,took:[]};
+const nemS=()=>{const cp=G.cp;if(!cp)return null;if(!cp.nem){const b=rndOf(NEMS);cp.nem={i:NEMS.indexOf(b),nm:b.nm,base:b.base,lk:genLook(),lv:1,esc:0,tro:[],ad:{rng:0,mel:0},dead:0,met:0,cool:0}}return cp.nem};
+const nemU=()=>U.find(u=>u.nem&&!u.dead);
+function nemStats(u){const n=G.cp&&G.cp.nem;if(!n||!u.st)return;const B=T[n.base],L=n.lv+Math.floor((typeof ctier==='number'?ctier:0)/4);
+ u.st.hp=Math.round(B.hp*2.4+L*4);u.st.lo=B.lo+L;u.st.hi=B.hi+L;u.st.aim=B.aim+L*2;u.st.vis=Math.max(B.vis||5,6);u.st.mv=B.mv+(L>=3?1:0);
+ const tro=Math.min(3,n.tro.length);u.st.lo+=tro;u.st.hi+=tro;if(n.ad.lrn==='rng')u.st.dodge=(u.st.dodge||0)+15;if(n.ad.lrn==='mel')u.st.arm=(u.st.arm||0)+1;
+ u.nm=n.nm}
+{const _as=applyStats;applyStats=function(){const r=_as.apply(this,arguments);try{U.forEach(u=>{if(u.nem){const f=u.hp>0&&u.st?u.hp:null;nemStats(u);if(f==null||u.hp>u.st.hp)u.hp=u.st.hp}})}catch(e){console.error('nemesis',e)}return r}}
+const nemSay=(u,txt)=>{try{xBubble(u,txt)}catch(e){}log.unshift(`<b style="color:#e08a7a">${esc(u.nm)}:</b> “${esc(txt)}”`)};
+function nemLine(){const n=G.cp.nem,b=NEMS[n.i]||NEMS[0];const alive=U.filter(u=>u.s===0&&u.ch&&!u.dead);const marked=alive.filter(u=>trEU(u,'marked'));const v=rndOf(marked.length?marked:alive);return rndOf(b.lines).replace(/\{X\}/g,v?v.ch.nm:'you')}
+/* will the nemesis come this battle? */
+{const _sb=startBattle;startBattle=function(c){NEMB.plan=false;NEMB.round=0;NEMB.mark=null;NEMB.slain=false;NEMB.esc=false;NEMB.took=[];const r=_sb.apply(this,arguments);
+  try{if(camp&&G.cp&&CUR&&!CUR.boss&&!CUR.rep){const f=G.cp.mp[CUR.idx]?G.cp.mp[CUR.idx].f:0;const n=G.cp.nem;if(f>=2&&!(n&&n.dead)){if(n&&n.cool>0)n.cool--;else if(Math.random()<(n&&n.met?.3:.4))NEMB.plan=true}}}catch(e){console.error('nemesis',e)}return r}}
+function nemArrive(){const n=nemS();const[r,c]=NEMB.mark;const at0=at(r,c);let cell=[r,c];if(at0||isP(r,c)){const alt=podCells(r,c,1,SZ-6)[0];if(alt)cell=alt}
+ const id=Math.max(...U.map(u=>u.id))+1;const u=mk(n.base,1,cell[0],cell[1],id,n.lk);u.nem=1;const keep=U;U=[u];try{applyStats()}finally{U=keep}u.ap=0;U.push(u);
+ try{u.m.material.color.setRGB(.85,.5,.5);u.rg.material.color.setHex(0xff2010)}catch(e){}
+ u.hp=u.st.hp;n.met=(n.met||0)+1;NEMB.mark=null;try{const m=NEMB.mesh;if(m&&m.parent)m.parent.remove(m);PODS.mk=PODS.mk.filter(x=>x!==m)}catch(e){}try{fRing(cell[1],cell[0],0xff2010,.2,2.2,700,0);shake(.18,0)}catch(e){}
+ log.unshift(`<b style="color:#ff6a50">${esc(n.nm)} has found you!</b>${n.ad.lrn==='rng'?' (Learned from your archers: harder to hit.)':n.ad.lrn==='mel'?' (Learned from your blades: heavier armour.)':''}${n.tro.length?` Carrying ${n.tro.length} stolen weapon${n.tro.length>1?'s':''}.`:''}`);
+ setTimeout(()=>{if(!u.dead)nemSay(u,nemLine())},500);try{hud()}catch(e){}}
+{const _e=endTurn;endTurn=function(){const r=_e.apply(this,arguments);try{if(camp&&NEMB.plan&&turn===0&&over===null){NEMB.round++;
+   if(NEMB.round===2&&!NEMB.mark){const o=XS.obj||{},gr=o.cell!=null?Math.floor(o.cell/100):1,gc=o.cell!=null?o.cell%100:Math.floor(MX);let cell=null;for(let t=0;t<60&&!cell;t++){const rr=Math.max(0,Math.min(3,gr-1+Math.floor(Math.random()*3))),cc=Math.max(1,Math.min(SW-2,gc+Math.floor((Math.random()*2-1)*6)));if(podFree(rr,cc))cell=[rr,cc]}
+    if(cell){NEMB.mark=cell;podMark([cell]);NEMB.mesh=PODS.mk[PODS.mk.length-1];log.unshift(`<b style="color:#ff6a50">The ground blackens. Someone is coming for you.</b>`);hud()}}
+   else if(NEMB.round===3&&NEMB.mark){NEMB.plan=false;nemArrive()}}}catch(e){console.error('nemesis',e)}return r}}
+/* hurt: the nemesis learns from who hurts him; fighters who wound him become Marked */
+{const _h=hurt;hurt=function(u,d,by){const hp0=u&&u.hp;const r=_h.apply(this,arguments);try{if(u&&u.nem&&by&&by.s===0){const n=G.cp.nem,dd=Math.max(0,hp0-Math.max(0,u.hp));if(by.st.rng>1)n.ad.rng+=dd;else n.ad.mel+=dd;if(by.ch)trEAdd(by.ch,'marked')}}catch(e){}return r}}
+/* he flees when badly hurt, at the start of his own turn */
+{const _a=aiStep;aiStep=function(){try{if(turn===1&&!NEMB.fleeChk){NEMB.fleeChk=1;const u=nemU();if(u&&u.hp<u.st.hp*.4){const n=G.cp.nem;nemSay(u,rndOf(['This is not over.','I will remember this.','Next time.']));u.dead=true;u.esc=1;NEMB.esc=true;n.esc++;n.lv++;n.cool=2;
+   try{[u.m,u.sh,u.rg].forEach(o=>o&&(o.visible=false));if(u.tg)u.tg.style.display='none';fSpark(u.c,u.r,0x400808,30,2,900,0,true)}catch(e){}log.unshift(`<b style="color:#ff6a50">${esc(n.nm)} flees into the dark.</b> They will be back, stronger.`);hud()}}}catch(e){console.error('nemesis',e)}
+  return _a.apply(this,arguments)}}
+{const _e2=endTurn;endTurn=function(){NEMB.fleeChk=0;return _e2.apply(this,arguments)}}
+/* kills: the nemesis takes weapons; killing him for good pays out */
+{const _lk=lkill;lkill=function(u,by,how){const was=u&&u.dead;const r=_lk.apply(this,arguments);try{if(was||!u||!u.dead)return r;const n=G.cp&&G.cp.nem;if(!n)return r;
+  if(by&&by.nem&&u.s===0&&u.ch){const w=u.ch.eq&&u.ch.eq.w;if(w){n.tro.push(w);u.ch.eq.w=null;NEMB.took.push(`${u.ch.nm}’s ${ITEMS[w]?ITEMS[w].n:'weapon'}`)}n.lv++;setTimeout(()=>{if(!by.dead)nemSay(by,w?`${u.ch.nm}’s weapon is mine now.`:`One less.`)},400)}
+  if(u.nem&&!u.esc){n.dead=1;NEMB.slain=true;if(by&&by.ch)trEAdd(by.ch,'slayer');NEMB.slayer=by&&by.ch?by.ch.nm:null}}catch(e){console.error('nemesis',e)}return r}}
+{const _st=settle;settle=function(){const was=settled;const r=_st.apply(this,arguments);try{if(!was&&camp&&G.cp&&G.cp.nem){const n=G.cp.nem;let h='';
+  if(NEMB.slain){const g=250+100*n.lv;G.gold+=g;n.tro.forEach(k=>G.inv.push(k));chestAdd(zNow()+1);chestAdd(zNow()+1);h=`<div class="chw got" style="padding:8px"><b style="color:#ff9a7a">${esc(n.nm)} is dead.</b><small>Their bounty: ${g} gold and two chests waiting in the hall${n.tro.length?`, and the ${n.tro.length} weapon${n.tro.length>1?'s':''} they took from your fallen`:''}.${NEMB.slayer?` ${esc(NEMB.slayer)} is now Nemesis-Slayer.`:''}</small></div>`;n.tro=[]}
+  else if(NEMB.esc)h=`<br><b style="color:#ff9a7a">${esc(n.nm)} escaped.</b> They are now level ${n.lv}.`;
+  if(NEMB.took.length)h+=`<br><b style="color:#ff9a7a">${esc(n.nm)} took ${NEMB.took.join(' and ')}.</b>`;
+  if(n.ad.rng+n.ad.mel>0&&!n.dead){n.ad.lrn=n.ad.rng>n.ad.mel*1.3?'rng':n.ad.mel>n.ad.rng*1.3?'mel':n.ad.lrn||null;n.ad.rng=0;n.ad.mel=0}
+  if(h){const rw=$('rw');if(rw)rw.insertAdjacentHTML('beforeend',h)}save()}}catch(e){console.error('nemesis',e)}return r}}
+/* the campaign map shows who is hunting you */
+{const _om=openMap;openMap=function(msg){const r=_om.apply(this,arguments);try{const n=G.cp&&G.cp.nem;if(!n||!n.met||G.cp.pend)return r;const b=NEMS[n.i]||NEMS[0];
+  const d=SCR.querySelector('.doom');const h=`<div class="nemc${n.dead?' dead':''}" title="${esc(b.d)}"><b>${n.dead?'Slain':'Hunted by'}</b> <i>${esc(n.nm)}</i>${n.dead?'':` · level ${n.lv}${n.tro.length?` · carrying ${n.tro.length} stolen weapon${n.tro.length>1?'s':''}`:''}${n.ad.lrn?` · ${n.ad.lrn==='rng'?'wary of archers':'armoured against blades'}`:''}`}</div>`;
+  (d||SCR.querySelector('.ngb')||SCR.querySelector('.pn h2')).insertAdjacentHTML('afterend',h)}catch(e){console.error('nemesis',e)}return r}}
+{const st=document.createElement('style');st.textContent='.nemc{max-width:460px;margin:4px auto;padding:3px 10px;font-size:13px;color:#3a1008;border-top:1px solid rgba(90,20,10,.3);border-bottom:1px solid rgba(90,20,10,.3)}.nemc b{font:700 12px Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;color:#7a1410}.nemc i{font-style:normal;font-weight:700}.nemc.dead{opacity:.7;text-decoration:line-through}';document.head.appendChild(st)}
+/* Marked fighters aim better at the nemesis */
+{const _ch=chance;chance=function(a,t){const p=_ch.apply(this,arguments);try{if(t&&t.nem&&trEU(a,'marked'))return Math.min(95,p+10)}catch(e){}return p}}
 /* ---------- volumetric light: god-ray shafts, dust and torch halos ---------- */
 const VLM={sh:[],dust:null,ready:false};
 function vlmInit(){if(VLM.ready)return;VLM.ready=true;
