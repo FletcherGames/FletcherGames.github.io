@@ -56,7 +56,7 @@ All mods belong to their respective creators. Download from their pages and foll
 | Jolt Physics | [Mod page](https://www.patreon.com/MrRealistic/posts/gta-sa-jolt-01-165395296) | Creator post supplied by FletcherGames; Patreon access may be required. |
 | limit | [Listed source](https://www.mixmods.com.br/2022/10/open-limit-adjuster/) | Identified by III.VC.SA.LimitAdjuster.asi. |
 | LiveTrafficRadio | [Creator hub](https://www.patreon.com/cw/peter_99) | Creator URL is supplied by installed documentation; exact release post not established. |
-| LivingStreets | Custom mod - release link pending | FletcherGames' custom Living Streets mod. No public download URL supplied or verified; add the release link when available. |
+| LivingStreets | [Beta v2.0 release](https://libertycity.net/files/gta-san-andreas/247821-living-streets-beta-v2-0.html) | FletcherGames' Living Streets mod — public beta v2.0. Development, bug fixes, and compatibility work are ongoing. |
 | Manual Driveby Refixed | [Listed source](https://libertycity.net/files/gta-san-andreas/213857-manual-driveby-refixed.html) | Includes NPC drive-by fixes. |
 | Menu_Background_Remake | [Listed source](https://libertycity.net/files/gta-san-andreas/194852-remake-of-backgrounds-in-the-menu.html) | Contains Full Menu Background Image plugin. |
 | Missing Lampposts Fix | [Listed source](https://www.mixmods.com.br/2022/04/missing-lampposts-fix-more-light-posts/) | Map additions. |
